@@ -4,14 +4,27 @@ export class Dijkstra {
         private canVisit: (node: string) => boolean = (node) => { return true; }
     ) {};
     nodes = new Set<string>();
+    // turns out, caching dijkstra speeds things up . . . like... a lot (duh).
+    cache = new Map<string, Map<string, Array<string>>>();
 
     addNode(node: string) {
         this.nodes.add(node);
     }
 
-    getShortestPath(from: string, to: string): Array<string> {
+    getShortestPath(from: string, to: string, skipCache=false): Array<string> {
+        if (this.cache.get(from) === undefined) {
+            this.cache.set(from, new Map<string, Array<string>>());
+        }
+
+        if (this.cache.get(from)?.get(to) === undefined || skipCache) {
+            this.cache.get(from)?.set(to, this._getShortestPath(from, to));
+        }
+
+        return this.cache.get(from)?.get(to)!;
+    }
+
+    _getShortestPath(from: string, to: string): Array<string> {
         let result = Array<string>();
-        let shortest = Infinity;
         let unvisited = new Set<string>(this.nodes);
         let distanceTo = new Map<string, number>();
         let parent = new Map<string, string>();
