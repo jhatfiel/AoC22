@@ -31,6 +31,7 @@ class C {
     best = 0;
     dij = new Dijkstra(this.getNeighbors.bind(this));
     DEBUG = false;
+    maxFlow = 0;
 
     getNeighbors(node: string) {
         let result = new Map<string, number>();
@@ -59,9 +60,12 @@ class C {
     }
 
     solve() {
-        let state = {uPath: 'AA', ePath: 'AA', uCur: 'AA', eCur: 'AA', released: 0, opened: new Set<string>()};
+        let state = {uPath: '', ePath: '', uCur: 'AA', eCur: 'AA', released: 0, opened: new Set<string>()};
 
-        this.valves.forEach((v, n) => this.dij.addNode(n));
+        this.valves.forEach((v, n) => {
+            this.dij.addNode(n);
+            this.maxFlow += v.flowRate;
+        });
 
         this.try(0, state);
     }
@@ -76,21 +80,25 @@ class C {
             if (state.uNext === undefined) {
                 let newState = this.copyState(state, false);
                 let triedSomething = false;
-                this.valves.forEach((v, n) => {
+                //Array.from(this.valves.values()).sort((a,b) => b.flowRate-a.flowRate).forEach((v) => {
+                this.valves.forEach((v) => {
                     // eNext is empty
                     // or eNext is not going to end at this n
                     // or eNext length is 0 && eCur = n
-                    if (v.flowRate > 0 && !state.opened.has(n) &&
+                    if (v.flowRate > 0 && !state.opened.has(v.name) &&
                             (!state.eNext ||
-                             (state.eNext.length > 0 && state.eNext[state.eNext.length-1] !== n) ||
-                             (state.eNext.length == 0 && state.eCur !== n)
+                             (state.eNext.length > 0 && state.eNext[state.eNext.length-1] !== v.name) ||
+                             (state.eNext.length == 0 && state.eCur !== v.name)
                             )
                         ) {
-                        newState.uNext = this.dij.getShortestPath(state.uCur, n).slice(1);
-                        newState.uNext.push(n);
-                        this.clog(`[${time}] [${newState.uPath}]: trying u shortestRoute from ${newState.uCur} to ${n}: ${newState.uNext}`);
-                        this.try(time, newState);
-                        triedSomething = true;
+                        newState.uNext = this.dij.getShortestPath(state.uCur, v.name).slice(1);
+                        // if we were to think about jumping ahead to when we get to the next location and turning on that valve, then "instantly" turn on all others, is it worth pursuing?
+                        if (time+newState.uNext.length < MAX_TIME-2) {
+                            newState.uNext.push(v.name);
+                            this.clog(`[${time}] [${newState.uPath}] [${newState.uPath}]: trying u shortestRoute from ${newState.uCur} to ${v.name}: ${newState.uNext}`);
+                            this.try(time, newState);
+                            triedSomething = true;
+                        }
                     }
                 })
                 // if we didn't have anything to try, just spin our wheels until time runs out
@@ -102,19 +110,22 @@ class C {
                 // if e has no planned rooms, see if we can find potential rooms to move e to, and recurse
                 let newState = this.copyState(state, false);
                 let triedSomething = false;
-                this.valves.forEach((v, n) => {
-                    if (v.flowRate > 0 && !state.opened.has(n)) this.clog(`[${time}] [${newState.uPath}]: should e try shortestRoute from ${newState.eCur} to ${n}?`);
-                    if (v.flowRate > 0 && !state.opened.has(n) &&
+                //Array.from(this.valves.values()).sort((a,b) => b.flowRate-a.flowRate).forEach((v) => {
+                this.valves.forEach((v) => {
+                    if (v.flowRate > 0 && !state.opened.has(v.name)) this.clog(`[${time}] [${newState.uPath}]: should e try shortestRoute from ${newState.eCur} to ${v.name}?`);
+                    if (v.flowRate > 0 && !state.opened.has(v.name) &&
                             (!state.uNext ||
-                             (state.uNext.length > 0 && state.uNext[state.uNext.length-1] !== n) ||
-                             (state.uNext.length == 0 && state.uCur !== n)
+                             (state.uNext.length > 0 && state.uNext[state.uNext.length-1] !== v.name) ||
+                             (state.uNext.length == 0 && state.uCur !== v.name)
                             )
                         ) {
-                        newState.eNext = this.dij.getShortestPath(state.eCur, n).slice(1);
-                        newState.eNext.push(n);
-                        this.clog(`[${time}] [${newState.ePath}]: trying e shortestRoute from ${newState.eCur} to ${n}: ${newState.eNext}`);
-                        this.try(time, newState);
-                        triedSomething = true;
+                        newState.eNext = this.dij.getShortestPath(state.eCur, v.name).slice(1);
+                        if (time+newState.eNext.length < MAX_TIME-2) {
+                            newState.eNext.push(v.name);
+                            this.clog(`[${time}] [${newState.ePath}]: trying e shortestRoute from ${newState.eCur} to ${v.name}: ${newState.eNext}`);
+                            this.try(time, newState);
+                            triedSomething = true;
+                        }
                     }
                 })
                 // if we didn't have anything to try, just spin our wheels until time runs out
@@ -126,40 +137,48 @@ class C {
                 // at this point, we should either be at a room we need to turn a valve on, or we should have some "next" path to follow
                 // OR, we have nothing to do and we'll just spin.  Either way, it's deterministic, so we just do what we're supposed to do and try(time+1)
 
-                let newState = this.copyState(state); // we have increased the state.released by what is currently open
-                time++;
+                // we can save a lot of time here by chopping out any potential path where it's just not possible to beat our best score so far
+                // even if all valves magically were on
+                let timeLeft = MAX_TIME-time;
+                let potentialRelease = timeLeft*this.maxFlow;
+                if (state.released + potentialRelease < this.best) {
+                    time = MAX_TIME-1;
+                } else {
+                    let newState = this.copyState(state); // we have increased the state.released by what is currently open
+                    time++;
 
-                // if u are at the next planned room, open the valve
-                if (state.uNext.length === 0) {
-                    // we know this valve is unopened and it has flow rate, otherwise we wouldn't have headed there
-                    newState.uPath += '<>';
-                    newState.opened.add(newState.uCur);
-                    newState.uNext = undefined;
+                    // if u are at the next planned room, open the valve
+                    if (state.uNext.length === 0) {
+                        //newState.uPath += '<>';
+                        if (!newState.opened.has(newState.uCur)) newState.uPath += '+' + newState.uCur;
+                        newState.opened.add(newState.uCur);
+                        newState.uNext = undefined;
 
-                    this.clog(`[${time}] [${newState.uPath}]: u opened ${newState.uCur}, released=${newState.released}`);
-                } else if (state.uNext.length >= 1) {
-                    // move along the path to the new room
-                    newState.uCur = newState.uNext!.shift()!;
-                    newState.uPath += newState.uCur;
-                    this.clog(`[${time}] [${newState.uPath}]: u moved ${newState.uCur}, released=${newState.released}`);
+                        this.clog(`[${time}] [${newState.uPath}]: u opened ${newState.uCur}, released=${newState.released}`);
+                    } else if (state.uNext.length >= 1) {
+                        // move along the path to the new room
+                        newState.uCur = newState.uNext!.shift()!;
+                        //newState.uPath += newState.uCur;
+                        this.clog(`[${time}] [${newState.uPath}]: u moved ${newState.uCur}, released=${newState.released}`);
+                    }
+
+                    // if e is at the next planned room, open the valve
+                    if (state.eNext.length === 0) {
+                        //newState.ePath += '<>';
+                        if (!newState.opened.has(newState.eCur)) newState.ePath += '+' + newState.eCur;
+                        newState.opened.add(newState.eCur);
+                        newState.eNext = undefined;
+
+                        this.clog(`[${time}] [${newState.ePath}]: e opened ${newState.eCur}, released=${newState.released}`);
+                    } else if (state.eNext.length >= 1) {
+                        // move along the path to the new room
+                        newState.eCur = newState.eNext!.shift()!;
+                        //newState.ePath += newState.eCur;
+                        this.clog(`[${time}] [${newState.ePath}]: e moved ${newState.eCur}, released=${newState.released}`);
+                    }
+
+                    this.try(time, newState);
                 }
-
-                // if e is at the next planned room, open the valve
-                if (state.eNext.length === 0) {
-                    // we know this valve is unopened and it has flow rate, otherwise we wouldn't have headed there
-                    newState.ePath += '<>';
-                    newState.opened.add(newState.eCur);
-                    newState.eNext = undefined;
-
-                    this.clog(`[${time}] [${newState.ePath}]: e opened ${newState.eCur}, released=${newState.released}`);
-                } else if (state.eNext.length >= 1) {
-                    // move along the path to the new room
-                    newState.eCur = newState.eNext!.shift()!;
-                    newState.ePath += newState.eCur;
-                    this.clog(`[${time}] [${newState.ePath}]: e moved ${newState.eCur}, released=${newState.released}`);
-                }
-
-                this.try(time, newState);
             }
         }
     }
