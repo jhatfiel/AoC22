@@ -1,3 +1,4 @@
+import { Dijkstra } from './../lib/dijkstra';
 import fs from 'fs';
 import readline from 'readline';
 
@@ -5,6 +6,7 @@ class C {
     grid = new Array<Array<string>>();
     distance = new Map<string, number>();
     unvisited = new Set<string>();
+    dij = new Dijkstra(this.getNeighbors.bind(this));
 
     start = '';
     exit = '';
@@ -12,6 +14,20 @@ class C {
     width = 0;
 
     curLength = 0;
+
+    getNeighbors(node: string) {
+        let result = new Map<string, number>();
+        const [row, col] = node.split(',').map(Number);
+        let alt = this.grid[row][col];
+        if (alt == 'S') alt = 'a';
+        let canStep = String.fromCharCode(alt.charCodeAt(0)+1);
+        if (row > 0 && this.grid[row-1][col] <= canStep) result.set(this.makeKey(row-1, col), 1);
+        if (col > 0 && this.grid[row][col-1] <= canStep) result.set(this.makeKey(row, col-1), 1);
+        if (row < this.height-1 && this.grid[row+1][col] <= canStep) result.set(this.makeKey(row+1, col), 1);
+        if (col < this.width-1 && this.grid[row][col+1] <= canStep) result.set(this.makeKey(row, col+1), 1);
+
+        return result;
+    }
 
     makeKey(row: number, col: number) { return row+','+col; }
 
@@ -28,7 +44,6 @@ class C {
     }
 
     getResult() {
-        let shortest = Infinity;
         // initialize unvisited
         for (let row=0; row<this.height; row++) {
             for (let col=0; col< this.width; col++) {
@@ -41,7 +56,7 @@ class C {
         this.distance.set(this.start, 0);
 
         while (this.unvisited.size) {
-            this.debug();
+            //this.debug();
             // find the unvisited node with the lowest distance
             let iter = this.unvisited.entries();
             let nearestUnvisited: string|undefined = undefined;
@@ -70,6 +85,15 @@ class C {
             // remove this node from unvisited
             this.unvisited.delete(nearestUnvisited);
         }
+
+        for (let row=0; row<this.height; row++) {
+            for (let col=0; col<this.width; col++) {
+                this.dij.addNode(this.makeKey(row, col));
+            }
+        }
+
+        let path = this.dij.getShortestPath(this.start, this.exit);
+        console.log(`Dijkstra path=${path.join('/')} length=${path.length}`);
 
         return this.distance.get(this.exit);
     }
