@@ -12,24 +12,24 @@ export class Dijkstra {
     }
 
     getShortestPath(from: string, to: string, skipCache=false): Array<string> {
-        if (this.cache.get(from) === undefined) {
-            this.cache.set(from, new Map<string, Array<string>>());
+        let fromCache = this.cache.get(from);
+        if (fromCache === undefined) {
+            return this._getShortestPath(from, to);
+        } else {
+            return fromCache.get(to)!;
         }
-
-        if (this.cache.get(from)?.get(to) === undefined || skipCache) {
-            this.cache.get(from)?.set(to, this._getShortestPath(from, to));
-        }
-
-        return this.cache.get(from)?.get(to)!;
     }
 
     _getShortestPath(from: string, to: string): Array<string> {
-        let result = Array<string>();
+        let fromCache = new Map<string, Array<string>>();
+        this.cache.set(from, fromCache);
+
         let unvisited = new Set<string>(this.nodes);
         let distanceTo = new Map<string, number>();
         let parent = new Map<string, string>();
         this.nodes.forEach((n) => distanceTo.set(n, Infinity));
         this.nodes.forEach((n) => parent.set(n, ''));
+        this.nodes.forEach((n) => fromCache.set(n, new Array<string>()));
 
         distanceTo.set(from, 0);
 
@@ -58,14 +58,17 @@ export class Dijkstra {
             })
 
             unvisited.delete(nearestUnvisited);
+
+            // store the result
+            let result = new Array<string>();
+            let trace = parent.get(nearestUnvisited);
+            while (trace !== undefined && trace !== '') {
+                result.push(trace);
+                trace = parent.get(trace);
+            }
+            fromCache.set(nearestUnvisited, result.reverse());
         }
 
-        let trace = parent.get(to);
-        while (trace !== undefined && trace !== '') {
-            result.push(trace);
-            trace = parent.get(trace);
-        }
-
-        return result.reverse();
+        return fromCache.get(to)!;
     }
 }
