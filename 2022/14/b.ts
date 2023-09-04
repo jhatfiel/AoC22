@@ -34,6 +34,7 @@ class C {
     }
 
     adjustBounds(p: P) {
+        this.path.push({row: 0, col: 500});
         this.left   = Math.min(p.col, this.left);
         this.right  = Math.max(p.col, this.right);
         this.height = Math.max(p.row, this.height);
@@ -49,7 +50,7 @@ class C {
 
         // keep track of the sand block
         if (this.grid[this.curSand.row][this.curSand.col] !== '.') return false; // sand entry is blocked
-        this.curSand.row = 0; this.curSand.col = 500;
+        //this.curSand.row = 0; this.curSand.col = 500;
         this.grid[this.curSand.row][this.curSand.col] = '█';
         while (this.falling(waitTime) && this.curSand.row <= this.height+1) {
             //this.debug();
@@ -105,9 +106,9 @@ class C {
 
     debug(clear=true) {
         if (clear) process.stdout.moveCursor(0, -1*(3+this.height));
-        console.log(`------------------ ${this.sandCount} ${this.left} ${this.right} ${this.height}`);
+        console.log(`------------------ ${this.sandCount} ${this.left} ${this.right} ${this.height} ${this.path.map((p) => this.toKey(p)).join(' / ')}-----`);
         for (let row=0; row<=this.height+1; row++) {
-            console.log(this.grid[row].slice(this.left-1, this.right+2).join(''));
+            console.log(this.grid[row].slice(this.left-30-1, this.right+30+2).join(''));
         }
     }
 
@@ -129,7 +130,7 @@ rl.on('line', (line) => {
 rl.on('close', () => {
     //c.debug(false);
     c.floor();
-    //c.debug(false);
+    c.debug(false);
     while (c.dropSand(0)) {
         //c.debug(true);
     }

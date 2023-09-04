@@ -48,7 +48,7 @@ class C {
 
         this.grid[this.curSand.row][this.curSand.col] = '█';
         while (this.falling(waitTime) && this.curSand.row <= this.height+1) {
-            //this.debug();
+            this.debug();
         }
         if (this.curSand.row <= this.height) {
             cameToRest = true;
@@ -117,7 +117,7 @@ rl.on('line', (line) => {
 
 rl.on('close', () => {
     c.debug(false);
-    while (c.dropSand(0)) {
+    while (c.dropSand(100)) {
         c.debug(true);
     }
     console.log(`Result: ${c.getResult()}`);
