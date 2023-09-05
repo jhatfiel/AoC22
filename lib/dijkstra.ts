@@ -13,7 +13,7 @@ export class Dijkstra {
 
     getShortestPath(from: string, to: string, skipCache=false): Array<string> {
         let fromCache = this.cache.get(from);
-        if (fromCache === undefined) {
+        if (fromCache === undefined || skipCache) {
             return this._getShortestPath(from, to);
         } else {
             return fromCache.get(to)!;
@@ -24,7 +24,7 @@ export class Dijkstra {
         let fromCache = new Map<string, Array<string>>();
         this.cache.set(from, fromCache);
 
-        let unvisited = new Set<string>(this.nodes);
+        let unvisited = Array.from(this.nodes);
         let distanceTo = new Map<string, number>();
         let parent = new Map<string, string>();
         this.nodes.forEach((n) => distanceTo.set(n, Infinity));
@@ -32,32 +32,33 @@ export class Dijkstra {
         this.nodes.forEach((n) => fromCache.set(n, new Array<string>()));
 
         distanceTo.set(from, 0);
+        unvisited.reverse();
+        unvisited.sort((a, b) => { return distanceTo.get(b)! - distanceTo.get(a)! })
 
-        while (unvisited.size) {
+        while (unvisited.length) {
             // get the closest unvisited node
-            let iter = unvisited.entries()
-            let nearestUnvisited: string|undefined = undefined;
-            let nearestDistance = Infinity;
-            for (const pair of iter) {
-                const node = pair[0];
-                const d = distanceTo.get(node);
-                if (d !== undefined && d < nearestDistance) {
-                    nearestDistance = d;
-                    nearestUnvisited = node
-                }
-            }
+            if (unvisited.length % 1000 === 0) console.log(`unvisited: ${unvisited.length}`);
+            let nearestUnvisited: string|undefined = unvisited.pop();
             if (!nearestUnvisited) break;
+
+            let nearestDistance = distanceTo.get(nearestUnvisited)!;
 
             // set the distance for all its neighbors
             this.getNeighbors(nearestUnvisited).forEach((d, n) => {
                 let currentDistance = distanceTo.get(n);
                 if (currentDistance !== undefined && currentDistance > nearestDistance+d) {
+                    let ndx = unvisited.indexOf(n);
                     distanceTo.set(n, nearestDistance+d);
+                    let newNdx = unvisited.length-1;
+                    while (distanceTo.get(unvisited[newNdx])! < nearestDistance+d) newNdx--;
+                    if (ndx !== newNdx) {
+                        unvisited.splice(ndx, 1);
+                        unvisited.splice(newNdx, 0, n);
+                    }
+
                     parent.set(n, nearestUnvisited!);
                 }
             })
-
-            unvisited.delete(nearestUnvisited);
 
             // store the result
             let result = new Array<string>();
@@ -67,6 +68,7 @@ export class Dijkstra {
                 trace = parent.get(trace);
             }
             fromCache.set(nearestUnvisited, result.reverse());
+            if (nearestUnvisited === to) break;
         }
 
         return fromCache.get(to)!;
