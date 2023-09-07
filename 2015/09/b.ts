@@ -19,8 +19,6 @@ p.onClose = () => {
 
     console.log(`Shortest path length is ${tsp.getPathCost(shortestPath)}`);
     console.log(`Longest path length is ${tsp.getPathCost(longestPath)}`);
-    // 443 is too low
-    // 874 is too low
 };
 
 p.run();
