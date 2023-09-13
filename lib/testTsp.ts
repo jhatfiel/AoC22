@@ -84,18 +84,18 @@ tests.push(() => {
 
 tests.forEach((f) => f());
 
-function getPaths(tsp: TSP): { SP: Array<string>; SC: any; LP: any; LC: any; } {
+function getPaths(tsp: TSP): { SP: Array<string>; SC: Array<string>; LP: Array<string>; LC: Array<string>; } {
     return {SP: tsp.getShortestPath(), SC: tsp.getShortestCycle(), LP: tsp.getLongestPath(), LC: tsp.getLongestCycle()};
 }
 
-function debugPaths(tsp: TSP, paths: { SP: Array<string>; SC: any; LP: any; LC: any; }) {
+function debugPaths(tsp: TSP, paths: { SP: Array<string>; SC: Array<string>; LP: Array<string>; LC: Array<string>; }) {
     console.log(`shortest path  = ${paths.SP} [${tsp.getShortestPathCost(paths.SP)}]`);
     console.log(`shortest cycle = ${paths.SC} [${tsp.getShortestPathCost(paths.SC)}]`);
     console.log(`longest path   = ${paths.LP} [${tsp.getShortestPathCost(paths.LP)}]`);
     console.log(`longest cycle  = ${paths.LC} [${tsp.getShortestPathCost(paths.LC)}]`);
 }
 
-function assertPathCosts(tsp: TSP, paths: { SP: Array<string>; SC: any; LP: any; LC: any; }, spCost: number, scCost: number, lpCost: number, lcCost: number) {
+function assertPathCosts(tsp: TSP, paths: { SP: Array<string>; SC: Array<string>; LP: Array<string>; LC: Array<string>; }, spCost: number, scCost: number, lpCost: number, lcCost: number) {
     console.assert(tsp.getShortestPathCost(paths.SP) === spCost, `Shortest path is ${spCost}`);
     console.assert(tsp.getShortestPathCost(paths.SC) === scCost, `Shortest cycle is ${scCost}`);
     console.assert(tsp.getLongestPathCost(paths.LP) === lpCost, `Longest path is ${lpCost}`);
