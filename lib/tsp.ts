@@ -1,8 +1,6 @@
 export class TSP {
     nodes = new Set<string>();
     edges = new Map<string, Map<string, number>>();
-    shortest = Infinity;
-    longest = 0;
 
     // shortestCache is from a mask to an endpoint
     shortestCycle = new Map<number, Map<string, Array<string>>>();
@@ -25,8 +23,6 @@ export class TSP {
         let fEdges = this.edges.get(from);
         if (fEdges === undefined) { fEdges = new Map<string, number>(); this.edges.set(from, fEdges); }
         fEdges.set(to, distance);
-        if (distance < this.shortest) this.shortest = distance-1;
-        if (distance > this.longest) this.longest = distance+1;
 
         // shortestCycle initialization
         const mask = this.toMask(new Set([from, to]));
@@ -43,13 +39,14 @@ export class TSP {
         return this.getShortestPathCost(path);
     }
 
-    getShortestPathCost(path: Array<string>): number {
+    getShortestPathCost(path = new Array<string>()): number {
         let last = '';
+        if (path.length < 2) return Infinity;
         return path.map((n) => {
                     let cost = 0;
                     if (last !== '') {
                         if (this.edges.get(last) && this.edges.get(last)?.get(n) !== undefined) cost = this.edges.get(last)!.get(n)!;
-                        else cost = this.shortest*this.longest;
+                        else cost = Infinity;
                     }
                     last = n;
                     return cost;
@@ -57,18 +54,39 @@ export class TSP {
                .reduce((sum, cost) => sum+cost, 0);
     }
 
-    getLongestPathCost(path: Array<string>): number {
+    getLongestPathCost(path = new Array<string>()): number {
         let last = '';
+        if (path.length < 2) return -Infinity;
         return path.map((n) => {
                     let cost = 0
                     if (last !== '') {
                         if (this.edges.get(last) && this.edges.get(last)?.get(n) !== undefined) cost = this.edges.get(last)!.get(n)!;
-                        else cost = -1*(this.shortest*this.longest);
+                        else cost = -Infinity;
                     }
                     last = n;
                     return cost;
                  })
                .reduce((sum, cost) => sum+cost, 0);
+    }
+
+    getShortestCycle(): Array<string> {
+        let result = new Array<string>();
+        let shortestCost = Infinity;
+        let mask = this.toMask(this.nodes); // visit every node
+
+        this.nodes.forEach((n) => {
+            this.cycle(this.nodes, n);
+            let newCycle = [n, ...this.shortestCycle.get(mask)!.get(n)!];
+            if (newCycle) {
+                let newCost = this.getShortestPathCost(newCycle);
+                if (newCost <= shortestCost) {
+                    shortestCost = newCost;
+                    result = newCycle;
+                }
+            }
+        });
+
+        return result;
     }
 
     getShortestPath(): Array<string> {
@@ -81,8 +99,28 @@ export class TSP {
             let newCycle = this.shortestCycle.get(mask)!.get(n)!;
             if (newCycle) {
                 let newCost = this.getShortestPathCost(newCycle);
-                if (newCost < shortestCost) {
+                if (newCost <= shortestCost) {
                     shortestCost = newCost;
+                    result = newCycle;
+                }
+            }
+        });
+
+        return result;
+    }
+
+    getLongestCycle(): Array<string> {
+        let result = new Array<string>();
+        let longestCost = -Infinity; 
+        let mask = this.toMask(this.nodes); // visit every node
+
+        this.nodes.forEach((n) => {
+            this.cycle(this.nodes, n);
+            let newCycle = [n, ...this.longestCycle.get(mask)!.get(n)!];
+            if (newCycle) {
+                let newCost = this.getLongestPathCost(newCycle);
+                if (newCost >= longestCost) {
+                    longestCost = newCost;
                     result = newCycle;
                 }
             }
@@ -93,7 +131,7 @@ export class TSP {
 
     getLongestPath(): Array<string> {
         let result = new Array<string>();
-        let longestCost = 0;
+        let longestCost = -Infinity; 
         let mask = this.toMask(this.nodes); // visit every node
 
         this.nodes.forEach((n) => {
@@ -101,7 +139,7 @@ export class TSP {
             let newCycle = this.longestCycle.get(mask)!.get(n)!;
             if (newCycle) {
                 let newCost = this.getLongestPathCost(newCycle);
-                if (newCost > longestCost) {
+                if (newCost >= longestCost) {
                     longestCost = newCost;
                     result = newCycle;
                 }
@@ -111,7 +149,7 @@ export class TSP {
         return result;
     }
 
-    cycle(set: Set<string>, to: string) {
+    cycle(set: Set<string>, to: string, debug='') {
         let mask = this.toMask(set);
         let sc = this.shortestCycle.get(mask);
         let lc = this.longestCycle.get(mask);
@@ -126,7 +164,7 @@ export class TSP {
             // record the lowest/highest cost cycle
             let shortestCost = Infinity;
             let shortestCycle = new Array<string>();
-            let longestCost = 0;
+            let longestCost = -Infinity;
             let longestCycle = new Array<string>();
             Array.from(this.nodes).forEach((n, ind) => {
                 if (n !== to && set.has(n)) {
@@ -134,12 +172,12 @@ export class TSP {
                     newSet.delete(n);
                     let newMask = this.toMask(newSet);
 
-                    this.cycle(newSet, to);
+                    this.cycle(newSet, to, debug+'  ');
                     let cycle = this.shortestCycle.get(newMask)!.get(to);
                     if (cycle?.length) {
                         let newShortestCycle = [n, ...cycle];
                         let newShortestCost = this.getShortestPathCost(newShortestCycle);
-                        if (newShortestCost < shortestCost) {
+                        if (newShortestCost <= shortestCost) {
                             shortestCost = newShortestCost;
                             shortestCycle = newShortestCycle;
                         }
@@ -149,7 +187,7 @@ export class TSP {
                     if (cycle?.length) {
                         let newLongestCycle = [n, ...cycle];
                         let newLongestCost = this.getLongestPathCost(newLongestCycle);
-                        if (newLongestCost > longestCost) {
+                        if (newLongestCost >= longestCost) {
                             longestCost = newLongestCost;
                             longestCycle = newLongestCycle;
                         }
