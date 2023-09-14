@@ -127,14 +127,14 @@ function tryBattle(player: Fighter, boss: Fighter, effects: Array<Spell>, castSp
         newPlayer.cast(s, newBoss, newEffects);
 
         if (newBoss.hp <= 0) {
-            if (newPlayer.spentMana < minMana && newPlayer.spentMana < 1242) {
+            if (newPlayer.spentMana < minMana) {
                 console.log(`+++ Spell killed the boss,   mana spent = ${newPlayer.spentMana}, cast spells: ${newCastSpells}`);
                 minMana = newPlayer.spentMana;
             }
         } else {
             newEffects = turnStart(newPlayer, newBoss, newEffects);
             if (newBoss.hp <= 0) {
-                if (newPlayer.spentMana < minMana && newPlayer.spentMana < 1242) {
+                if (newPlayer.spentMana < minMana) {
                     console.log(`+++ Boss died on turn start, mana spent = ${newPlayer.spentMana}, cast spells: ${newCastSpells}`);
                     minMana = newPlayer.spentMana;
                 }
