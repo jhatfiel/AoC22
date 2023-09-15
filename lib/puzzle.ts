@@ -37,6 +37,10 @@ export class Puzzle {
     maskOrN(arr: Array<number>, mask: number, el: number): number {
         return mask | (1<<arr.indexOf(el));
     }
+
+    countOccurrences(arr: Array<any>): Map<string, number> {
+        return new Map(Object.entries(arr.reduceRight((acc, cur) => { acc[cur]?++acc[cur]:acc[cur]=1; return acc; }, {})));
+    }
     
     gridAround(row: number, col: number, maxRow: number, maxCol: number): Array<{row: number, col: number}> {
         let result = new Array<{row: number, col: number}>();
