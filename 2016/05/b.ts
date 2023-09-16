@@ -17,7 +17,7 @@ p.onLine = (line) => {
             
             if (password[lastIndex] === '_') {
                 password = password.slice(0, lastIndex) + hex.slice(6, 7) + password.slice(lastIndex+1);
-                console.log(`${password}: ${i.toString().padStart(8, ' ')} found position ${lastIndex}!      `);
+                console.log(`${password}: ${i.toString().padStart(8, ' ')} found position ${lastIndex}!          `);
             }
         }
         if (i % 1000 === 0) {
