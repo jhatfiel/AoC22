@@ -1,11 +1,11 @@
-import fs from 'fs';
-import readline from 'readline';
+import { createReadStream } from 'fs';
+import { createInterface } from 'readline';
 
 export class Puzzle {
     constructor(private fn: string) { }
 
     run() {
-        const rl = readline.createInterface({ input: fs.createReadStream(this.fn), crlfDelay: Infinity, terminal: false});
+        const rl = createInterface({ input: createReadStream(this.fn), crlfDelay: Infinity, terminal: false});
         rl.on('line', this.onLine.bind(this));
         rl.on('close', this.onClose.bind(this));
     }

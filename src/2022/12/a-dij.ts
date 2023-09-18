@@ -1,4 +1,4 @@
-import { Dijkstra } from './../lib/dijkstra';
+import { Dijkstra } from '../../lib/dijkstra';
 import fs from 'fs';
 import readline from 'readline';
 
