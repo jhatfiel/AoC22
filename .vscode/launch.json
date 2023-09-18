@@ -1,0 +1,33 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch TS",
+            "args": [
+                "${fileBasenameNoExtension}",
+                "${input:input}"
+            ],
+            "cwd": "${fileDirname}",
+        }
+    ],
+    "inputs": [
+        {"id": "input", "type": "pickString", "description": "Select input file", "options": ["sample", "input"]},
+        {
+            "id": "pickFile",
+            "type": "command",
+            "command": "extension.command.variable.file.pickFile",  //extension.commandvariable.file.pickFile",
+            "args": {
+                "include": "*",
+                "display": "fileName",
+                "description": "Input file to process",
+                "showDirs": false,
+                "fromFolder": { "fixed": "${fileDirname}"}
+            }
+        }
+    ]
+}
