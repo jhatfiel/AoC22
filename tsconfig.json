@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "moduleDetection": "force"
+  },
+  "type": "commonjs",
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

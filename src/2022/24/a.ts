@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import { Dijkstra } from './../../lib/dijkstra';
+import { Dijkstra } from '../../lib/dijkstra';
 
 const WALL = '█';
 
@@ -21,8 +21,8 @@ class C {
     ec = 0;
     dij = new Dijkstra(this.getNeighbors.bind(this))
     storms = new Array<Storm>();
+    path = new Array<string>();
     waitTime = 0*1000;
-    direction = 0;
 
     makeKey(row: number, col: number, depth: number) { return row+','+col+','+depth; }
 
@@ -80,36 +80,20 @@ class C {
         this.buildDepth();
 
         let root = this.makeKey(this.cr, this.cc, 0); // 0,1,0
-        let totalLength = 0;
+        let exit = this.makeKey(this.er, this.ec, 0); 
+        console.log(`root = ${root}, exit = ${exit}`);
 
-        this.direction = 0;
-        let exit = this.makeKey(this.er, this.ec, 0);
-        let path = this.dij.getShortestPath(root, exit);
-        console.log(`root = ${root}, exit = ${exit}, path length=${path.length}`);
-        totalLength += path.length;
+        this.path = this.dij.getShortestPath(root, exit);
+        console.log(this.path);
+        const pathLen = this.path.length;
 
-        this.direction = 1;
-        root = this.makeKey(this.er, this.ec, totalLength%this.depth);
-        exit = this.makeKey(this.cr, this.cc, 0); 
-        path = this.dij.getShortestPath(root, exit);
-        console.log(`root = ${root}, exit = ${exit}, path length=${path.length}`);
-        totalLength += path.length;
-
-        this.direction = 0;
-        root = this.makeKey(this.cr, this.cc, totalLength%this.depth);
-        exit = this.makeKey(this.er, this.ec, 0); 
-        path = this.dij.getShortestPath(root, exit);
-        console.log(`root = ${root}, exit = ${exit}, path length=${path.length}`);
-
-        totalLength += path.length;
-
-        //console.log(this.path);
+        this.minute = 0;
         //this.debug(false);
-        //this.path.shift();
+
+        this.path.shift();
 
         // walk the path
         /*
-        this.minute = 0;
         while (this.path.length) {
             this.minute++;
             const next = this.path.shift();
@@ -122,17 +106,21 @@ class C {
         }
         */
 
-        //this.cr = this.er;
-        //this.cc = this.ec;
+        this.cr = this.er;
+        this.cc = this.ec;
         //this.debug(false);
 
-        return totalLength;
+        return pathLen;
     }
 
     getNeighbors(node: string) {
-        //fs.writeSync(process.stdout.fd, `getNeighbors ${node}\n`);
-        //process.stdout.moveCursor(0, -1);
+        /*
+        fs.writeSync(process.stdout.fd, `getNeighbors ${node}\n`);
+        process.stdout.moveCursor(0, -1);
+        */
         let result = new Map<string, number>();
+        //this.valves.get(node)?.connected.forEach((v) => result.set(v.name, 1));
+        // z is the minute offset - used to determine when "depth" layer we are at
         const [row,col,depth] = node.split(',').map(Number);
         let newd = (depth+1)%this.depth;
         // we can go to one of 5 locations.  This location on the next "depth" layer, or N/E/S/W on the next depth layer (assuming not walls)
@@ -142,18 +130,10 @@ class C {
         if (row<this.height-1 && this.grid[newd][row+1][col] === '.') result.set(this.makeKey(row+1,col,newd), 1);
         if (col<this.width-1  && this.grid[newd][row][col+1] === '.') result.set(this.makeKey(row,col+1,newd), 1);
 
-        if (this.direction === 0) {
-            // special case for exit cell - we can hit it at any depth
-            if (row === this.height-2 && col === this.ec)
-                for (let d=0; d<this.depth; d++) 
-                    if (d !== newd) result.set(this.makeKey(row+1,col,d), 1);
-        } else {
-            // special case for entrance cell - we can hit it at any depth
-            if (row === 1 && col === this.cc)
-                for (let d=0; d<this.depth; d++) 
-                    if (d !== newd) result.set(this.makeKey(0,col,d), 1);
-
-        }
+        // special case for exit cell - we can hit it at any depth
+        if (row === this.height-2 && col === this.ec)
+            for (let d=0; d<this.depth; d++)
+                if (d !== newd) result.set(this.makeKey(row+1,col,d), 1);
 
         return result;
     }
