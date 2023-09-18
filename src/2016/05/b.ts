@@ -1,6 +1,6 @@
 import { hash } from 'spark-md5';
 import { Puzzle } from "../../lib/puzzle";
-import { createHash } from 'crypto';
+//import { createHash } from 'crypto';
 
 const p = new Puzzle(process.argv[2]);
 
@@ -12,8 +12,8 @@ p.onLine = (line) => {
     console.log();
     do {
         i++;
-        //hex = hash(line+i);
-        hex = createHash('md5').update(line+i).digest('hex');
+        hex = hash(line+i);
+        //hex = createHash('md5').update(line+i).digest('hex');
         if (hex.startsWith('00000') && Number(hex.slice(5, 6)) < 8) {
             lastIndex = Number(hex.slice(5,6));
             
