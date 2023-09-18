@@ -13,6 +13,17 @@
                 "${input:input}"
             ],
             "cwd": "${fileDirname}",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch TS (term)",
+            "args": [
+                "${fileBasenameNoExtension}",
+                "${input:input}"
+            ],
+            "cwd": "${fileDirname}",
+            "console": "integratedTerminal",
         }
     ],
     "inputs": [
