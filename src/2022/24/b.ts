@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import { Dijkstra } from '../../lib/dijkstra';
+import { Dijkstra } from '../../lib/dijkstra.js';
 
 const WALL = '█';
 

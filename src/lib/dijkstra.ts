@@ -1,3 +1,7 @@
+/*
+This is actually more like a Bellman-Ford algorithm...
+*/
+
 export class Dijkstra {
     constructor(
         private getNeighbors: (node: string) => Map<string, number>,
@@ -34,29 +38,46 @@ export class Dijkstra {
         distanceTo.set(from, 0);
         unvisited.reverse();
         unvisited.sort((a, b) => { return distanceTo.get(b)! - distanceTo.get(a)! })
+        let lastDistance = 0;
 
+        let prevNdx = unvisited.length;
         while (unvisited.length) {
             // get the closest unvisited node
-            if (unvisited.length % 1000 === 0) console.log(`unvisited: ${unvisited.length}`);
+            if (unvisited.length % 1000 === 0) console.log(`unvisited: ${unvisited.length}, lastDistance=${lastDistance}`);
             let nearestUnvisited: string|undefined = unvisited.pop();
             if (!nearestUnvisited) break;
 
             let nearestDistance = distanceTo.get(nearestUnvisited)!;
+            lastDistance = nearestDistance;
+            //console.log(`Working with ${nearestUnvisited}[${nearestDistance}]`);
 
             // set the distance for all its neighbors
             this.getNeighbors(nearestUnvisited).forEach((d, n) => {
                 let currentDistance = distanceTo.get(n);
-                if (currentDistance !== undefined && currentDistance > nearestDistance+d) {
+                let newDistance = nearestDistance+d;
+                if (currentDistance !== undefined && currentDistance > newDistance) {
+                    //if (currentDistance < Infinity) console.log(`!!!!!!!!!!!!!!!!!!!!!! -------------- Improved ${n} from ${currentDistance} to ${newDistance}`)
+                    //console.log(`- We can go from ${nearestUnvisited} to ${n}`);
                     let ndx = unvisited.indexOf(n);
-                    distanceTo.set(n, nearestDistance+d);
-                    let newNdx = unvisited.length-1;
-                    while (distanceTo.get(unvisited[newNdx])! < nearestDistance+d) newNdx--;
-                    if (ndx !== newNdx) {
-                        unvisited.splice(ndx, 1);
-                        unvisited.splice(newNdx, 0, n);
-                    }
+                    if (ndx !== -1) {
+                        // find the new correct place for this node (based on placement of last node)
+                        let newNdx = prevNdx;
+                        if (newNdx > unvisited.length) newNdx = unvisited.length;
+                        while (distanceTo.get(unvisited[newNdx-1])! < newDistance) newNdx--;
+                        while (distanceTo.get(unvisited[newNdx+1])! > newDistance) newNdx++;
+                        //if (distanceTo.get(unvisited[newNdx])! > newDistance) { console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@ --------------- BAD newNdx`)}
+                        if (ndx !== newNdx) {
+                            //console.log(`----------------------------------------Moving ${n}[${newDistance}] to ${newNdx}(${ndx}) ${unvisited.filter((n) => Number.isFinite(distanceTo.get(n))).map((n) => `${n}[${distanceTo.get(n)}]`).join(',')}${unvisited.length}`);
+                            unvisited.splice(ndx, 1); // remove it from the old location
+                            if (ndx < newNdx) newNdx--; // removing the old one changes this one
+                            unvisited.splice(newNdx, 0, n); // insert it at the new location
+                        }
+                        distanceTo.set(n, newDistance);
+                        //console.log(`---------------------------------------------------------------------------------------- ${unvisited.filter((n) => Number.isFinite(distanceTo.get(n))).map((n) => `${n}[${distanceTo.get(n)}]`).join(',')}${unvisited.length}`);
 
-                    parent.set(n, nearestUnvisited!);
+                        prevNdx = newNdx;
+                        parent.set(n, nearestUnvisited!);
+                    }
                 }
             })
 

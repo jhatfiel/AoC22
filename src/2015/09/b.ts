@@ -1,5 +1,5 @@
-import { Puzzle } from "../../lib/puzzle";
-import { TSP } from "../../lib/tsp";
+import { Puzzle } from "../../lib/puzzle.js";
+import { TSP } from "../../lib/tsp.js";
 
 const p = new Puzzle(process.argv[2]);
 

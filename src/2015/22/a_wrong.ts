@@ -4,7 +4,7 @@ amazing what happens when you misread just one small part of the problem descrip
 I thought the effects only applied on the start turn of the fighter who was affected by them, so I stored them on the fighter
 had to rework it quite a bit to make it apply on both turn starts
 */
-import { Puzzle } from "../../lib/puzzle";
+import { Puzzle } from "../../lib/puzzle.js";
 
 const p = new Puzzle(process.argv[2]);
 

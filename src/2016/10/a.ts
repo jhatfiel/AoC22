@@ -1,4 +1,4 @@
-import { Puzzle } from "../../lib/puzzle";
+import { Puzzle } from "../../lib/puzzle.js";
 
 class Bot {
     constructor(public name: number, public botLookup: (n:number)=>Bot, public debug=false) {}

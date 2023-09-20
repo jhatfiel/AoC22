@@ -1,6 +1,6 @@
 import { assert } from "console";
-import { Puzzle } from "../../lib/puzzle";
-import { TSP } from "../../lib/tsp";
+import { Puzzle } from "../../lib/puzzle.js";
+import { TSP } from "../../lib/tsp.js";
 
 const tsp = new TSP();
 

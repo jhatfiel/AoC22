@@ -1,4 +1,4 @@
-import { TSP } from "./tsp";
+import { TSP } from "./tsp.js";
 
 let tests = Array<() => void>();
 

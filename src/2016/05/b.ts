@@ -1,5 +1,6 @@
-import { hash } from 'spark-md5';
-import { Puzzle } from "../../lib/puzzle";
+import pkg from 'spark-md5';
+const { hash } = pkg;
+import { Puzzle } from "../../lib/puzzle.js";
 //import { createHash } from 'crypto';
 
 const p = new Puzzle(process.argv[2]);
