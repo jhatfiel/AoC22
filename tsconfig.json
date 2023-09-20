@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "rootDir": "./src",
-    "resolveJsonModule": true,
     "sourceMap": true,
-    "moduleDetection": "force"
   },
   "type": "commonjs",
   "include": ["src/**/*.ts"],

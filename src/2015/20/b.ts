@@ -27,3 +27,5 @@ function factors(num: number): Set<number> {
     }
     return result;
 }
+
+export {};

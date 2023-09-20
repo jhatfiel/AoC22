@@ -35,3 +35,4 @@ while (row !== qRow || col !== qCol) {
 console.log(`${row}/${col} = ${num}`);
 
 // oh, I get it.  the 25th puzzle is SUPER easy so that you can get back to presents.  Merry Christmas!
+{}

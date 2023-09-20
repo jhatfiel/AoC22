@@ -1,4 +1,4 @@
-import { Puzzle } from "../../lib/puzzle";
+import { Puzzle } from "../../lib/puzzle.js";
 
 class Reindeer {
     constructor(public name: string, public speed: number, public duration: number, public rest: number) {}

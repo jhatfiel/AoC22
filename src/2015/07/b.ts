@@ -1,4 +1,4 @@
-import { Puzzle } from "../../lib/puzzle";
+import { Puzzle } from "../../lib/puzzle.js";
 
 const p = new Puzzle(process.argv[2]);
 
