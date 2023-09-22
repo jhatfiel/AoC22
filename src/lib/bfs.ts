@@ -4,10 +4,7 @@ Super simple BFS
 
 export class BFS {
     constructor(private getNeighbors: (node: string) => Set<string>) {};
-    nodes = new Set<string>();
     cache = new Map<string, Map<string, Array<string>>>();
-
-    addNode(node: string) { this.nodes.add(node); }
 
     getShortestPath(from: string, to: string, skipCache=false): Array<string> {
         let toCache = this.cache.get(to);
@@ -24,7 +21,6 @@ export class BFS {
 
         let parent = new Map<string, string>();
         parent.set(from, '');
-        this.nodes.forEach((n) => toCache.set(n, new Array<string>()));
 
         let toVisit = new Set<string>();
         toVisit.add(from);

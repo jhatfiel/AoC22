@@ -1,5 +1,4 @@
 import { Puzzle } from "../../lib/puzzle.js";
-import { BFS } from "../../lib/bfs.js";
 
 const p = new Puzzle();
 
