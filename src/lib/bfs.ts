@@ -27,11 +27,13 @@ export class BFS {
         let iteration = 0;
 
         while (toVisit.size) {
+            /*
             iteration++;
             if (iteration % 1000 === 0) {
                 console.log(`_getShortestPath: toVisit.size=${toVisit.size}    `);
                 if (process.stdout.moveCursor) { process.stdout.moveCursor(0, -1);}
             }
+            */
             let nextNode = toVisit.entries().next().value[0];
             toVisit.delete(nextNode);
             if (nextNode === to) break;
