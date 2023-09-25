@@ -78,4 +78,16 @@ export class Puzzle {
         if (row < maxRow)                 result.push({row: row+1, col: col});
         return result;
     }
+
+    permute(arr = Array<string>()): Array<string> {
+        if (arr.length < 2) return [...arr];
+        // take each element and return the permutation of the remaining elements
+        let result = new Array<string>();
+        arr.forEach((e, ind) => {
+            let arrCopy = [...arr];
+            arrCopy.splice(ind, 1);
+            this.permute(arrCopy).forEach((p) => result.push(e+p));
+        });
+        return result;
+    }
 }
