@@ -1,4 +1,3 @@
-import { cross } from 'd3-array';
 import { Puzzle } from "../../lib/puzzle.js";
 
 let password='';
