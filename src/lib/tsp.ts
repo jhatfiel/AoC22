@@ -23,16 +23,6 @@ export class TSP {
         let fEdges = this.edges.get(from);
         if (fEdges === undefined) { fEdges = new Map<string, number>(); this.edges.set(from, fEdges); }
         fEdges.set(to, distance);
-
-        // shortestCycle initialization
-        const mask = this.toMask(new Set([from, to]));
-        let map = this.shortestCycle.get(mask);
-        if (map === undefined) {
-            map = new Map<string, Array<string>>();
-            this.shortestCycle.set(mask, map);
-            this.longestCycle.set(mask, map);
-        }
-        map.set(to, [from, to]);
     }
 
     getPathCost(path: Array<string>): number {
@@ -72,16 +62,14 @@ export class TSP {
     getShortestCycle(): Array<string> {
         let result = new Array<string>();
         let shortestCost = Infinity;
-        let mask = this.toMask(this.nodes); // visit every node
 
         this.nodes.forEach((n) => {
-            this.cycle(this.nodes, n);
-            let newCycle = [n, ...this.shortestCycle.get(mask)!.get(n)!];
-            if (newCycle) {
-                let newCost = this.getShortestPathCost(newCycle);
+            let path = [...this.getShortestPathFrom(n), n];
+            if (path) {
+                let newCost = this.getShortestPathCost(path);
                 if (newCost <= shortestCost) {
                     shortestCost = newCost;
-                    result = newCycle;
+                    result = path;
                 }
             }
         });
@@ -89,19 +77,45 @@ export class TSP {
         return result;
     }
 
+    getShortestPathFrom(from: string): Array<string> {
+        let result = new Array<string>();
+        let shortestCost = Infinity;
+        let nodes = Array.from(this.nodes);
+        let nodesSet = new Set<string>(nodes);
+        let firstMask = this.toMask(nodesSet);
+
+        this.debug(`getShortestPathFrom(${from})`);
+        this.shortestCycle = new Map<number, Map<string, Array<string>>>();
+
+        Array.from(this.nodes).filter((n) => n!==from).forEach((n) => {
+            this.cycle(from, nodesSet, n);
+            let newCycle = this.shortestCycle.get(firstMask)!.get(n)!;
+            if (newCycle) {
+                let newCost = this.getShortestPathCost(newCycle);
+                this.debug(`getShortestPathFrom(${from}) ${n} ${newCost}`);
+                if (newCost <= shortestCost) {
+                    this.debug('NEW BEST');
+                    shortestCost = newCost;
+                    result = [...newCycle];
+                }
+            }
+        })
+        this.debug(`getShortestPathFrom(${from}) FINAL ANSWER: ${result} ${this.getShortestPathCost(result)}`);
+        return result;
+    }
+
     getShortestPath(): Array<string> {
         let result = new Array<string>();
         let shortestCost = Infinity;
-        let mask = this.toMask(this.nodes); // visit every node
 
         this.nodes.forEach((n) => {
-            this.cycle(this.nodes, n);
-            let newCycle = this.shortestCycle.get(mask)!.get(n)!;
-            if (newCycle) {
-                let newCost = this.getShortestPathCost(newCycle);
+            let path = this.getShortestPathFrom(n);
+            if (path) {
+                let newCost = this.getShortestPathCost(path);
+                this.debug(`getShortestPath ${n} ${path} ${newCost}`);
                 if (newCost <= shortestCost) {
                     shortestCost = newCost;
-                    result = newCycle;
+                    result = [...path];
                 }
             }
         });
@@ -112,36 +126,57 @@ export class TSP {
     getLongestCycle(): Array<string> {
         let result = new Array<string>();
         let longestCost = -Infinity; 
-        let mask = this.toMask(this.nodes); // visit every node
 
         this.nodes.forEach((n) => {
-            this.cycle(this.nodes, n);
-            let newCycle = [n, ...this.longestCycle.get(mask)!.get(n)!];
-            if (newCycle) {
-                let newCost = this.getLongestPathCost(newCycle);
+            let path = [...this.getLongestPathFrom(n), n];
+            if (path) {
+                let newCost = this.getLongestPathCost(path);
                 if (newCost >= longestCost) {
                     longestCost = newCost;
-                    result = newCycle;
+                    result = path;
                 }
             }
         });
 
+        return result;
+    }
+
+    getLongestPathFrom(from: string): Array<string> {
+        let result = new Array<string>();
+        let longestCost = -Infinity;
+        let nodes = Array.from(this.nodes);
+        let nodesSet = new Set<string>(nodes);
+        let firstMask = this.toMask(nodesSet);
+
+        this.shortestCycle = new Map<number, Map<string, Array<string>>>();
+
+        Array.from(this.nodes).filter((n) => n!==from).forEach((n) => {
+            this.cycle(from, nodesSet, n);
+            let newCycle = this.longestCycle.get(firstMask)!.get(n)!;
+            if (newCycle) {
+                let newCost = this.getLongestPathCost(newCycle);
+                //this.debug(`getLongestPathFrom(${from}) ${n} ${newCost}`);
+                if (newCost > longestCost) {
+                    //this.debug('BEST');
+                    longestCost = newCost;
+                    result = [...newCycle];
+                }
+            }
+        })
         return result;
     }
 
     getLongestPath(): Array<string> {
         let result = new Array<string>();
         let longestCost = -Infinity; 
-        let mask = this.toMask(this.nodes); // visit every node
 
         this.nodes.forEach((n) => {
-            this.cycle(this.nodes, n);
-            let newCycle = this.longestCycle.get(mask)!.get(n)!;
-            if (newCycle) {
-                let newCost = this.getLongestPathCost(newCycle);
+            let path = this.getLongestPathFrom(n);
+            if (path) {
+                let newCost = this.getLongestPathCost(path);
                 if (newCost >= longestCost) {
                     longestCost = newCost;
-                    result = newCycle;
+                    result = [...path];
                 }
             }
         });
@@ -149,7 +184,8 @@ export class TSP {
         return result;
     }
 
-    cycle(set: Set<string>, to: string, debug='') {
+    cycle(from: string, set: Set<string>, to: string, debug='  ') {
+        this.debug(`${debug}cycle ${from} -> ${to} [${Array.from(set.keys())}]`)
         let mask = this.toMask(set);
         let sc = this.shortestCycle.get(mask);
         let lc = this.longestCycle.get(mask);
@@ -166,40 +202,87 @@ export class TSP {
             let shortestCycle = new Array<string>();
             let longestCost = -Infinity;
             let longestCycle = new Array<string>();
-            Array.from(this.nodes).forEach((n, ind) => {
-                if (n !== to && set.has(n)) {
-                    let newSet = new Set(set);
-                    newSet.delete(n);
-                    let newMask = this.toMask(newSet);
+            if (set.size === 2) {
+                shortestCost = this.getShortestPathCost([from, to]);
+                if (shortestCost !== Infinity) shortestCycle = [from, to];
+                longestCost = this.getLongestPathCost([from, to]);
+                if (longestCost !== Infinity) longestCycle = [from, to];
+            } else {
+                Array.from(this.nodes).forEach((n, ind) => {
+                    if (n !== to && set.has(n) && n !== from) {
+                        let newSet = new Set(set);
+                        newSet.delete(to);
+                        this.debug(`${debug}REMOVING and trying cycle to ${from}->${n} without ${to}/[${Array.from(newSet.keys())}]`);
+                        let newMask = this.toMask(newSet);
 
-                    this.cycle(newSet, to, debug+'  ');
-                    let cycle = this.shortestCycle.get(newMask)!.get(to);
-                    if (cycle?.length) {
-                        let newShortestCycle = [n, ...cycle];
-                        let newShortestCost = this.getShortestPathCost(newShortestCycle);
-                        if (newShortestCost <= shortestCost) {
-                            shortestCost = newShortestCost;
-                            shortestCycle = newShortestCycle;
+                        this.cycle(from, newSet, n, debug+'  ');
+                        let cycle = this.shortestCycle.get(newMask)!.get(n);
+                        if (cycle?.length) {
+                            let newShortestCycle = [...cycle, to];
+                            let newShortestCost = this.getShortestPathCost(newShortestCycle);
+                            this.debug(`${debug}shortest: ${newShortestCycle} ${newShortestCost}`)
+                            if (newShortestCost <= shortestCost) {
+                                shortestCost = newShortestCost;
+                                shortestCycle = newShortestCycle;
+                            }
+                        }
+
+                        cycle = this.longestCycle.get(newMask)!.get(n);
+                        if (cycle?.length) {
+                            let newLongestCycle = [...cycle, to];
+                            let newLongestCost = this.getLongestPathCost(newLongestCycle);
+                            this.debug(`${debug}longest: ${newLongestCycle} ${newLongestCost}`)
+                            if (newLongestCost >= longestCost) {
+                                longestCost = newLongestCost;
+                                longestCycle = newLongestCycle;
+                            }
                         }
                     }
-
-                    cycle = this.longestCycle.get(newMask)!.get(to);
-                    if (cycle?.length) {
-                        let newLongestCycle = [n, ...cycle];
-                        let newLongestCost = this.getLongestPathCost(newLongestCycle);
-                        if (newLongestCost >= longestCost) {
-                            longestCost = newLongestCost;
-                            longestCycle = newLongestCycle;
-                        }
-                    }
-                }
-            });
+                });
+            }
             sc.set(to, shortestCycle);
             lc!.set(to, longestCycle);
+        } else {
+            this.debug(`${debug}CACHED`)
         }
+
+        this.debug(`${debug}cycle ${from} -> ${to} [${Array.from(set.keys())}] SHORTEST is ${sc.get(to)}/${this.getShortestPathCost(sc.get(to))}`)
+
+        /*
+        this.debug(`${debug} this.shortestCycle dump`)
+        this.shortestCycle.forEach((vMap, key) => {
+            if (true || this.toSet(key).size > 2) {
+                this.debug(`${debug}${Array.from(this.toSet(key).keys())}`);
+                vMap.forEach((v, k) => {
+                    this.debug(`${debug}--${k}=[${v}] cost=${this.getShortestPathCost(v)}`);
+                })
+            }
+        });
+        this.debug(`${debug} this.shortestCycle dump end`)
+        */
+        /*
+        this.debug(`${debug} this.longestCycle dump`)
+        this.longestCycle.forEach((vMap, key) => {
+            if (true || this.toSet(key).size > 2) {
+                this.debug(`${debug}${Array.from(this.toSet(key).keys())}`);
+                vMap.forEach((v, k) => {
+                    this.debug(`${debug}--${k}=[${v}] cost=${this.getLongestPathCost(v)}`);
+                })
+            }
+        });
+        this.debug(`${debug} this.longestCycle dump end`)
+        */
     }
 
     toMask(set: Set<string>): number {
         return Array.from(this.nodes).map((n, i) => set.has(n)?1<<i:0).reduce((p, v) => p | v, 0);
+    }
+
+    toSet(mask: number): Set<string> {
+        return Array.from(this.nodes).reduce((acc, n, i) => { if (mask & 1<<i) acc.add(n); return acc;}, new Set<string>());
+    }
+
+    debug(m: string) {
+        //console.log(m);
     }
 }
