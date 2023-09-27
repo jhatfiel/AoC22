@@ -53,6 +53,21 @@ export class Puzzle {
         return result;
     }
 
+    gridAroundP(p: {x: number, y: number}, max={x:Infinity, y:Infinity}): Array<{x: number, y: number}> {
+        let result = new Array<{x: number, y: number}>();
+        if (p.x > 0 && p.y > 0)         result.push({x: p.x-1, y: p.y-1});
+        if (p.x > 0)                    result.push({x: p.x-1, y: p.y});
+        if (p.x > 0 && p.y < max.y)     result.push({x: p.x-1, y: p.y+1});
+
+        if (p.y > 0)                    result.push({x: p.x, y: p.y-1});
+        if (p.y < max.y)                result.push({x: p.x, y: p.y+1});
+
+        if (p.x < max.x && p.y > 0)     result.push({x: p.x+1, y: p.y-1});
+        if (p.x < max.x)                result.push({x: p.x+1, y: p.y});
+        if (p.x < max.x && p.y < max.y) result.push({x: p.x+1, y: p.y+1});
+        return result;
+    }
+
     gridAround(row: number, col: number, maxRow: number, maxCol: number): Array<{row: number, col: number}> {
         let result = new Array<{row: number, col: number}>();
         if (row > 0 && col > 0)           result.push({row: row-1, col: col-1});
