@@ -105,4 +105,27 @@ export class Puzzle {
         });
         return result;
     }
+
+    /**
+     *  Returns the position of an oscilating entity along positions `0 ... max` (inclusive) after 
+     *  optional `delay` ticks have passed, assuming starting position `start` and starting `direction` of travel
+     *
+     *  @param max (0-based) The number of the maximum position (so total number of positions is max+1)
+     *  @param delay the position reported is after number of `ticks` have passed (Default: 0)
+     *  @param start the position the entity is currently is (Default: 0)
+     *  @param direction is the position increasing (1) or decreasing (-1) (Default: 1)
+
+     *  @remarks
+     *  This equation is based on triangle wave function; the x axis is ticks since start; the y axis is the position of the item you are watching
+     *  the amplitude is the max that is passed in (and the period is just 4*amplitude)
+     *  https://en.wikipedia.org/wiki/Triangle_wave
+     */
+    positionAfter(max: number, delay=0, start=0, direction=1): number {
+        // set delay based on start & direction
+        if (start === 0) direction = 1;
+        if (direction === -1) delay = delay + (max-start) + max;
+        else delay = delay + start;
+        let period = max * 4;
+        return Math.abs(Math.abs((((delay-max)%period)+period)%period - period/2) - max);
+    }
 }
