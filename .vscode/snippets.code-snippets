@@ -15,23 +15,54 @@
 	// 	],
 	// 	"description": "Log output to console"
 	// }
-	"Puzzle": {
+	"Minimal template": {
 		"scope": "typescript",
 		"prefix": "puzzle",
 		"body": [
 "import { Puzzle } from \"../../lib/puzzle.js\";",
 "",
-"const p = new Puzzle(process.argv[2]);",
+"const puzzle = new Puzzle(process.argv[2]);",
 "",
-"p.onLine = (line) => {",
+"puzzle.onLine = (line) => {",
 "    console.log(line);",
 "}",
 "",
-"p.onClose = () => {",
+"puzzle.onClose = () => {",
 "",
 "}",
 "",
-"p.run();"
+"puzzle.run();"
+		]
+	},
+	"Grid based template": {
+		"scope": "typescript",
+		"prefix": "puzzle",
+		"body": [
+"import { Puzzle } from '../../lib/puzzle.js';",
+"",
+"const puzzle = new Puzzle();",
+"let gridSize = 128",
+"let grid = Array.from({length: gridSize}, () => new Array<boolean>(gridSize).fill(false))",
+"type Pair = {x: number, y: number};",
+"function makeKey(p: Pair) { return `${p.x},${p.y}`;}",
+"function isWall(p: Pair) { return grid[p.y][p.x]; }",
+"function getNeighbors(node: string): Set<string> {",
+"    let result = new Set<string>();",
+"    let [x, y] = node.split(',').map(Number);",
+"    puzzle.gridOrthogonalP({x,y},{x:gridSize,y:gridSize}).forEach((p) => {",
+"        if (!isWall(p)) result.add(`${p.x},${p.y}`);",
+"    })",
+"    return result;",
+"}",
+"function debug() {",
+"    for (let y=0; y<=6; y++) {",
+"        let line = '';",
+"        for (let x=0; x<10; x++) {",
+"            line += isWall({x,y})?'#':'.'",
+"       }",
+"        console.log(line);",
+"    }",
+"}",
 		]
 	}
 }
