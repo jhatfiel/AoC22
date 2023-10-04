@@ -14,7 +14,7 @@ for (let y=0; y<128; y++) {
         .forEach((b, ind) => grid.grid[y][ind] = (b==='1'));
 }
 
-let nodes = grid.getWalls().map((p) => grid.toKey(p));
+let nodes = grid.getOn().map((p) => grid.toKey(p));
 console.log(`Total used: ${nodes.length}`);
 let cluster = new Cluster(nodes, (node) => grid.getNeighbors(node, true));
 console.log(`Number of clusters ${cluster.sets.length}`);

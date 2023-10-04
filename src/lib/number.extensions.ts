@@ -7,6 +7,7 @@ console.log('3'.padZero(4));
 
 (5).times(ind => console.log(`times ${ind.padZero(4)}`));
  */
+/*
 interface Number {
   padZero(length: number);
   times(fn: (ind: number) => any, ctx: any)
@@ -32,3 +33,4 @@ Number.prototype.times = function(fn: (ind: number) => any, ctx: any){
     }
     return this.valueOf();
 };
+*/
