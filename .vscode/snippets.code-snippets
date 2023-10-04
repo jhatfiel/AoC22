@@ -39,7 +39,7 @@
 		"prefix": "puzzle",
 		"body": [
 "import { Puzzle } from '../../lib/puzzle.js';",
-"import { Grid, Pair } from '../../lib/puzzle.js';",
+"import { Grid, Pair } from '../../lib/grid.js';",
 "",
 "const puzzle = new Puzzle(process.argv[2]);",
 "let grid = new Grid({x: 2, y: 2});",
