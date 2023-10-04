@@ -17,22 +17,24 @@ puzzle.onLine = (line) => {
 puzzle.onClose = () => {
     let paths = new Array<string>();
     let newPaths = new Array<string>();
-    let longestPaths: Array<string>;
 
     newPaths.push('-0');
 
     while (newPaths.length > 0) {
-        longestPaths = newPaths; // for part 2
         console.log(`Paths: ${paths.length}`);
         let _newPaths = new Array<string>();
         newPaths.forEach(p => {
-            paths.push(p);
             let lastNode = Number(p.slice(p.lastIndexOf('-')+1));
+            let foundContinuation = false;
             Array.from(getOrCreateNode(lastNode).keys()).forEach(to => {
-                if (p.indexOf(`${lastNode}-${to}`) === -1 && p.indexOf(`${to}-${lastNode}`) === -1) {
-                    _newPaths.push(`${p}-${to}`);
+                if (p.indexOf(`${lastNode}-${to}`) === -1 && p.indexOf(`${to}-${lastNode}`) === -1 && lastNode !== to) {
+                    foundContinuation = true;
+                    let newPath = `${p}-${to}`;
+                    if (getOrCreateNode(to).has(to) && p.indexOf(`${to}-${to}`) === -1) newPath += `-${to}`
+                    _newPaths.push(newPath);
                 }
             });
+            if (!foundContinuation) paths.push(p); // record paths when we reach a dead-end path
         })
 
         newPaths = _newPaths;
@@ -40,24 +42,26 @@ puzzle.onClose = () => {
     console.log(`Paths: ${paths.length}`);
 
     let strongest = -Infinity;
+    let longest = -Infinity;
+    let strongestLongest = -Infinity;
     paths.forEach(p => {
         let str = pathStrength(p);
+        let len = pathLength(p);
         if (str > strongest) {
             strongest = str
-            console.log(`${str.toString().padStart(5, ' ')} ${p}`);
+            console.log(`${str.toString().padStart(5, ' ')} new strongest ${p}`);
+        }
+        if (len > longest) { longest = len; strongestLongest = -Infinity; }
+        if (str > strongestLongest && len === longest) {
+            strongestLongest = str
+            console.log(`${str.toString().padStart(5, ' ')} new strongest longest ${p}`);
         }
     })
     console.log(`Strongest bridge: ${strongest}`);
-
-    strongest = -Infinity;
-    longestPaths.forEach(p => {
-        let str = pathStrength(p);
-        if (str > strongest) {
-            strongest = str
-            console.log(`${str.toString().padStart(5, ' ')} ${p}`);
-        }
-    })
-    console.log(`Strongest longest bridge: ${strongest}`);
+    console.log(`Strongest longest bridge: ${strongestLongest}`);
+}
+function pathLength(p: string): number {
+    return Array.from(p.matchAll(/-/g)).length;
 }
 
 function pathStrength(p: string): number {
