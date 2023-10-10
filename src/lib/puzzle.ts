@@ -4,15 +4,18 @@ import { createInterface } from 'readline';
 export class Puzzle {
     constructor(private fn="_UNUSED_") { }
 
-    run() {
+    async run() {
         const rl = createInterface({ input: createReadStream(this.fn), crlfDelay: Infinity, terminal: false});
-        rl.on('line', this.onLine.bind(this));
-        rl.on('close', this.onClose.bind(this));
+        return new Promise((resolve, reject) => {
+            rl.on('line', line => { this.lines.push(line); this.onLine(line) } ); 
+            rl.on('close', () => { resolve(this.lines); this.onClose(); });
+        })
     }
 
-    onLine(line: string) { console.log(`Line: ${line}`); }
+    lines = new Array<string>();
 
-    onClose() { console.log(`Closed`); }
+    onLine(line: string) { }
+    onClose() { }
     
     toMask(arr: Array<string>, set: Set<string>): number {
         return arr.map((n, i) => set.has(n)?1<<i:0).reduce((p, v) => p | v, 0);
