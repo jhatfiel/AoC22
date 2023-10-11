@@ -6,8 +6,10 @@ export class Grid<CellType = boolean> {
 
     grid: Array<Array<CellType>>;
 
-    toKey(p: Pair) { return `${p.x},${p.y}`; }
-    fromKey(k: string) { let arr=k.split(',').map(Number); return {x: arr[0], y: arr[1]}; }
+    toKey(p: Pair) { return Grid.toKey(p); }
+    static toKey(p: Pair) { return `${p.x},${p.y}`; }
+    fromKey(k: string) { return Grid.fromKey(k); }
+    static fromKey(k: string) { let arr=k.split(',').map(Number); return {x: arr[0], y: arr[1]}; }
     isOn(p: Pair) { return this.grid[p.y][p.x]; }
     getOn() { return this.grid.map((row, y) => row.map((b, x) => b?{x,y}:null)).flat().filter((p) => p); }
     isInGrid(p: Pair, offset: Pair) { return p.x+offset.x>=0 && p.x+offset.x<=this.max.x && p.y+offset.y>=0 && p.y+offset.y<=this.max.y; }
