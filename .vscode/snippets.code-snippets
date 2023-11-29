@@ -39,15 +39,11 @@
 "const puzzle = new Puzzle(process.argv[2]);",
 "let grid = new Grid({x: 2, y: 2});",
 "",
-"puzzle.onLine = (line) => {",
-"    console.log(line);",
-"}",
-"",
-"puzzle.onClose = () => {",
-"",
-"}",
-"",
-"puzzle.run();"
+"await puzzle.run()",
+"    .then((lines: Array<string>) => {",
+"        lines.forEach((line) => {",
+"        })",
+"    });",
 		]
 	}
 }
