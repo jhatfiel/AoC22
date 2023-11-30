@@ -42,7 +42,6 @@ await puzzle.run()
             // check to see if this generation is a copy of last generation but just moved one to the right
             done = pots.every((v, ind) => ind === SIZE-1 || newPots[ind+1] === v);
                 
-            console.debug(done);
             pots = newPots;
             debug();
         }
