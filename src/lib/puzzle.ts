@@ -133,13 +133,15 @@ export class Puzzle {
     }
 
     waitForEnter() {
-        let buffer = Buffer.alloc(1);
-        let done = false;
-        while (!done) {
-            try {
-                readSync(0, buffer, 0, 1, undefined)
-                done = true;
-            } catch (error) {
+        if (process.stdout.moveCursor) {
+            let buffer = Buffer.alloc(1);
+            let done = false;
+            while (!done) {
+                try {
+                    readSync(0, buffer, 0, 1, undefined)
+                    done = true;
+                } catch (error) {
+                }
             }
         }
     }
