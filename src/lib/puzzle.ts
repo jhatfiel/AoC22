@@ -1,4 +1,4 @@
-import { createReadStream } from 'fs';
+import { createReadStream, readSync } from 'fs';
 import { createInterface } from 'readline';
 
 export class Puzzle {
@@ -130,5 +130,17 @@ export class Puzzle {
         else delay = delay + start;
         let period = max * 4;
         return Math.abs(Math.abs((((delay-max)%period)+period)%period - period/2) - max);
+    }
+
+    waitForEnter() {
+        let buffer = Buffer.alloc(1);
+        let done = false;
+        while (!done) {
+            try {
+                readSync(0, buffer, 0, 1, undefined)
+                done = true;
+            } catch (error) {
+            }
+        }
     }
 }
