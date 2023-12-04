@@ -21,7 +21,7 @@ await puzzle.run()
             let [winArr, myArr] = arr[1].split('|').map(s => s.trim().split(/ +/));
             let numOfThisCard = numCards.get(cardNum);
             totCards += numOfThisCard;
-            let matchCount = winArr.reduce((acc, wNum) => acc += (myArr.indexOf(wNum) !== -1)?1:0, 0)
+            let matchCount = winArr.filter(wNum => myArr.indexOf(wNum) !== -1).length;
             //console.debug(`${cardNum.toString().padStart(3, ' ')} (${numOfThisCard.toString().padStart(35, ' ')} copies, ${totCards.toString().padStart(35, ' ')} copies so far), matchCount: ${matchCount}`);
             debug(cardNum, numOfThisCard, matchCount);
             for (let i=1; i<matchCount+1; i++) {
