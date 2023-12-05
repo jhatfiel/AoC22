@@ -89,21 +89,22 @@ await puzzle.run()
             requestedRanges.push({from, to});
         }
 
-        //debugState();
+        debugState();
 
         let category = CategoryType.SEED;
         lines.slice(2).forEach(line => {
             if (line === '') category++;
             else if (!line.endsWith('map:')) {
                 // process mapping numbers
-                //console.debug(`${CategoryType[category]} ${line}`);
+                debugState();
+                console.debug(`${CategoryType[category]} ${line}`);
                 let arr = line.split(' ').map(Number);
                 seedMapping.process(category, arr[1], arr[0], arr[2]);
-                //puzzle.waitForEnter();
+                puzzle.waitForEnter();
             }
         });
 
-        //debugState();
+        debugState();
 
         let overallLowestLocation = Infinity;
         requestedRanges.forEach(requestRange => {
@@ -137,7 +138,7 @@ await puzzle.run()
     });
 
 function debugState(clearScreen = true) {
-    const CAT_WIDTH=37; // 17
+    const CAT_WIDTH= 37; // 17
     const NUM_WIDTH=(CAT_WIDTH-1)/2;
     //const PRINT_CATEGORIES=CATEGORIES; 
     const PRINT_CATEGORIES=[CategoryType.SEED, CategoryType.LOCATION];
