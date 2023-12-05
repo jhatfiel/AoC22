@@ -21,7 +21,7 @@ await puzzle.run()
             else if (!line.endsWith('map:')) {
                 // process mapping numbers
                 let arr = line.split(' ').map(Number);
-                maps[mapNum].push({from: arr[1], to: arr[0], length: arr[2]}
+                maps[mapNum].push({from: arr[1], to: arr[0], length: arr[2]})
             }
         });
 
