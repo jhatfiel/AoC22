@@ -1,7 +1,7 @@
 import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle();
-const RACES = (process.argv.length <= 2 || process.argv[2] === 'sample')?[[7, 9], [15, 40], [30, 200]]:[[48,255], [87,1288], [69,1117], [81,1623]];
+const RACES = (process.argv.length <= 2 || process.argv[2] === 'sample')?[[71530, 940200]]:[[48876981,255128811171623]];
 
 let tot=1;
 RACES.forEach(([length, record]) => {
