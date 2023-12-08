@@ -22,41 +22,46 @@ class MapNav {
 
 await puzzle.run()
     .then((lines: Array<string>) => {
-        const LAST_SEEN = new Map<string, number>();
+        let firstSeenMap = new Map<string, number>();
 
         let mapNav = new MapNav(lines);
 
-        let steps = 0;
+        let numSteps = 0;
         let curNodeArr = Array.from(mapNav.nodeChoice.keys()).filter(n => n.endsWith('A'));
-        console.debug(`[0]: Current Nodes: ${curNodeArr}`)
-        while (! curNodeArr.every(n => n.endsWith('Z'))) {
-            let turnIndex = steps % mapNav.turner.length;
-            if (curNodeArr.every(n => LAST_SEEN.has(n+turnIndex)))
-                break;
-
-            curNodeArr.forEach(n => {
-                LAST_SEEN.set(n + turnIndex, steps);
+        let cycleSize = new Array(curNodeArr.length);
+        while (true) {
+            let turnIndex = numSteps % mapNav.turner.length;
+            curNodeArr.forEach((n, ind) => {
+                if (!firstSeenMap.has(n+turnIndex)) {
+                    firstSeenMap.set(n + turnIndex, numSteps);
+                } else {
+                    if (cycleSize[ind] === undefined) cycleSize[ind] = numSteps - firstSeenMap.get(n+turnIndex);
+                }
             })
-            curNodeArr = curNodeArr.map(n => mapNav.getNextNode(n, steps));
-            steps++;
+
+            //console.debug(`[${numSteps.toString().padStart(3, ' ')}/${numSteps%mapNav.turner.length}]: Current Nodes: ${curNodeArr}`)
+
+            if (curNodeArr.every((_, ind) => cycleSize[ind] !== undefined)) break;
+
+            curNodeArr = curNodeArr.map(n => mapNav.getNextNode(n, numSteps));
+            numSteps++;
         }
 
-        let turnIndex = steps%mapNav.turner.length;
-        curNodeArr.forEach(n => {
-            let loopSize = steps - LAST_SEEN.get(n+turnIndex)
-            console.debug(`[${steps}]: ${n+turnIndex} loop (${loopSize})`);
+        let turnIndex = numSteps%mapNav.turner.length;
+        curNodeArr.forEach((n, ind) => {
+            let firstSeen = firstSeenMap.get(n+turnIndex);
+            let loopSize = cycleSize[ind];
+            console.debug(`[${numSteps}]: ${n+turnIndex} loop (${loopSize})`);
             for (let additionalSteps = 0; additionalSteps < loopSize; additionalSteps++) {
-                n = mapNav.getNextNode(n, steps+additionalSteps);
+                n = mapNav.getNextNode(n, numSteps+additionalSteps);
                 if (n.endsWith('Z')) {
-                    console.debug(`    [${additionalSteps}] - Found node ending in Z: ${n}`)
+                    let loc = firstSeen+additionalSteps+1;
+                    console.debug(`    First end state ${n}: occurs at ${loc}, ${loc+loopSize}, ${loc+2*loopSize}, ${loc+3*loopSize}, ${loc+4*loopSize}, ${loc+5*loopSize}`)
                 }
             }
         })
 
-        console.debug(`9, 15, 3 = ${Puzzle.first_alignment(9, 15, 3)}`)
-        console.debug(`30, 38, 6 = ${Puzzle.first_alignment(30, 38, 6)}`)
-        console.debug(`9, 12, 5= ${Puzzle.first_alignment(9, 12, 5)}`)
-
-
-        console.debug(`[${steps}]: Current Nodes: ${curNodeArr}`)
+        // the answer is just the LCM of all the cycles, which is: 13740108158591 (yes, 13 trillion steps)
+        // this ignores what might happen if the cycle didn't start right at the start location.... but it does so . . . *shrugs
+        console.debug(`LCM of all cycles is ${cycleSize.reduce((acc, cs) => acc = Puzzle.lcm(acc, cs), 1)}`)
     });
