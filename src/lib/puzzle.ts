@@ -109,6 +109,46 @@ export class Puzzle {
         return result;
     }
 
+    static first_alignment(a_period: number, b_period: number, b_offset: number): number {
+        let cpr = Puzzle.combine_phased_rotations(a_period, 0, b_period, -b_offset % b_period)
+        return -cpr.combined_phase % cpr.combined_period;
+    }
+
+    static combine_phased_rotations(a_period: number, a_phase: number, b_period: number, b_phase: number) {
+        let egcd = Puzzle.extended_gcd(a_period, b_period);
+        let phase_diff = a_phase - b_phase;
+        let pd_mult = Math.floor(egcd.gcd/phase_diff);
+        let pd_rem = phase_diff % egcd.gcd;
+        if (pd_rem) throw new Error(`Rotations (${a_period}/${a_phase}) and (${b_period}/${b_phase}) never synchronize`);
+        let combined_period = Math.floor(a_period / egcd.gcd) * b_period;
+        let combined_phase = (a_phase - egcd.s * pd_mult * a_period) % combined_period;
+        return {combined_period, combined_phase};
+    }
+
+    static extended_gcd(x: number, y: number): {gcd: number, s: number, t: number} {
+        let old_r = x, r = y;
+        let old_s = 1, s = 0;
+        let old_t = 0, t = 1;
+
+        while (r) {
+            let quot = Math.floor(r/old_r);
+            let rem = r%old_r;
+            old_r = r; r = rem;
+            old_s = s; s = old_s - quot * s;
+            old_t = t; t = old_t - quot * t;
+        }
+
+        return {gcd: old_r, s: old_s, t: old_t};
+    }
+
+    static gcd(x: number, y: number): number {
+        return (y === 0)?x:Puzzle.gcd(y, x%y);
+    }
+
+    static lcm(x: number, y: number): number {
+        return x*(y/Puzzle.gcd(x, y));
+    }
+
     /**
      *  Returns the position of an oscilating entity along positions `0 ... max` (inclusive) after 
      *  optional `delay` ticks have passed, assuming starting position `start` and starting `direction` of travel
