@@ -109,19 +109,21 @@ export class Puzzle {
         return result;
     }
 
+    // https://math.stackexchange.com/questions/2218763/how-to-find-lcm-of-two-numbers-when-one-starts-with-an-offset
     static first_alignment(a_period: number, b_period: number, b_offset: number): number {
-        let cpr = Puzzle.combine_phased_rotations(a_period, 0, b_period, -b_offset % b_period)
-        return -cpr.combined_phase % cpr.combined_period;
+        let cpr = Puzzle.combine_phased_rotations(a_period, 0, b_period, ((-b_offset % b_period)+b_period)%b_period)
+        return ((-cpr.combined_phase % cpr.combined_period)+cpr.combined_period)%cpr.combined_period;
     }
 
     static combine_phased_rotations(a_period: number, a_phase: number, b_period: number, b_phase: number) {
         let egcd = Puzzle.extended_gcd(a_period, b_period);
         let phase_diff = a_phase - b_phase;
-        let pd_mult = Math.floor(egcd.gcd/phase_diff);
-        let pd_rem = phase_diff % egcd.gcd;
+        // divmod(phase_difference, gcd)
+        let pd_mult = Math.floor(phase_diff/egcd.gcd);
+        let pd_rem = ((phase_diff % egcd.gcd)+egcd.gcd)%egcd.gcd;
         if (pd_rem) throw new Error(`Rotations (${a_period}/${a_phase}) and (${b_period}/${b_phase}) never synchronize`);
         let combined_period = Math.floor(a_period / egcd.gcd) * b_period;
-        let combined_phase = (a_phase - egcd.s * pd_mult * a_period) % combined_period;
+        let combined_phase = (((a_phase - egcd.s * pd_mult * a_period) % combined_period)+combined_period)%combined_period;
         return {combined_period, combined_phase};
     }
 
@@ -131,11 +133,14 @@ export class Puzzle {
         let old_t = 0, t = 1;
 
         while (r) {
-            let quot = Math.floor(r/old_r);
-            let rem = r%old_r;
+            // divmod(old_r, r)
+            let quot = Math.floor(old_r/r);
+            let rem = old_r%r;
             old_r = r; r = rem;
-            old_s = s; s = old_s - quot * s;
-            old_t = t; t = old_t - quot * t;
+            let t_old_s = old_s;
+            old_s = s; s = t_old_s - quot * s;
+            let t_old_t = old_t;
+            old_t = t; t = t_old_t - quot * t;
         }
 
         return {gcd: old_r, s: old_s, t: old_t};
