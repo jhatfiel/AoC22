@@ -8,13 +8,13 @@ await puzzle.run()
         let total = 0;
         lines.forEach(line => {
             const lineArray = line.split(' ').map(Number);
-            let nextNumber = getNextNumber(lineArray);
-            total += nextNumber;
+            let prevNumber = getPrevNumber(lineArray);
+            total += prevNumber;
         });
-        console.debug(`Total of all next numbers: ${total}`);
+        console.debug(`Total of all previous numbers: ${total}`);
     });
 
-function getNextNumber(arr: Array<number>) {
+function getPrevNumber(arr: Array<number>) {
     if (arr.every(n => n === 0)) return 0;
     let diffArray = new Array<number>();
 
@@ -22,8 +22,8 @@ function getNextNumber(arr: Array<number>) {
         if (index > 0) diffArray.push(n - arr[index-1])
     })
 
-    let nextDiff = arr[arr.length-1] + getNextNumber(diffArray);
-    return nextDiff;
+    let prevDiff = arr[0] - getPrevNumber(diffArray);
+    return prevDiff;
 }
 
 
