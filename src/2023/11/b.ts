@@ -15,33 +15,25 @@ await puzzle.run()
             unusedCol.add(col);
         }
         gridParser.matches.forEach(m => {
-            //console.debug(`Match:`, m)
             unusedRow.delete(m.row);
             unusedCol.delete(m.first);
         })
 
+        let expansionSize = 999999;
         gridParser.matches.forEach(m => {
             let expandRows = Array.from(unusedRow.keys()).filter(ur => ur < m.row).length;
             let expandCols = Array.from(unusedCol.keys()).filter(uc => uc < m.first).length;
-            m.row += expandRows;
-            m.first += expandCols;
-            m.last += expandCols;
+            m.row += expandRows*expansionSize;
+            m.first += expandCols*expansionSize;
+            m.last += expandCols*expansionSize;
         });
-
-        /*
-        console.debug(`After expansion`)
-        gridParser.matches.forEach(m => {
-            console.debug(`Match:`, m)
-        });
-        */
 
         let totalDistance = 0;
         gridParser.matches.forEach(g1 => {
             gridParser.matches.forEach(g2 => {
                 let d = Math.abs(g1.row - g2.row) + Math.abs(g1.first - g2.first);
-                //console.debug(`find distance between ${JSON.stringify(g1)} and ${JSON.stringify(g2)} = ${d}`)
                 totalDistance += d;
             })
         })
-        console.debug(`Total distance = ${totalDistance/2}`)
+        console.debug(`Total distance = ${totalDistance/2}`);
     });
