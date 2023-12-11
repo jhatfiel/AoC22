@@ -46,12 +46,15 @@ await puzzle.run()
                 if (grid[y][x] === '.' && linesToBorder({x,y}) % 2 === 1) {
                     console.debug(`Inner position: ${x},${y}`)
                     innerSize++;
+                    grid[y][x] = 'I'
                 }
             }
         }
+
+        console.debug(`Filled in 'inner' positions with I`);
+        debugGrid();
         console.debug(`Inner Size: ${innerSize}`);
     });
-
 
 function linesToBorder(pos: Pair): number {
     // check horizontal lines up to this row
@@ -66,8 +69,10 @@ function linesToBorder(pos: Pair): number {
     }
     //  pairs of J and F go across
     //  pairs of 7 and L go across
+    // I'm not really sure how this works, but it does.  I didn't think through all possibilities, but it worked in the sample & actual input so *shrugs
     while (matchingPipe.length) {
         let [a, b] = [matchingPipe.pop(), matchingPipe.shift()];
+        console.debug(`Found: ${a}${b}`)
         if ('7L7_JFJ'.indexOf(`${a}${b}`) !== -1) lineCount++
     }
 
