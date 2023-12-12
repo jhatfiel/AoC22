@@ -8,13 +8,12 @@ await puzzle.run()
         let totalPossibleCount = 0;
         lines.forEach(line => {
             let arr = line.split(' ');
-            let criteria = arr[0];
-            criteria = criteria + '?' + criteria + '?' + criteria + '?' + criteria + '?' + criteria
-            let dArr = arr[1].split(',').map(Number);
-            dArr.push(...[...dArr, ...dArr, ...dArr, ...dArr]);
+            let criteria = arr[0] + '?' + arr[0] + '?' + arr[0] + '?' + arr[0] + '?' + arr[0];
+            let dArr = (arr[1] + ',' + arr[1] + ',' + arr[1] + ',' + arr[1] + ',' + arr[1]).split(',').map(Number);
+            //let dArr = (arr[1]).split(',').map(Number);
             console.debug(`criteria: ${criteria}, dArr=${dArr}`)
             let possibleCount = permute(criteria, dArr);
-            console.debug(`Possible Count: ${possibleCount}`);
+            console.debug(`Possible Arrangements: ${possibleCount}`);
             totalPossibleCount += possibleCount;
         });
         console.log(`Total possible arrangements: ${totalPossibleCount}`);
@@ -30,38 +29,52 @@ function getBrokenCounts(criteria: string): Array<number> {
 }
 
 function permute(criteria: string, dArr: Array<number>): number {
-    //console.debug(`Calling permute ${criteria}`);
     let result = 0;
-    // try '.' and '#' for the first '?' character
-    let firstUnknown = criteria.indexOf('?');
-    // start by seeing if this permutation is even possible
-    if (firstUnknown === -1) {
-        // no unknowns, just return 1 if this arrangement could work
-        let bcArr = getBrokenCounts(criteria);
-        //console.debug(`thisDArr: ${thisDArr}`);
-        if (dArr.length === bcArr.length && dArr.every((d, ind) => d === bcArr[ind])) {
-            //console.debug(`Found potential match!: ${criteria}!!`)
-            result = 1;
-        }
-    } else {
-        let criteriaTrimmed = criteria.substring(0, firstUnknown);
-        let trimmedBCArr = getBrokenCounts(criteriaTrimmed);
-        // if we have already encountered a bad pattern, return
-        if (trimmedBCArr.some((count, index) => (index !== trimmedBCArr.length-1 && count !== dArr[index]) || (count > dArr[index]))) {
-            //console.debug(`BAD PATH!!! ${criteriaTrimmed}, ${trimmedBCArr}, ${dArr}`)
-            return result;
-        }
+    let trials = new Array<string>();
+    let good = new Array<string>();
+    trials.push(criteria);
+    //console.debug(`Trials remaining: ${trials.length}`);
+    console.debug(`-- Found so far: ${result}`);
 
-        // if there aren't enough characters left to finish out the dArr, return
-        let neededCharacters = dArr.slice(trimmedBCArr.length).reduce((acc, count) => acc += count+1, -1);
-        if (criteria.length - firstUnknown < neededCharacters) {
-            //console.debug(`Too short!!! ${criteriaTrimmed}, ${trimmedBCArr}, ${dArr}`)
-            return result;
+    while (trials.length) {
+        let t = trials.pop();
+        //if (process.stdout.isTTY) { process.stdout.moveCursor(0, -1); process.stdout.clearLine(0); }
+        //console.debug(`Trials remaining: ${trials.length}`);
+        let firstUnknown = t.indexOf('?');
+        if (firstUnknown === -1) {
+            // no unknowns, just return 1 if this arrangement could work
+            let bcArr = getBrokenCounts(t);
+            //console.debug(`thisDArr: ${thisDArr}`);
+            if (dArr.length === bcArr.length && dArr.every((d, ind) => d === bcArr[ind])) {
+                //console.debug(`Found potential match!: ${t}!!`)
+                result++;
+                //good.push(t);
+                if (result%10000 === 0) {
+                    if (process.stdout.isTTY) { process.stdout.moveCursor(0, -1); process.stdout.clearLine(0); }
+                    console.debug(`-- Found so far: ${result} (list size: ${trials.length})`);
+                }
+            }
+        } else {
+            // start by seeing if this permutation is even possible
+            let criteriaTrimmed = t.substring(0, firstUnknown);
+            let trimmedBCArr = getBrokenCounts(criteriaTrimmed);
+            // if we have already encountered a bad pattern, return
+            // if there aren't enough characters left to finish out the dArr, return
+            let neededCharacters = dArr.slice(trimmedBCArr.length).reduce((acc, count) => acc += count+1, -1);
+            //console.debug(`${t}: Is remaining dArr too big to fit? ${t.substring(firstUnknown)}, ${dArr.slice(trimmedBCArr.length)}: ${t.length - firstUnknown < neededCharacters}`)
+            if (trimmedBCArr.some((count, index) => (index !== trimmedBCArr.length-1 && count !== dArr[index]) || (count > dArr[index]))) {
+                //console.debug(`BAD PATH!!! ${criteriaTrimmed}, ${trimmedBCArr}, ${dArr}`)
+            } else if (t.length - firstUnknown < neededCharacters) {
+                //console.debug(`Remaining dArr is big to fit: ${t.substring(firstUnknown)}, ${dArr.slice(trimmedBCArr.length)}`)
+            } else {
+                // try '.' and '#' for the first '?' character
+                let criteriaGood = t.substring(0, firstUnknown) + '.' + t.substring(firstUnknown+1);
+                let criteriaDamaged = t.substring(0, firstUnknown) + '#' + t.substring(firstUnknown+1);
+                trials.push(criteriaGood);
+                trials.push(criteriaDamaged);
+            }
         }
-
-        let criteriaGood = criteria.substring(0, firstUnknown) + '.' + criteria.substring(firstUnknown+1);
-        let criteriaDamaged = criteria.substring(0, firstUnknown) + '#' + criteria.substring(firstUnknown+1);
-        result = permute(criteriaGood, dArr) + permute(criteriaDamaged, dArr);
     }
+
     return result;
 }
