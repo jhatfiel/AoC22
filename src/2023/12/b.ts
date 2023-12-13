@@ -1,140 +1,64 @@
 import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle(process.argv[2]);
+const DUP = 5;
+var arrangementsFor = new Map<string, number>();
 
 await puzzle.run()
     .then((lines: Array<string>) => {
         let totalPossibleCount = 0;
         lines.forEach(line => {
             let arr = line.split(' ');
-            let criteria = arr[0] + '?' + arr[0] + '?' + arr[0] + '?' + arr[0] + '?' + arr[0];
-            let dArr = (arr[1] + ',' + arr[1] + ',' + arr[1] + ',' + arr[1] + ',' + arr[1]).split(',').map(Number);
-            //criteria = arr[0] + '?' + arr[0] + '?' + arr[0] + '?' + arr[0];
-            //dArr = (arr[1] + ',' + arr[1] + ',' + arr[1] + ',' + arr[1]).split(',').map(Number);
-            console.debug(`criteria: ${criteria}, dArr=${dArr}`)
+            let criteria = arr[0];
+            let damagedArrayStr = arr[1];
+            // duplicate the input 5 times
+            for (let i=1; i < DUP; i++) {
+                criteria += '?' + arr[0];
+                damagedArrayStr += ',' + arr[1];
+            }
+            let damagedArray = damagedArrayStr.split(',').map(Number);
+            console.debug(`criteria: ${criteria}, damagedArray=${damagedArray}`)
             let startTime = performance.now();
-            let possibleCount = permute(criteria, dArr);
+            let possibleCount = possibleArrangements(criteria, damagedArray);
             let endTime = performance.now();
             console.debug(`Possible Arrangements: ${possibleCount} (computed in ${Math.floor((endTime - startTime)/10)/100} seconds)`);
             totalPossibleCount += possibleCount;
         });
         console.log(`Total possible arrangements: ${totalPossibleCount}`);
+        console.log(`Total memorized arrangements: ${arrangementsFor.size}`);
     });
 
-function getNumUnknown(criteria: string): number {
-    return criteria.split('').filter(c => c === '?').length;
-}
+function possibleArrangements(criteria: string, damagedArray: Array<number>): number {
+    let key = criteria + '_' + damagedArray.join(','); // memoization - remember previous times we've asked for this exact solution so we don't recompute it
+    if (arrangementsFor.has(key)) return arrangementsFor.get(key);
 
-function getNumDamaged(criteria: string): number {
-    return criteria.split('').filter(c => c === '#').length;
-}
-
-function getNumPermutations(criteria: string): number {
-    return Math.pow(2, getNumUnknown(criteria));
-}
-
-function getDamagedCounts(criteria: string): Array<number> {
-    let result = new Array<number>();
-    let len = 0;
-    for (let i=0; i<criteria.length; i++) {
-        if (criteria.charAt(i) !== '#') { if (len > 0) result.push(len); len = 0;
-        } else {
-            len++;
+    if (damagedArray.length === 0) {
+        // no more damaged entries, so everything left better be just ? or .
+        return criteria.split('').every(c => c === '?' || c === '.')?1:0;
+    } else {
+        let result = 0;
+        let p1Pattern = ''.padStart(damagedArray[0], '#'); // part 1 pattern: a string of damaged characters (###...) with length equal to first damagedArray entry
+        let remainingDamagedArray = damagedArray.slice(1); // part 2 will need to match the rest of the damaged array
+        if (remainingDamagedArray.length > 0) p1Pattern += '.'; // if we have more damagedArray entries, the part1 string HAS to end with a period
+        // we need to make sure there are at least enough characters left in part2 to fulfil the optimistic matching of the remainingDamagedArray
+        let p2TotalNeeded = remainingDamagedArray.reduce((acc, d) => acc += d, 0) + remainingDamagedArray.length-1;
+        // find the index of the first damaged character. Part1 has to contain this character.
+        let firstDamagedIndex = criteria.indexOf('#');
+        if (firstDamagedIndex === -1) firstDamagedIndex = criteria.length;
+        for (let n=0; n <= criteria.length - p2TotalNeeded - p1Pattern.length && n <= firstDamagedIndex; n++) {
+            // split the criteria into part1 & part2
+            let p1 = criteria.substring(n, n+p1Pattern.length);
+            let p2 = criteria.substring(   n+p1Pattern.length);
+            // if p1 can match the pattern above, we know that all possible arrangements for part2 will work with this one, so include them
+            if (canMatch(p1, p1Pattern)) result += possibleArrangements(p2, remainingDamagedArray);
         }
+        // memoize the result so we don't recompute it
+        arrangementsFor.set(key, result);
+        return result;
     }
-    if (len > 0) result.push(len);
-    return result;
 }
 
-function shouldPrune(criteria: string, dArr: Array<number>): boolean {
-    let firstUnknown = criteria.indexOf('?');
-    if (firstUnknown !== -1) {
-        // start by seeing if this permutation is even possible
-        let criteriaTrimmed = criteria.substring(0, firstUnknown);
-        let trimmedCArr = getDamagedCounts(criteriaTrimmed);
-        // if we have already encountered a bad pattern, return
-        //console.debug(`${t}: Is remaining dArr too big to fit? ${t.substring(firstUnknown)}, ${dArr.slice(trimmedCArr.length)}: ${t.length - firstUnknown < neededCharacters}`)
-        if (trimmedCArr.some((count, index) => (index !== trimmedCArr.length-1 && count !== dArr[index]) || (count > dArr[index]))) {
-            //console.debug(`BAD PATH!!! ${criteriaTrimmed}, ${trimmedBCArr}, ${dArr}`)
-            return true;
-        } else {
-            // if there aren't enough characters left to finish out the dArr, return
-            let dArrRemaining = dArr.slice(trimmedCArr.length);
-            let neededCharacters = dArrRemaining.reduce((acc, count) => acc += count+1, -1);
-            if (criteria.length - firstUnknown < neededCharacters) {
-                //console.debug(`Remaining dArr is big to fit: ${t.substring(firstUnknown)}, ${dArr.slice(trimmedBCArr.length)}`)
-                return true;
-            } else {
-                // can we check to see if there are enough possible places for a '#' left to match how many damaged springs we need
-                let dNeeded = dArrRemaining.reduce((acc, n) => acc += n, 0);
-                let cRemaining = criteria.substring(firstUnknown);
-                let uOrDRemaining = getNumUnknown(cRemaining) + getNumDamaged(cRemaining);
-                if (dNeeded > uOrDRemaining) { 
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-function reportProgress(tried: number, numPermutations: number, result: number, percentDone: number, forcePrint = false) {
-    let pd = forcePrint?percentDone:Math.floor(100*tried/numPermutations);
-    if (forcePrint || pd !== percentDone) {
-        percentDone = pd;
-        if (process.stdout.isTTY) { process.stdout.moveCursor(0, -1); process.stdout.clearLine(0); }
-        console.debug(`------------------- ${percentDone.toString().padStart(3, ' ')}%: ${tried.toString().padStart(numPermutations.toString().length)}: Found so far: ${result}`);
-    }
-    return percentDone;
-}
-
-function permute(criteria: string, dArr: Array<number>): number {
-    let result = 0;
-    let trials = new Array<string>();
-    let good = new Array<string>();
-    trials.push(criteria);
-    //console.debug(`Trials remaining: ${trials.length}`);
-    //let numPermutations = getNumPermutations(criteria);
-    //console.debug(`-- Permutations to check: ${numPermutations.toString()}`);
-    //console.debug(`-------------------   0%: ${'0'.padStart(numPermutations.toString().length)}`);
-    let tried = 0;
-    let percentDone = 0;
-
-    while (trials.length) {
-        let t = trials.pop();
-        let tDArr = getDamagedCounts(t);
-        //percentDone = reportProgress(tried, numPermutations, result, percentDone);
-        //console.debug(`Damaged Counts for ${t} is ${tDArr}`)
-        // if we have the same number of damaged counts and all the lengths match up, we are done, regardless of whether there are more unknowns
-        if (dArr.length === tDArr.length && dArr.every((d, ind) => d === tDArr[ind])) {
-            result++;
-            //tried += getNumPermutations(t);
-            //percentDone = reportProgress(tried, numPermutations, result, percentDone);
-            //console.debug(`Found solution that skipped: `, getNumPermutations(t));
-            //console.debug(`${percentDone.toString().padStart(3, ' ')}% done: Tried: ${tried.toString().padStart(20, ' ')}/${numPermutations.toString().padEnd(20, ' ')}: Found so far: ${result}`);
-            //if (result%10000 === 0) {
-                //if (process.stdout.isTTY) { process.stdout.moveCursor(0, -1); process.stdout.clearLine(0); }
-                //console.debug(`-- Found so far: ${result} (list size: ${trials.length})`);
-            //}
-        } else {
-            if (shouldPrune(t, dArr)) {
-                // ignore all branches under this one
-                //tried += getNumPermutations(t);
-                //percentDone = reportProgress(tried, numPermutations, result, percentDone);
-                //console.debug(`Ignoring: `, getNumPermutations(t));
-                //console.debug(`${percentDone.toString().padStart(3, ' ')}% done: Tried: ${tried.toString().padStart(20, ' ')}/${numPermutations.toString().padEnd(20, ' ')}: Found so far: ${result}`);
-            } else {
-                // try '.' and '#' for the first '?' character
-                let firstUnknown = t.indexOf('?');
-                let criteriaGood = t.substring(0, firstUnknown) + '.' + t.substring(firstUnknown+1);
-                let criteriaDamaged = t.substring(0, firstUnknown) + '#' + t.substring(firstUnknown+1);
-                trials.push(criteriaGood);
-                trials.push(criteriaDamaged);
-            }
-        }
-    }
-
-    return result;
+function canMatch(s: string, pattern: string): boolean {
+    // a string (s) matches a pattern if each character matches or the string has a ? at that location
+    return pattern.split('').every((c, index) => s[index] === c || s[index] === '?');
 }
