@@ -20,55 +20,39 @@ await puzzle.run()
     });
 
 function processPattern(pattern: Array<string>): number {
-    console.debug(`Pattern: ${pattern.length}`);
+    // GridParser is overkill, I thought this would make it easier but it was unnecessary
     let gp = new GridParser(pattern, [/#/g]);
+    const DESIRED_NUM_DIFFERENCES = 0; // 1 for part 2...
+
     // first see if it's a vertical line?
-    let result = 0;
-    
     for (let tryCol = 1; tryCol < gp.grid[0].length; tryCol++) {
-        //console.debug(`Trying to see reflection is from ${tryCol-1} to ${tryCol}`);
-        let validReflection = true;
+        let numDifferences = 0;
         // everything before tryCol must match up with everything after tryCol
         for (let offset=0; offset<Math.min(gp.grid[0].length-tryCol, tryCol); offset++) {
             let colA = tryCol-1-offset;
             let colB = tryCol+offset;
             // ensure all # in colA are in colB
-            let colAMatches = gp.matches.filter(m => m.first === colA);
-            let colBMatches = gp.matches.filter(m => m.first === colB);
-
-            if (colAMatches.length !== colBMatches.length || colAMatches.some((m, ind) => colBMatches[ind].row !== m.row)) {
-                validReflection = false
-            }
+            for (let row=0; row < gp.grid.length; row++) if (gp.grid[row][colA] !== gp.grid[row][colB]) numDifferences++;
         }
 
-        if (validReflection) {
-            console.debug(`Found valid reflection, col=${tryCol}`)
+        if (numDifferences === DESIRED_NUM_DIFFERENCES) {
             return tryCol;
         }
     }
     
+    // check if it's a horizontal line
     for (let tryRow = 1; tryRow < gp.grid.length; tryRow++) {
-        //console.debug(`Trying to see reflection is from ${tryRow-1} to ${tryRow}`);
-        let validReflection = true;
+        let numDifferences = 0;
         // everything before tryRow must match up with everything after tryRow
         for (let offset=0; offset<Math.min(gp.grid.length-tryRow, tryRow); offset++) {
             let rowA = tryRow-1-offset;
             let rowB = tryRow+offset;
             // ensure all # in rowA are in rowB
-            let rowAMatches = gp.matches.filter(m => m.row === rowA);
-            let rowBMatches = gp.matches.filter(m => m.row === rowB);
-            //console.debug(`-------`)
-            //console.debug(`Trying out row: ${rowA} and ${rowB}`)
-
-            if (rowAMatches.length !== rowBMatches.length || rowAMatches.some((m, ind) => rowBMatches[ind].first !== m.first)) {
-                validReflection = false
-                //console.debug(`Failed at row ${rowA} and ${rowB}: ${rowAMatches.length} vs ${rowBMatches.length}`)
-            }
+            for (let col=0; col < gp.grid[0].length; col++) if (gp.grid[rowA][col] !== gp.grid[rowB][col]) numDifferences++;
         }
 
-        if (validReflection) {
-            console.debug(`Found valid reflection, row=${tryRow}`)
-            return 100*(tryRow);
+        if (numDifferences === DESIRED_NUM_DIFFERENCES) {
+            return tryRow*100;
         }
     }
 }
