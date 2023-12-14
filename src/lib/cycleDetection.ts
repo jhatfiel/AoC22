@@ -1,9 +1,10 @@
 /**
  * Cycle Detection
  * MAKE SURE YOU INITIALIZE IT WITH THE STATE FOR ITERATIONS = 0
- * I.e., if you expect it to give you results after 100 iterations and you plan on calling 
+ * I.e., if you expect it to give you results after 100 iterations and you plan on calling getValueAt(100) then you need a "0" state or getValueAt(100) will return the wrong results
  * logValue with a unique key that represents the state of the system and a value that the system generates
- * If a cycle is detected, the return is an object representing the final results with a value property
+ * If a cycle is detected, return true
+ * call getValueAt to get an object representing the result at that iteration with a value property that gives you the value the system would generate
  */
 export type CycleDetectionResult<T=number> = {
     loopStart: number;      // start of the loop (the first loop detected)
