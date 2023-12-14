@@ -1,15 +1,17 @@
+import { CycleDetection, CycleDetectionResult } from "../../lib/cycleDetection.js";
 import { GridParser } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
+const MAX_CYCLES = 1000000000
+
 const puzzle = new Puzzle(process.argv[2]);
-var lastSeenState = new Map<string, number>();
 
 await puzzle.run()
     .then((lines: Array<string>) => {
-        let totalLoad = 0;
         let gp = new GridParser(lines, [/O/g]);
-        const MAX_CYCLES = 1000000000
-        for (let cycle = 0; cycle < MAX_CYCLES; cycle++) {
+        let cycleDetection = new CycleDetection();
+        cycleDetection.logValue(generateKey(gp), calculateLoad(gp));
+        for (let cycleIndex = 0; cycleIndex < MAX_CYCLES; cycleIndex++) {
             // move north (row = row-1)
             gp.matches.sort((a, b) => {
                 return a.row - b.row;
@@ -51,26 +53,19 @@ await puzzle.run()
                 }
             });
 
-            // loop?
-            let key = gp.grid.flat().join('');
-            if (lastSeenState.has(key)) {
-                let loopSize = cycle - lastSeenState.get(key);
-                let remaining = MAX_CYCLES - cycle;
-                let numLoops = Math.floor(remaining/loopSize); 
-                console.debug(`Cycle: ${cycle} - Found loop: ${loopSize}, jumping forward to ${cycle+numLoops*loopSize}`)
-                cycle += numLoops * loopSize;
-            } else {
-                lastSeenState.set(key, cycle);
-            }
+            // check for loop
+            if (cycleDetection.logValue(generateKey(gp), calculateLoad(gp))) break;
         }
 
-        console.debug(`Final`)
-        gp.debugGrid();
-
         // calculate load
-        gp.matches.forEach(m => {
-            totalLoad += gp.grid.length - m.row;
-        });
-        console.log(`Total load: ${totalLoad}`);
-        console.log(`Number of states seen: ${lastSeenState.size}`)
+        console.log(`Total load at ${MAX_CYCLES}: ${cycleDetection.getValueAt(MAX_CYCLES).value}`);
+        console.log(`Number of states seen: ${cycleDetection.lastSeenState.size}`)
     });
+
+function generateKey(gp: GridParser): string {
+    return gp.grid.flat().join('');
+}
+
+function calculateLoad(gp: GridParser): number {
+    return gp.matches.reduce((acc, m) => acc += gp.grid.length - m.row, 0);
+}
