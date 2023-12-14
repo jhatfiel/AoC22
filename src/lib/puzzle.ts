@@ -177,6 +177,10 @@ export class Puzzle {
         return Math.abs(Math.abs((((delay-max)%period)+period)%period - period/2) - max);
     }
 
+    waitFor(milliseconds: number) {
+        if (milliseconds) { let waitTill = new Date(new Date().getTime() + milliseconds); while (waitTill > new Date()); }
+    }
+
     waitForEnter() {
         if (process.stdout.moveCursor) {
             let buffer = Buffer.alloc(1);
