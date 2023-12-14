@@ -7,12 +7,11 @@ var lastSeenState = new Map<string, number>();
 await puzzle.run()
     .then((lines: Array<string>) => {
         let totalLoad = 0;
-        let gp = new GridParser(lines, [/O/g, /#/g]);
+        let gp = new GridParser(lines, [/O/g]);
         const MAX_CYCLES = 1000000000
         for (let cycle = 0; cycle < MAX_CYCLES; cycle++) {
-            if (cycle % 1000 === 0) { console.debug(`Cycle: ${cycle}`)}
             // move north (row = row-1)
-            gp.matches.filter(m => m.typeIndex === 0).sort((a, b) => {
+            gp.matches.sort((a, b) => {
                 return a.row - b.row;
             }).forEach(m => {
                 while (m.row > 0 && gp.grid[m.row-1][m.first] === '.') {
@@ -22,7 +21,7 @@ await puzzle.run()
                 }
             });
             // move west (col = col-1)
-            gp.matches.filter(m => m.typeIndex === 0).sort((a, b) => {
+            gp.matches.sort((a, b) => {
                 return a.first - b.first
             }).forEach(m => {
                 while (m.first > 0 && gp.grid[m.row][m.first-1] === '.') {
@@ -32,7 +31,7 @@ await puzzle.run()
                 }
             });
             // move south (row = row+1)
-            gp.matches.filter(m => m.typeIndex === 0).sort((a, b) => {
+            gp.matches.sort((a, b) => {
                 return b.row - a.row
             }).forEach(m => {
                 while (m.row < gp.grid.length-1 && gp.grid[m.row+1][m.first] === '.') {
@@ -42,7 +41,7 @@ await puzzle.run()
                 }
             });
             // move east (col = col+1)
-            gp.matches.filter(m => m.typeIndex === 0).sort((a, b) => {
+            gp.matches.sort((a, b) => {
                 return b.first - a.first;
             }).forEach(m => {
                 while (m.first < gp.grid[0].length && gp.grid[m.row][m.first+1] === '.') {
@@ -64,19 +63,14 @@ await puzzle.run()
                 lastSeenState.set(key, cycle);
             }
         }
+
         console.debug(`Final`)
-        debugGrid(gp.grid);
+        gp.debugGrid();
 
         // calculate load
-        gp.matches.filter(m => m.typeIndex===0).forEach(m => {
+        gp.matches.forEach(m => {
             totalLoad += gp.grid.length - m.row;
         });
         console.log(`Total load: ${totalLoad}`);
+        console.log(`Number of states seen: ${lastSeenState.size}`)
     });
-
-function debugGrid(grid: Array<Array<string>>) {
-    grid.forEach(row => {
-        console.debug(row.join(''))
-    })
-
-}

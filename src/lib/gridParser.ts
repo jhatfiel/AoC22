@@ -39,6 +39,12 @@ export class GridParser {
                                         (m.last  >= colFirst && m.last  <= colLast));
     }
 
+    debugGrid() {
+        this.grid.forEach(row => {
+            console.debug(row.join(''))
+        })
+    }
+
     public static FLOAT = new RegExp(/[0-9]+\.[0-9]*/g);
     public static NUMBER = new RegExp(/[0-9]/g);
     public static NUMBERS = new RegExp(/[0-9]+/g);
