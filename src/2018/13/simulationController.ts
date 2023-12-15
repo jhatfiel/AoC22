@@ -121,7 +121,7 @@ export class SimulationController {
     terminate() {
         this.term.moveTo(1, this.height);
         console.debug(`crashes: ${this.sim.crashLocations.join(' / ')}`);
-        console.debug(`Done!, Last cart is at: ${this.sim.carts.filter(c => !c.crashed)[0].toString()}`);
+        console.debug(`Done!, Last cart is at: ${(this.sim.carts.filter(c => !c.crashed)[0] ?? '').toString()}`);
         this.term.grabInput(false);
         setTimeout(_ => process.exit(), 100);
     }
