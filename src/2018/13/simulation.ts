@@ -1,18 +1,41 @@
 import { GridParser } from "../../lib/gridParser.js";
+import ScreenBuffer from '../../../node_modules/terminal-kit/lib/ScreenBuffer.js'
 import pkg from '../../../node_modules/terminal-kit/lib/termkit.js'
 const { Terminal } = pkg;
-import ScreenBuffer from '../../../node_modules/terminal-kit/lib/ScreenBuffer.js'
 
-let term = new Terminal();
+//const TL = '╔', HOR = '═', TR = '╗';
+//const BL = '╚', VER = '║', BR = '╝';
+//const CROSS = '╬';
+//const TL = '┏', HOR = '━', TR = '┓';
+//const BL = '┗', VER = '┃', BR = '┛';
+//const CROSS = '╋';
+const TL = '┌', HOR = '─', TR = '┐';
+const BL = '└', VER = '│', BR = '┘';
+const CROSS = '┼';
+
+//const CRASH = '◙';
+//const CRASH = '╳';
+const CRASH = '▉';
+const CART_UP = '▲';
+const CART_LEFT = '◀';
+const CART_RIGHT = '▶';
+const CART_DOWN = '▼';
 
 export class Simulation {
+    constructor(public term: typeof Terminal) {}
     iteration = 0;
     boxes = new Array<Box>();
     carts = new Array<Cart>();
 
-    crashed = false;
-    firstCrashLocation = '';
+    crashLocations = new Array<string>();
     rowOffset = 2;
+
+    numRows: number;
+    numCols: number;
+
+    crashJustHappened(): boolean { return this.carts.some(c => c.hide !== c.crashed); }
+    getNumRemainingCarts(): number { return this.carts.filter(c => !c.crashed).length; }
+    getAnyCrashedCarts(): boolean { return this.carts.some(c => c.crashed); }
 
     parseInput(lines: Array<string>) {
         // the grid has top-left/bottom-right pieces and top-right/bottom-left pieces
@@ -20,6 +43,8 @@ export class Simulation {
         // if you find the first top-right/bottom-left piece in a row after the top-left piece, you've hit the corner
         // similar for bottom-right (then bottom-left is just calculated)
         let gridParser = new GridParser(lines, [/\//g, /\\/g, /[\^v<>]/g, /\+/g]);
+        this.numRows = gridParser.grid.length;
+        this.numCols = gridParser.grid.map(row => row.length).reduce((acc, len) => acc = Math.max(acc, len), 0);
 
         // find all the boxes first
         // some of these "top-left" entries can be "bottom-right", but we will remove them as we're building boxes
@@ -53,7 +78,7 @@ export class Simulation {
         this.boxes.forEach((box, ind) => {
             for (let pInd=ind+1; pInd<this.boxes.length; pInd++) {
                 box.intersect(this.boxes[pInd]);
-                this.boxes[pInd].intersect(box);
+                //this.boxes[pInd].intersect(box);
             }
         })
 
@@ -70,18 +95,13 @@ export class Simulation {
                 return cart;
             });
     
-        this.carts.forEach(cart => {
-            term(`Currently have cart ${cart.id} at ${cart.col},${cart.row} facing ${Direction[cart.dir]} (on box ${cart.currentBox.toString()})\n`)
-        })
-
         this.background = Array.from({length: lines.length}, _ => new Array<string>(lines[0].length));
-
     }
 
     background: Array<Array<string>>;
     backgroundPrepared = false;
 
-    drawScreen(startRow=0, startCol=0, endRow=Infinity, endCol=Infinity) {
+    prepareBackground() {
         //term.fullscreen(true);
         //term.moveTo(1, 1);
         //term("Hi");
@@ -95,14 +115,17 @@ export class Simulation {
         screenBuffer.draw();
         */
         if (!this.backgroundPrepared) {
-            term.saveCursor();
-            term.moveTo(1, 1); term(`Iteration number: ${this.iteration}`);
+            this.background = Array.from({length: this.numRows}, _ => ''.padStart(this.numCols).split(''));
             this.boxes.forEach(box => {
-                term.moveTo(box.left+1, box.top+this.rowOffset); term('╔'.padEnd(box.right-box.left, '═') + '╗');
-                term.moveTo(box.left+1, box.bottom+this.rowOffset); term('╚'.padEnd(box.right-box.left, '═') + '╝');
-                for (let n = 1; n < box.bottom-box.top; n++) {
-                    term.moveTo(box.left+1, box.top+this.rowOffset+n); term('║');
-                    term.moveTo(box.right+1, box.top+this.rowOffset+n); term('║');
+                this.background[box.top   ][box.left] = TL; this.background[box.top   ][box.right] = TR;
+                this.background[box.bottom][box.left] = BL; this.background[box.bottom][box.right] = BR;
+                for (let n = box.left+1; n < box.right; n++) {
+                    this.background[box.top   ][n] = HOR;
+                    this.background[box.bottom][n] = HOR;
+                }
+                for (let n = box.top+1; n < box.bottom; n++) {
+                    this.background[n][box.left ] = VER;
+                    this.background[n][box.right] = VER;
                 }
             })
 
@@ -110,57 +133,71 @@ export class Simulation {
             this.boxes.forEach(box => {
                 Array.from(box.intersections.keys()).forEach(intersection => {
                     let [row, col] = intersection.split(',').map(Number)
-                    term.moveTo(col+1, row+this.rowOffset); term('╬')
+                    this.background[row][col] = CROSS;
                 })
             })
             //term.moveTo(1, 2); term(viewport.map(row => row.join('')).join('\n'));
-            term.restoreCursor();
 
             this.backgroundPrepared = true;
         }
     }
 
-/*
-▲ going up
-◄ going left
-► going right
-▼ going down
-◥ turning from right to up (or up to right)
-◤ turning from left to up (or up to left)
-◣ turning from left to down (or down to left)
-◢ turning from right to down (or down to right)
-*/
-    drawCarts(startRow=0, startCol=0, endRow=Infinity, endCol=Infinity) {
-        term.saveCursor();
-        this.carts.sort((a, b) => (a.row === b.row)?a.col-b.col:a.row-b.row).forEach(cart => {
-            //term(`Currently have cart ${cart.id} at ${cart.col},${cart.row} facing ${Direction[cart.dir]} (on box ${cart.currentBox.toString()})\n`)
-            let c: string;
-            if (cart.dir === Direction.UP)    c = '▲';
-            if (cart.dir === Direction.LEFT)  c = '◄';
-            if (cart.dir === Direction.RIGHT) c = '►';
-            if (cart.dir === Direction.DOWN)  c = '▼';
-            term.moveTo(cart.col+1, cart.row+this.rowOffset); term(c);
-        });
-        term.restoreCursor();
+    drawScreen(outputRow=1, outputCol=1, showGrid=true, startRow=0, startCol=0, height, width) {
+        this.term.saveCursor();
+        this.term.moveTo(outputCol, outputRow); this.term(`Iteration number: ${this.iteration} Crashes: ${this.crashLocations.join(' / ')}`);
+        if (showGrid) {
+            startRow = Math.max(startRow, 0);
+            startCol = Math.max(startCol, 0);
+            let endRow = Math.min(startRow+height, this.numRows);
+            let endCol = Math.min(startCol+width, this.numCols);
+            if (endRow - startRow < height) startRow = Math.max(0, endRow-height);
+            if (endCol - startCol < width)  startCol = Math.max(0, endCol-width);
+            for (let row=startRow; row<endRow; row++) {
+                let rowArr = this.background[row].slice(startCol, endCol);
+                this.carts.filter(cart => !cart.hide && cart.row === row && startCol <= cart.col && cart.col <= endCol).forEach(cart => {
+                    let c: string;
+                    if (cart.dir === Direction.UP)    c = CART_UP;
+                    if (cart.dir === Direction.LEFT)  c = CART_LEFT;
+                    if (cart.dir === Direction.RIGHT) c = CART_RIGHT;
+                    if (cart.dir === Direction.DOWN)  c = CART_DOWN;
+                    if (cart.crashed) c = CRASH;
+                    rowArr[cart.col-startCol] = c;
+                })
+                this.term.moveTo(outputCol, outputRow + (row-startRow) + 1).eraseLineAfter();
+                this.term(rowArr.join(''));
+            }
+        }
+        this.term.restoreCursor();
     }
 
-    debugCarts() {
-        this.carts.sort((a, b) => (a.row === b.row)?a.col-b.col:a.row-b.row).forEach(cart => {
-            term(`Currently have cart ${cart.id} at ${cart.col},${cart.row} facing ${Direction[cart.dir]} (on box ${cart.currentBox.toString()})\n`)
+    debugCarts(outputRow=1, outputCol=1) {
+        this.term.saveCursor();
+        this.carts.sort((a, b) => a.id - b.id).forEach((cart, ind) => {
+            this.term.moveTo(outputCol, outputRow+ind);
+            if (cart.crashed) {
+                this.term(`#[%[L2]s]: CRASHED - `, cart.id);
+            } else {
+                this.term(`#[%[L2]s]: at %[L3]s,%[L3]s facing %[L5]s (on box %[L17]s)`, cart.id, cart.col, cart.row, Direction[cart.dir], cart.currentBox.toString());
+            }
         });
+        this.term.restoreCursor();
     }
 
     moveCarts() {
+        this.carts.forEach(cart => cart.hide = cart.crashed);
+
         // sort carts by row, then by column
-        console.debug(`Iteration: ${this.iteration}`)
         this.carts.sort((a, b) => (a.row === b.row)?a.col-b.col:a.row-b.row).forEach(cart => {
-            cart.move();
-            this.carts.filter(c => c.id !== cart.id).forEach(c => {
-                if (c.row === cart.row && c.col === cart.col) {
-                    this.crashed = true;
-                    console.debug(`Crash!! Cart #${cart.id} and #${c.id} at ${cart.col},${cart.row}`)
-                }
-            })
+            if (!cart.crashed) {
+                cart.move();
+                this.carts.filter(c => !c.crashed && c.id !== cart.id).forEach(c => {
+                    if (c.row === cart.row && c.col === cart.col) {
+                        cart.crashed = true;
+                        c.crashed = true;
+                        this.crashLocations.push(`[${this.iteration}]:${cart.col},${cart.row}`);
+                    }
+                })
+            }
         });
         this.iteration++;
     }
@@ -168,50 +205,46 @@ export class Simulation {
 
 export class Box {
     moveAlong(row: number, col: number, dir: Direction): [number, number, Direction] {
-             if (row === this.top    && col === this.left  && dir === Direction.UP)    return [row, col+1, Direction.RIGHT];
-        else if (row === this.top    && col === this.left  && dir === Direction.LEFT)  return [row+1, col, Direction.DOWN];
-        else if (row === this.bottom && col === this.left  && dir === Direction.DOWN)  return [row, col+1, Direction.RIGHT];
-        else if (row === this.bottom && col === this.left  && dir === Direction.LEFT)  return [row-1, col, Direction.UP];
-        else if (row === this.top    && col === this.right && dir === Direction.UP)    return [row, col-1, Direction.LEFT];
-        else if (row === this.top    && col === this.right && dir === Direction.RIGHT) return [row+1, col, Direction.DOWN];
-        else if (row === this.bottom && col === this.right && dir === Direction.DOWN)  return [row, col-1, Direction.LEFT];
-        else if (row === this.bottom && col === this.right && dir === Direction.RIGHT) return [row-1, col, Direction.UP];
-        else if (dir === Direction.UP)    return [row-1, col, dir];
-        else if (dir === Direction.LEFT)  return [row, col-1, dir];
-        else if (dir === Direction.RIGHT) return [row, col+1, dir];
-        else if (dir === Direction.DOWN)  return [row+1, col, dir];
-        throw new Error(`Bad directions`)
+             if (dir === Direction.UP)    row--;
+        else if (dir === Direction.LEFT)  col--;
+        else if (dir === Direction.RIGHT) col++;
+        else if (dir === Direction.DOWN)  row++;
+
+             if (row === this.top    && col === this.left  && dir === Direction.UP)    dir = Direction.RIGHT;
+        else if (row === this.top    && col === this.left  && dir === Direction.LEFT)  dir = Direction.DOWN;
+        else if (row === this.bottom && col === this.left  && dir === Direction.DOWN)  dir = Direction.RIGHT;
+        else if (row === this.bottom && col === this.left  && dir === Direction.LEFT)  dir = Direction.UP;
+        else if (row === this.top    && col === this.right && dir === Direction.UP)    dir = Direction.LEFT;
+        else if (row === this.top    && col === this.right && dir === Direction.RIGHT) dir = Direction.DOWN;
+        else if (row === this.bottom && col === this.right && dir === Direction.DOWN)  dir = Direction.LEFT;
+        else if (row === this.bottom && col === this.right && dir === Direction.RIGHT) dir = Direction.UP;
+
+        return [row, col, dir];
     }
     constructor(public top: number, public left: number, public right: number, public bottom: number) {}
     intersections = new Map<string, Box>(); // "row,col"
 
     intersect(pBox: Box) {
-        this.intersectHLine(pBox, pBox.top,    pBox.left,  pBox.right); // top of box
-        this.intersectVLine(pBox, pBox.left,   pBox.top,   pBox.bottom);  // left side
+        this.intersectHLine(pBox, pBox.top,    pBox.left,  pBox.right);  // top of box
+        this.intersectVLine(pBox, pBox.left,   pBox.top,   pBox.bottom); // left side
         this.intersectVLine(pBox, pBox.right,  pBox.top,   pBox.bottom); // right side
-        this.intersectHLine(pBox, pBox.bottom, pBox.left,  pBox.right); // bottom of box
+        this.intersectHLine(pBox, pBox.bottom, pBox.left,  pBox.right);  // bottom of box
     }
 
     intersectHLine(pBox: Box, row: number, left: number, right: number) {
         if (this.top < row && row < this.bottom) {
-            let coord = '';
-            if        (left < this.left && this.left < right) {
-                coord = `${row},${this.left}`;
-            } else if (left < this.right && this.right < right) {
-                coord = `${row},${this.right}`;
-            }
-            if (coord) this.intersections.set(coord, pBox);
+            let coords = new Array<string>();
+            if (left < this.left  && this.left  < right) coords.push(`${row},${this.left}`);
+            if (left < this.right && this.right < right) coords.push(`${row},${this.right}`);
+            coords.forEach(c => { this.intersections.set(c, pBox); pBox.intersections.set(c, this); })
         }
     }
     intersectVLine(pBox: Box, col: number, top: number, bottom: number) {
         if (this.left < col && col < this.right) {
-            let coord = '';
-            if        (top < this.top && this.top < bottom) {
-                coord = `${this.top},${col}`;
-            } else if (top < this.bottom && this.bottom < bottom) {
-                coord = `${this.bottom},${col}`;
-            }
-            if (coord) this.intersections.set(coord, pBox);
+            let coords = new Array<string>();
+            if (top < this.top    && this.top    < bottom) coords.push(`${this.top},${col}`);
+            if (top < this.bottom && this.bottom < bottom) coords.push(`${this.bottom},${col}`);
+            coords.forEach(c => { this.intersections.set(c, pBox); pBox.intersections.set(c, this); })
         }
     }
 
@@ -235,10 +268,14 @@ export class Cart {
     }
     dir: Direction;
     intersectionCounter = 0;
-    replacedCharacter: ' ';
+    crashed = false;
+    hide = false;
 
     move() {
-        let key = `${this.row},${this.col}`
+        [this.row, this.col, this.dir] = this.currentBox.moveAlong(this.row, this.col, this.dir);
+
+        let key = `${this.row},${this.col}`;
+
         if (this.currentBox.intersections.has(key)) {
             let newDir = this.dir + dirOffset[this.intersectionCounter]
             newDir = ((newDir%4)+4)%4;
@@ -247,10 +284,11 @@ export class Cart {
                 // jump to a new box
                 this.dir = newDir;
                 this.currentBox = this.currentBox.intersections.get(key);
-                console.debug(`Cart #${this.id} has jumped to a new box`)
             }
         }
+    }
 
-        [this.row, this.col, this.dir] = this.currentBox.moveAlong(this.row, this.col, this.dir);
+    toString(): string {
+        return `Cart #${this.id} at ${this.col},${this.row}`
     }
 }
