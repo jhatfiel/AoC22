@@ -74,41 +74,50 @@ export class Simulation {
             term(`Currently have cart ${cart.id} at ${cart.col},${cart.row} facing ${Direction[cart.dir]} (on box ${cart.currentBox.toString()})\n`)
         })
 
+        this.background = Array.from({length: lines.length}, _ => new Array<string>(lines[0].length));
+
     }
 
-    drawScreen() {
+    background: Array<Array<string>>;
+    backgroundPrepared = false;
+
+    drawScreen(startRow=0, startCol=0, endRow=Infinity, endCol=Infinity) {
         //term.fullscreen(true);
         //term.moveTo(1, 1);
         //term("Hi");
         //setTimeout(_ => {term.fullscreen(false);}, 5000);
 
         // draw the boxes:
-        //let screenBuffer = new ScreenBuffer({dst: term, x: 1, y: 1, noFill: true});
-        term.saveCursor();
-        term.moveTo(1, 1); term(`Iteration number: ${this.iteration}`);
-        this.boxes.forEach(box => {
-            /*
-            term.moveTo(box.left, box.top); term('╭')
-            term.moveTo(box.left, box.bottom); term('╰')
-            term.moveTo(box.right, box.top); term('╮')
-            term.moveTo(box.right, box.bottom); term('╯')
-            */
-            term.moveTo(box.left+1, box.top+this.rowOffset); term('╔'.padEnd(box.right-box.left, '═') + '╗');
-            term.moveTo(box.left+1, box.bottom+this.rowOffset); term('╚'.padEnd(box.right-box.left, '═') + '╝');
-            for (let n = 1; n < box.bottom-box.top; n++) {
-                term.moveTo(box.left+1, box.top+this.rowOffset+n); term('║');
-                term.moveTo(box.right+1, box.top+this.rowOffset+n); term('║');
-            }
-        })
-
-        // draw the intersections last because they overwrite the tracks
-        this.boxes.forEach(box => {
-            Array.from(box.intersections.keys()).forEach(intersection => {
-                let [row, col] = intersection.split(',').map(Number)
-                term.moveTo(col+1, row+this.rowOffset); term('╬')
+        /*
+        let screenBuffer = new ScreenBuffer({dst: term, x: 1, y: 1, noFill: true});
+        screenBuffer.moveTo(1, 1);
+        screenBuffer.put({}, 'Testing');
+        screenBuffer.draw();
+        */
+        if (!this.backgroundPrepared) {
+            term.saveCursor();
+            term.moveTo(1, 1); term(`Iteration number: ${this.iteration}`);
+            this.boxes.forEach(box => {
+                term.moveTo(box.left+1, box.top+this.rowOffset); term('╔'.padEnd(box.right-box.left, '═') + '╗');
+                term.moveTo(box.left+1, box.bottom+this.rowOffset); term('╚'.padEnd(box.right-box.left, '═') + '╝');
+                for (let n = 1; n < box.bottom-box.top; n++) {
+                    term.moveTo(box.left+1, box.top+this.rowOffset+n); term('║');
+                    term.moveTo(box.right+1, box.top+this.rowOffset+n); term('║');
+                }
             })
-        })
-        term.restoreCursor();
+
+            // draw the intersections last because they overwrite the tracks
+            this.boxes.forEach(box => {
+                Array.from(box.intersections.keys()).forEach(intersection => {
+                    let [row, col] = intersection.split(',').map(Number)
+                    term.moveTo(col+1, row+this.rowOffset); term('╬')
+                })
+            })
+            //term.moveTo(1, 2); term(viewport.map(row => row.join('')).join('\n'));
+            term.restoreCursor();
+
+            this.backgroundPrepared = true;
+        }
     }
 
 /*
@@ -121,7 +130,7 @@ export class Simulation {
 ◣ turning from left to down (or down to left)
 ◢ turning from right to down (or down to right)
 */
-    drawCarts() {
+    drawCarts(startRow=0, startCol=0, endRow=Infinity, endCol=Infinity) {
         term.saveCursor();
         this.carts.sort((a, b) => (a.row === b.row)?a.col-b.col:a.row-b.row).forEach(cart => {
             //term(`Currently have cart ${cart.id} at ${cart.col},${cart.row} facing ${Direction[cart.dir]} (on box ${cart.currentBox.toString()})\n`)
@@ -135,14 +144,23 @@ export class Simulation {
         term.restoreCursor();
     }
 
+    debugCarts() {
+        this.carts.sort((a, b) => (a.row === b.row)?a.col-b.col:a.row-b.row).forEach(cart => {
+            term(`Currently have cart ${cart.id} at ${cart.col},${cart.row} facing ${Direction[cart.dir]} (on box ${cart.currentBox.toString()})\n`)
+        });
+    }
+
     moveCarts() {
         // sort carts by row, then by column
+        console.debug(`Iteration: ${this.iteration}`)
         this.carts.sort((a, b) => (a.row === b.row)?a.col-b.col:a.row-b.row).forEach(cart => {
             cart.move();
-            if (this.carts.filter(c => c.id !== cart.id).some(c => c.row === cart.row && c.col === cart.col)) {
-                this.crashed = true;
-                console.debug(`Crash!! ${cart.col},${cart.row}`)
-            }
+            this.carts.filter(c => c.id !== cart.id).forEach(c => {
+                if (c.row === cart.row && c.col === cart.col) {
+                    this.crashed = true;
+                    console.debug(`Crash!! Cart #${cart.id} and #${c.id} at ${cart.col},${cart.row}`)
+                }
+            })
         });
         this.iteration++;
     }
@@ -229,6 +247,7 @@ export class Cart {
                 // jump to a new box
                 this.dir = newDir;
                 this.currentBox = this.currentBox.intersections.get(key);
+                console.debug(`Cart #${this.id} has jumped to a new box`)
             }
         }
 

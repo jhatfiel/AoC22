@@ -9,11 +9,15 @@ await puzzle.run()
         sim.parseInput(lines);
 
         // run the simulation now
+        //sim.drawScreen();
+        //sim.drawCarts();
+
         while (!sim.crashed) {
+            sim.moveCarts();
+            sim.debugCarts();
+
             //sim.drawScreen();
             //sim.drawCarts();
-
-            sim.moveCarts();
 
             //puzzle.waitFor(1000);
         }
