@@ -10,9 +10,9 @@ await puzzle.run()
         let potGearArr = gridParser.matches.filter(m => m.typeIndex === 1);
 
         potGearArr.forEach(potGear => {
-            let neighbors = gridParser.getNeighbors(potGear, 0).map(gpm => Number(gpm.value));
+            let neighbors = gridParser.getMatchNeighbors(potGear, 0).map(gpm => Number(gpm.value));
             if (neighbors.length === 2) {
-                console.debug(`Found a gear at ${potGear.row}, ${potGear.first} with neighbors ${neighbors}`)
+                console.debug(`Found a gear at ${potGear.y}, ${potGear.x} with neighbors ${neighbors}`)
                 total += neighbors[0] * neighbors[1];
             }
         })

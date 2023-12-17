@@ -2,30 +2,30 @@ import { GridParser } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle(process.argv[2]);
-let unusedRow = new Set<number>();
-let unusedCol = new Set<number>();
+let unusedY = new Set<number>();
+let unusedX = new Set<number>();
 
 await puzzle.run()
     .then((lines: Array<string>) => {
         let gridParser = new GridParser(lines, [/#/g]);
-        for (let row = 0; row<gridParser.grid.length; row++) {
-            unusedRow.add(row);
+        for (let y = 0; y<gridParser.grid.length; y++) {
+            unusedY.add(y);
         }
         for (let col = 0; col<gridParser.grid[0].length; col++) {
-            unusedCol.add(col);
+            unusedX.add(col);
         }
         gridParser.matches.forEach(m => {
             //console.debug(`Match:`, m)
-            unusedRow.delete(m.row);
-            unusedCol.delete(m.first);
+            unusedY.delete(m.y);
+            unusedX.delete(m.x);
         })
 
         gridParser.matches.forEach(m => {
-            let expandRows = Array.from(unusedRow.keys()).filter(ur => ur < m.row).length;
-            let expandCols = Array.from(unusedCol.keys()).filter(uc => uc < m.first).length;
-            m.row += expandRows;
-            m.first += expandCols;
-            m.last += expandCols;
+            let expandRows = Array.from(unusedY.keys()).filter(ur => ur < m.y).length;
+            let expandCols = Array.from(unusedX.keys()).filter(uc => uc < m.x).length;
+            m.y += expandRows;
+            m.x += expandCols;
+            m.xEnd += expandCols;
         });
 
         /*
@@ -38,7 +38,7 @@ await puzzle.run()
         let totalDistance = 0;
         gridParser.matches.forEach(g1 => {
             gridParser.matches.forEach(g2 => {
-                let d = Math.abs(g1.row - g2.row) + Math.abs(g1.first - g2.first);
+                let d = Math.abs(g1.y - g2.y) + Math.abs(g1.x - g2.x);
                 //console.debug(`find distance between ${JSON.stringify(g1)} and ${JSON.stringify(g2)} = ${d}`)
                 totalDistance += d;
             })

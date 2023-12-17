@@ -15,23 +15,23 @@ await puzzle.run()
             unusedCol.add(col);
         }
         gridParser.matches.forEach(m => {
-            unusedRow.delete(m.row);
-            unusedCol.delete(m.first);
+            unusedRow.delete(m.y);
+            unusedCol.delete(m.x);
         })
 
         let expansionSize = 999999;
         gridParser.matches.forEach(m => {
-            let expandRows = Array.from(unusedRow.keys()).filter(ur => ur < m.row).length;
-            let expandCols = Array.from(unusedCol.keys()).filter(uc => uc < m.first).length;
-            m.row += expandRows*expansionSize;
-            m.first += expandCols*expansionSize;
-            m.last += expandCols*expansionSize;
+            let expandRows = Array.from(unusedRow.keys()).filter(ur => ur < m.y).length;
+            let expandCols = Array.from(unusedCol.keys()).filter(uc => uc < m.x).length;
+            m.y += expandRows*expansionSize;
+            m.x += expandCols*expansionSize;
+            m.xEnd += expandCols*expansionSize;
         });
 
         let totalDistance = 0;
         gridParser.matches.forEach(g1 => {
             gridParser.matches.forEach(g2 => {
-                let d = Math.abs(g1.row - g2.row) + Math.abs(g1.first - g2.first);
+                let d = Math.abs(g1.y - g2.y) + Math.abs(g1.x - g2.x);
                 totalDistance += d;
             })
         })

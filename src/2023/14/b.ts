@@ -12,44 +12,44 @@ await puzzle.run()
         let cycleDetection = new CycleDetection();
         cycleDetection.logValue(generateKey(gp), calculateLoad(gp));
         for (let cycleIndex = 0; cycleIndex < MAX_CYCLES; cycleIndex++) {
-            // move north (row = row-1)
+            // move north (y = y-1)
             gp.matches.sort((a, b) => {
-                return a.row - b.row;
+                return a.y - b.y;
             }).forEach(m => {
-                while (m.row > 0 && gp.grid[m.row-1][m.first] === '.') {
-                    gp.grid[m.row][m.first] = '.'
-                    m.row--;
-                    gp.grid[m.row][m.first] = 'O'
+                while (m.y > 0 && gp.grid[m.y-1][m.x] === '.') {
+                    gp.grid[m.y][m.x] = '.'
+                    m.y--;
+                    gp.grid[m.y][m.x] = 'O'
                 }
             });
-            // move west (col = col-1)
+            // move west (x = x-1)
             gp.matches.sort((a, b) => {
-                return a.first - b.first
+                return a.x - b.x
             }).forEach(m => {
-                while (m.first > 0 && gp.grid[m.row][m.first-1] === '.') {
-                    gp.grid[m.row][m.first] = '.'
-                    m.first--;
-                    gp.grid[m.row][m.first] = 'O'
+                while (m.x > 0 && gp.grid[m.y][m.x-1] === '.') {
+                    gp.grid[m.y][m.x] = '.'
+                    m.x--;
+                    gp.grid[m.y][m.x] = 'O'
                 }
             });
-            // move south (row = row+1)
+            // move south (y = y+1)
             gp.matches.sort((a, b) => {
-                return b.row - a.row
+                return b.y - a.y
             }).forEach(m => {
-                while (m.row < gp.grid.length-1 && gp.grid[m.row+1][m.first] === '.') {
-                    gp.grid[m.row][m.first] = '.'
-                    m.row++;
-                    gp.grid[m.row][m.first] = 'O'
+                while (m.y < gp.grid.length-1 && gp.grid[m.y+1][m.x] === '.') {
+                    gp.grid[m.y][m.x] = '.'
+                    m.y++;
+                    gp.grid[m.y][m.x] = 'O'
                 }
             });
-            // move east (col = col+1)
+            // move east (x = x+1)
             gp.matches.sort((a, b) => {
-                return b.first - a.first;
+                return b.x - a.x;
             }).forEach(m => {
-                while (m.first < gp.grid[0].length && gp.grid[m.row][m.first+1] === '.') {
-                    gp.grid[m.row][m.first] = '.'
-                    m.first++;
-                    gp.grid[m.row][m.first] = 'O'
+                while (m.x < gp.grid[0].length && gp.grid[m.y][m.x+1] === '.') {
+                    gp.grid[m.y][m.x] = '.'
+                    m.x++;
+                    gp.grid[m.y][m.x] = 'O'
                 }
             });
 
@@ -67,5 +67,5 @@ function generateKey(gp: GridParser): string {
 }
 
 function calculateLoad(gp: GridParser): number {
-    return gp.matches.reduce((acc, m) => acc += gp.grid.length - m.row, 0);
+    return gp.matches.reduce((acc, m) => acc += gp.grid.length - m.y, 0);
 }

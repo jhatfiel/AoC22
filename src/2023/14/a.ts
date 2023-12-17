@@ -8,22 +8,15 @@ await puzzle.run()
         let totalLoad = 0;
         let gp = new GridParser(lines, [/O/g, /#/g]);
         gp.matches.filter(m => m.typeIndex === 0).forEach(m => {
-            while (m.row > 0 && gp.grid[m.row-1][m.first] === '.') {
-                m.row--;
-                gp.grid[m.row+1][m.first] = '.'
-                gp.grid[m.row][m.first] = 'O'
+            while (m.y > 0 && gp.grid[m.y-1][m.x] === '.') {
+                m.y--;
+                gp.grid[m.y+1][m.x] = '.'
+                gp.grid[m.y][m.x] = 'O'
             }
         });
-        debugGrid(gp.grid);
+        gp.debugGrid();
         gp.matches.filter(m => m.typeIndex===0).forEach(m => {
-            totalLoad += gp.grid.length - m.row;
+            totalLoad += gp.grid.length - m.y;
         });
         console.log(`Total load: ${totalLoad}`);
     });
-
-function debugGrid(grid: Array<Array<string>>) {
-    grid.forEach(row => {
-        console.debug(row.join(''))
-    })
-
-}
