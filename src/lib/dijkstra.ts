@@ -31,13 +31,13 @@ export class Dijkstra {
         let unvisited = Array.from(this.nodes);
         let distanceTo = new Map<string, number>();
         let parent = new Map<string, string>();
-        this.nodes.forEach((n) => distanceTo.set(n, Infinity));
+        //this.nodes.forEach((n) => distanceTo.set(n, Infinity));
         this.nodes.forEach((n) => parent.set(n, ''));
         this.nodes.forEach((n) => fromCache.set(n, new Array<string>()));
 
         distanceTo.set(from, 0);
         unvisited.reverse();
-        unvisited.sort((a, b) => { return distanceTo.get(b)! - distanceTo.get(a)! })
+        //unvisited.sort((a, b) => { return distanceTo.get(b)! - distanceTo.get(a)! })
         let lastDistance = 0;
 
         let prevNdx = unvisited.length;
@@ -47,13 +47,13 @@ export class Dijkstra {
             let nearestUnvisited: string|undefined = unvisited.pop();
             if (!nearestUnvisited) break;
 
-            let nearestDistance = distanceTo.get(nearestUnvisited)!;
+            let nearestDistance = distanceTo.get(nearestUnvisited) ?? Infinity;
             lastDistance = nearestDistance;
             //console.log(`Working with ${nearestUnvisited}[${nearestDistance}]`);
 
             // set the distance for all its neighbors
             this.getNeighbors(nearestUnvisited).forEach((d, n) => {
-                let currentDistance = distanceTo.get(n);
+                let currentDistance = distanceTo.get(n) ?? Infinity;
                 let newDistance = nearestDistance+d;
                 if (currentDistance !== undefined && currentDistance > newDistance) {
                     //if (currentDistance < Infinity) console.log(`!!!!!!!!!!!!!!!!!!!!!! -------------- Improved ${n} from ${currentDistance} to ${newDistance}`)
@@ -63,8 +63,8 @@ export class Dijkstra {
                         // find the new correct place for this node (based on placement of last node)
                         let newNdx = prevNdx;
                         if (newNdx > unvisited.length) newNdx = unvisited.length;
-                        while (distanceTo.get(unvisited[newNdx-1])! < newDistance) newNdx--;
-                        while (distanceTo.get(unvisited[newNdx+1])! > newDistance) newNdx++;
+                        while (distanceTo.get(unvisited[newNdx-1]) ?? Infinity < newDistance) newNdx--;
+                        while (distanceTo.get(unvisited[newNdx+1]) ?? Infinity > newDistance) newNdx++;
                         //if (distanceTo.get(unvisited[newNdx])! > newDistance) { console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@ --------------- BAD newNdx`)}
                         if (ndx !== newNdx) {
                             //console.log(`----------------------------------------Moving ${n}[${newDistance}] to ${newNdx}(${ndx}) ${unvisited.filter((n) => Number.isFinite(distanceTo.get(n))).map((n) => `${n}[${distanceTo.get(n)}]`).join(',')}${unvisited.length}`);
@@ -81,17 +81,16 @@ export class Dijkstra {
                 }
             })
 
-            // store the result
-            let result = new Array<string>();
-            let trace = parent.get(nearestUnvisited);
-            while (trace !== undefined && trace !== '') {
-                result.push(trace);
-                trace = parent.get(trace);
-            }
-            fromCache.set(nearestUnvisited, result.reverse());
             if (nearestUnvisited === to) break;
         }
 
-        return fromCache.get(to)!;
+        // store the result
+        let result = new Array<string>();
+        let trace = parent.get(to);
+        while (trace !== undefined && trace !== '') {
+            result.push(trace);
+            trace = parent.get(trace);
+        }
+        return result.reverse();
     }
 }
