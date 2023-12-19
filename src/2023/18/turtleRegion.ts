@@ -15,6 +15,7 @@ export class TurtleRegion<T = number> {
     move(dir: string, len: number, value: T) {
         if (PAIR_RIGHT.get(this.lastDir) === dir) this.rTurns++;
         if (PAIR_LEFT.get(this.lastDir) === dir) this.lTurns++;
+        this.lastDir = dir;
 
         let rp = {x: this.pos.x, y: this.pos.y}; PairMove(rp, PAIR_RIGHT.get(dir));
         let lp = {x: this.pos.x, y: this.pos.y}; PairMove(lp, PAIR_LEFT.get(dir));
@@ -83,7 +84,41 @@ export class TurtleRegion<T = number> {
         }
     }
 
-    fill() {
+    fill(): Map<string, T> {
+        this.normalize();
+        let inside: Map<string, T>;
+        if (this.rTurns > this.lTurns) {
+            // take all of the rSide cells and flood fill them
+            inside = this.rSide;
+        } else {
+            // take all of the lSide cells and flood fill them
+            inside = this.lSide;
+        }
 
+        let toProcess = inside;
+
+        while (toProcess.size) {
+            let newProcess = new Map<string, T>();
+
+            toProcess.forEach((v, k) => {
+                inside.set(k, v);
+                let up = PairFromKey(k); PairMove(up, 'U');
+                let dp = PairFromKey(k); PairMove(dp, 'D');
+                let rp = PairFromKey(k); PairMove(rp, 'R');
+                let lp = PairFromKey(k); PairMove(lp, 'L');
+
+                [up, dp, rp, lp].forEach(p => {
+                    let newKey = PairToKey(p);
+                    if (!inside.has(newKey) && !this.path.has(newKey)) {
+                        //console.debug(`New location to process: ${newKey}`);
+                        newProcess.set(newKey, v);
+                    }
+                })
+            })
+
+            toProcess = newProcess;
+        }
+
+        return inside;
     }
 }
