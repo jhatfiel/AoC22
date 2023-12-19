@@ -4,8 +4,12 @@ const puzzle = new Puzzle(process.argv[2]);
 
 await puzzle.run()
     .then((lines: Array<string>) => {
-        lines.forEach(l => {
-            console.log(l);
+        lines.forEach(line => {
+            let arr = line.split(' ');
+            let dir = arr[0];
+            let len = arr[1];
+            let color = arr[2].replace(/[()]/g, '');
+
+            console.debug(`${dir} ${len} ${color}`)
         });
-        console.log(lines.map(Number).reduce((acc, n) => acc+n, 0));
     });
