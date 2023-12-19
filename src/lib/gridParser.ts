@@ -15,6 +15,32 @@ export type GridParserMatch = {
 }
 
 export type Pair = {x: number, y: number};
+export const PAIR_MOVEMENT = new Map<string, Pair>()
+PAIR_MOVEMENT.set('U', {x:  0, y: -1});
+PAIR_MOVEMENT.set('R', {x:  1, y:  0});
+PAIR_MOVEMENT.set('D', {x:  0, y:  1});
+PAIR_MOVEMENT.set('L', {x: -1, y:  0});
+export const PAIR_RIGHT = new Map<string, string>()
+PAIR_RIGHT.set('U', 'R');
+PAIR_RIGHT.set('R', 'D');
+PAIR_RIGHT.set('D', 'L');
+PAIR_RIGHT.set('L', 'U');
+export const PAIR_LEFT = new Map<string, string>()
+PAIR_LEFT.set('U', 'L');
+PAIR_LEFT.set('R', 'U');
+PAIR_LEFT.set('D', 'R');
+PAIR_LEFT.set('L', 'D');
+export function PairToKey(p: Pair): string { return `${p.x},${p.y}`; }
+export function PairFromKey(s: string): Pair { const [x, y]=s.split(',').map(Number); return {x, y}; }
+export function PairMove(p: Pair, dir: string) {
+    const pm = PAIR_MOVEMENT.get(dir);
+    if (!pm) throw new Error(`Invalid direction specified for PairMove ${dir}`);
+    PairMoveBy(p, pm);
+}
+
+export function PairMoveBy(p: Pair, move: Pair) {
+    p.x += move.x; p.y += move.y;
+}
 
 export class GridParser {
     constructor(public lines: Array<string>, typeArr: Array<RegExp>) {
