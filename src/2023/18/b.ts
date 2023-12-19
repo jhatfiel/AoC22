@@ -9,12 +9,13 @@ await puzzle.run()
     .then((lines: Array<string>) => {
         lines.forEach(line => {
             let arr = line.split(' ');
-            let dir = arr[0];
-            let len = Number(arr[1]);
-            let color = parseInt(arr[2].replace(/[()#]/g, ''), 16);
+            let color = arr[2].replace(/[()#]/g, '');
+            let dirIndex = Number(color.substring(5));
+            let dir = 'RDLU'.substring(dirIndex, dirIndex+1);
+            let len = parseInt(color.substring(0, 5), 16);
 
-            //console.debug(`${dir} ${len} ${color}`)
-            tr.move(dir, len, color);
+            console.debug(`${color} ${dir} ${len}`)
+            tr.move(dir, len, 1);
         });
 
         tr.normalize();
