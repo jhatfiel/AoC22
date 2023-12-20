@@ -15,6 +15,9 @@ export type GridParserMatch = {
 }
 
 export type Pair = {x: number, y: number};
+export type GridLine = {TL: Pair, BR: Pair};
+export type GridCorner = {H: GridLine, V: GridLine};
+
 export const PAIR_MOVEMENT = new Map<string, Pair>()
 PAIR_MOVEMENT.set('U', {x:  0, y: -1});
 PAIR_MOVEMENT.set('R', {x:  1, y:  0});
@@ -32,15 +35,17 @@ PAIR_LEFT.set('D', 'R');
 PAIR_LEFT.set('L', 'D');
 export function PairToKey(p: Pair): string { return `${p.x},${p.y}`; }
 export function PairFromKey(s: string): Pair { const [x, y]=s.split(',').map(Number); return {x, y}; }
-export function PairMove(p: Pair, dir: string) {
+export function PairMove(p: Pair, dir: string): Pair {
     const pm = PAIR_MOVEMENT.get(dir);
     if (!pm) throw new Error(`Invalid direction specified for PairMove ${dir}`);
-    PairMoveBy(p, pm);
+    return PairMoveBy(p, pm);
 }
 
-export function PairMoveBy(p: Pair, move: Pair) {
+export function PairMoveBy(p: Pair, move: Pair): Pair {
     p.x += move.x; p.y += move.y;
+    return p;
 }
+export function PairClone(p: Pair): Pair { return {x: this.pos.x, y: this.pos.y}; }
 
 export class GridParser {
     constructor(public lines: Array<string>, typeArr: Array<RegExp>) {
@@ -70,6 +75,17 @@ export class GridParser {
     public TR: Pair;
     public BL: Pair;
     public BR: Pair;
+
+    static MakeOrthogonalLine(p1: Pair, p2: Pair): GridLine {
+        if (p1.x < p2.x || p1.y < p2.y) return { TL: p1, BR: p2 };
+        else                            return { TL: p2, BR: p1 };
+    }
+
+    static MakeCorner(l1: GridLine, l2: GridLine): GridCorner {
+        if (l1.TL.x === l1.BR.x) return {H: l2, V: l1};
+        else                     return {H: l1, V: l2};
+
+    }
 
     getMatchNeighbors(gpm: GridParserMatch, typeIndex: number|undefined): Array<GridParserMatch> {
         let rowFirst = Math.max(0, gpm.y-1);
