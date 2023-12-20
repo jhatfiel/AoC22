@@ -16,6 +16,11 @@ abstract class Module {
     inputs = new Array<Module>();
     outputs = new Array<Module>();
     queue = new Array<Pulse>();
+    lastPulseReceived: Pulse;
+    watchState: boolean;
+    watchStateNum = 0;
+
+    setWatchState(v: boolean) { this.watchState = v; }
 
     addOutput(mod: Module) {
         this.outputs.push(mod);
@@ -27,6 +32,11 @@ abstract class Module {
     }
 
     receivePulse(pulse: Pulse) {
+        if (!this.watchStateNum && pulse.value === this.watchState) {
+            this.watchStateNum = numButtonPresses;
+            console.debug(`[${numButtonPresses.toString().padStart(6, ' ')}] ${this.name} received ${pulse.value} from ${pulse.from}`);
+        }
+        this.lastPulseReceived = pulse;
         this.queue.push(pulse);
     }
 
@@ -56,9 +66,7 @@ abstract class Module {
 }
 
 class OutputModule extends Module {
-    process(pulse: Pulse) {
-        if (pulse.value === false) console.log(`Button press: ${buttonPress} Received low: ${JSON.stringify(pulse)}`)
-    };
+    process(pulse: Pulse) { };
 }
 
 class BroadcasterModule extends Module {
@@ -95,12 +103,13 @@ class ConjunctionModule extends Module {
 }
 
 let modMap = new Map<string, Module>();
-let buttonPress = 0;
+let numButtonPresses = 0;
+let broadcasterModule = new BroadcasterModule('broadcaster');
+let outputModule: OutputModule;
+modMap.set('broadcaster', broadcasterModule);
 
 await puzzle.run()
     .then((lines: Array<string>) => {
-        let broadcasterModule = new BroadcasterModule('broadcaster');
-        modMap.set('broadcaster', broadcasterModule);
         lines.forEach(line => {
             //console.log(line);
             let arr = line.split(' -> ');
@@ -122,10 +131,10 @@ await puzzle.run()
             let mod = modMap.get(name);
             let outputArr = arr[1].split(', ');
             outputArr.forEach(outputName => {
-                //console.debug(`${name} processing outputName=${outputName}`)
                 let outputMod = modMap.get(outputName);
                 if (!outputMod) {
-                    outputMod = new OutputModule(outputName);
+                    outputModule = new OutputModule(outputName);
+                    outputMod= outputModule;
                     modMap.set(outputName, outputMod);
                 }
                 mod.addOutput(outputMod);
@@ -133,9 +142,21 @@ await puzzle.run()
             })
         })
 
+        generateGraph(modMap);
 
-        for (buttonPress=0; ; buttonPress++) {
-            //console.debug(`[${n.toString().padStart(3, ' ')}] Pressing button`);
+        let cqMod = modMap.get('cq'); cqMod.setWatchState(false);
+        let dcMod = modMap.get('dc'); dcMod.setWatchState(false);
+        let vpMod = modMap.get('vp'); vpMod.setWatchState(false);
+        let rvMod = modMap.get('rv'); rvMod.setWatchState(false);
+        // the answer is just the period of each of these getting a false - basically, when they all 
+        // get a low pulse, that sets ns to false, which sends a low pulse to rx
+        // rx is the output in my input
+        // rx is fed by ns
+        // ns is fed by cq, dc, vp, and rv
+
+        while (numButtonPresses < 1000 || cqMod.watchStateNum*dcMod.watchStateNum*vpMod.watchStateNum*rvMod.watchStateNum === 0) {
+            numButtonPresses++;
+            //if (numButtonPresses%10000 === 0) console.debug(`[${numButtonPresses.toString().padStart(3, ' ')}] Pressing button`);
             broadcasterModule.process({from: 'button', value: false});
             LOW_COUNT++; // broadcaster process
             while (Array.from(modMap.values()).some(mod => mod.hasPulses())) {
@@ -143,8 +164,43 @@ await puzzle.run()
                     mod.processPulses();
                 })
             }
+            if (numButtonPresses === 1000) {
+                console.debug(`LOW_COUNT=${LOW_COUNT} HIGH_COUNT=${HIGH_COUNT}`);
+                console.log(`Result = ${LOW_COUNT*HIGH_COUNT}`);
+            }
         }
 
-        console.debug(`LOW_COUNT=${LOW_COUNT} HIGH_COUNT=${HIGH_COUNT}`);
-        console.log(`Result = ${LOW_COUNT*HIGH_COUNT}`)
+        console.log(`Final numButtonPresses=${numButtonPresses}`);
+        console.log(`Watch states hit at: ${cqMod.watchStateNum}, ${dcMod.watchStateNum}, ${vpMod.watchStateNum}, ${rvMod.watchStateNum}`)
+        console.log(`LCM of numbers is ${Puzzle.lcm(cqMod.watchStateNum, Puzzle.lcm(dcMod.watchStateNum, Puzzle.lcm(vpMod.watchStateNum, rvMod.watchStateNum)))}`)
     });
+
+function generateGraph(modMap: Map<string, Module>) {
+    /**
+     * Generate input for https://edotor.net/
+     */
+    let link = 'https://edotor.net';
+    console.debug(`Generating input for ${link}`);
+    link += '/?engine=dot#digraph%7B%7B'
+    modMap.forEach((mod, name) => {
+        let shape = 'tripleoctagon';
+        if (mod instanceof BroadcasterModule) {
+            shape = 'doublecircle';
+        } else if (mod instanceof FlipFlopModule) {
+            shape = 'invtriangle';
+        } else if (mod instanceof ConjunctionModule) {
+            shape = 'invhouse';
+        }
+        link += `${name}%5Bshape%3D${shape}%5D`;
+    });
+    link += '%7D';
+    modMap.forEach((mod, name) => {
+        mod.outputs.forEach(outputMod => {
+            //console.debug(`${name} -> ${outputMod.name}`);
+            link += `${name}-%3E${outputMod.name};`
+        })
+    });
+    link += '%7D'
+    console.debug(link);
+
+}
