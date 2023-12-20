@@ -56,7 +56,9 @@ abstract class Module {
 }
 
 class OutputModule extends Module {
-    process(pulse: Pulse) {};
+    process(pulse: Pulse) {
+        if (pulse.value === false) console.log(`Button press: ${buttonPress} Received low: ${JSON.stringify(pulse)}`)
+    };
 }
 
 class BroadcasterModule extends Module {
@@ -93,13 +95,14 @@ class ConjunctionModule extends Module {
 }
 
 let modMap = new Map<string, Module>();
+let buttonPress = 0;
 
 await puzzle.run()
     .then((lines: Array<string>) => {
         let broadcasterModule = new BroadcasterModule('broadcaster');
         modMap.set('broadcaster', broadcasterModule);
         lines.forEach(line => {
-            console.log(line);
+            //console.log(line);
             let arr = line.split(' -> ');
             let name = arr[0];
             if (name.startsWith('%')) {
@@ -119,7 +122,7 @@ await puzzle.run()
             let mod = modMap.get(name);
             let outputArr = arr[1].split(', ');
             outputArr.forEach(outputName => {
-                console.debug(`${name} processing outputName=${outputName}`)
+                //console.debug(`${name} processing outputName=${outputName}`)
                 let outputMod = modMap.get(outputName);
                 if (!outputMod) {
                     outputMod = new OutputModule(outputName);
@@ -130,7 +133,8 @@ await puzzle.run()
             })
         })
 
-        for (let n=0; n<1000; n++) {
+
+        for (buttonPress=0; ; buttonPress++) {
             //console.debug(`[${n.toString().padStart(3, ' ')}] Pressing button`);
             broadcasterModule.process({from: 'button', value: false});
             LOW_COUNT++; // broadcaster process
