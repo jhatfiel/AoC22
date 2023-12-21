@@ -1,4 +1,4 @@
-import { createReadStream, readSync } from 'fs';
+import { createReadStream, readFileSync, readSync, writeFileSync } from 'fs';
 import { createInterface } from 'readline';
 
 export class Puzzle {
@@ -193,5 +193,13 @@ export class Puzzle {
                 }
             }
         }
+    }
+
+    cache(obj: any, fn: string) {
+        writeFileSync(fn, JSON.stringify(obj), 'utf-8');
+    }
+
+    restore(fn): any {
+        return JSON.parse(readFileSync(fn).toString());
     }
 }
