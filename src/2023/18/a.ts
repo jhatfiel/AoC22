@@ -1,9 +1,11 @@
+import { PairToKey } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
-import { TurtleRegion } from "./turtleRegion.js";
+import { RectagonToRectangles, generateGraph } from "./rectagonToRectangles.js";
+import { TurtleRectagon } from "./turtleRectagon.js";
 
 const puzzle = new Puzzle(process.argv[2]);
 
-let tr = new TurtleRegion();
+let tr = new TurtleRectagon();
 
 await puzzle.run()
     .then((lines: Array<string>) => {
@@ -11,16 +13,24 @@ await puzzle.run()
             let arr = line.split(' ');
             let dir = arr[0];
             let len = Number(arr[1]);
-            let color = parseInt(arr[2].replace(/[()#]/g, ''), 16);
 
             //console.debug(`${dir} ${len} ${color}`)
-            tr.move(dir, len, color);
+            tr.move(dir, len);
         });
 
-        tr.normalize();
-        let result = tr.fill();
-        //console.debug(Array.from(tr.path.keys()))
-        //console.debug(Array.from(result.keys()))
+        let rectagon = tr.getRectagon();
+        generateGraph(rectagon);
 
-        console.log(`Total size of lagoon = ${tr.path.size + result.size}`)
+        let rectangles = RectagonToRectangles(rectagon);
+
+        let totalArea = 0;
+        rectangles.forEach(r => {
+            let area = (r.BR.x - r.TL.x + 1) * (r.BR.y - r.TL.y + 1);
+            console.debug(`Rectangle: ${PairToKey(r.TL)} / ${PairToKey(r.BR)} = ${area}`);
+            totalArea += area;
+        })
+
+
+        console.log(`Total Area: ${totalArea}`);
+
     });

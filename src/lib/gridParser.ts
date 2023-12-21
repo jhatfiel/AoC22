@@ -16,7 +16,7 @@ export type GridParserMatch = {
 
 export type Pair = {x: number, y: number};
 export type GridLine = {TL: Pair, BR: Pair};
-export type GridCorner = {H: GridLine, V: GridLine};
+export type GridCorner = {corner: Pair, h: Pair, v: Pair};
 
 export const PAIR_MOVEMENT = new Map<string, Pair>()
 PAIR_MOVEMENT.set('U', {x:  0, y: -1});
@@ -45,7 +45,6 @@ export function PairMoveBy(p: Pair, move: Pair): Pair {
     p.x += move.x; p.y += move.y;
     return p;
 }
-export function PairClone(p: Pair): Pair { return {x: this.pos.x, y: this.pos.y}; }
 
 export class GridParser {
     constructor(public lines: Array<string>, typeArr: Array<RegExp>) {
@@ -82,9 +81,53 @@ export class GridParser {
     }
 
     static MakeCorner(l1: GridLine, l2: GridLine): GridCorner {
-        if (l1.TL.x === l1.BR.x) return {H: l2, V: l1};
-        else                     return {H: l1, V: l2};
+        // find which point is shared
+        let corner: Pair;
+        let h: Pair;
+        let v: Pair;
 
+        let hLine = (l1.TL.y === l1.BR.y)?l1:l2;
+        let vLine = (l1.TL.x === l1.BR.x)?l1:l2;
+
+        if (GridParser.PairEqual(hLine.BR, vLine.BR)) {
+            /**
+             *   |
+             * --+
+             */
+            corner = {...hLine.BR};
+            h = hLine.TL;
+            v = vLine.TL;
+        } else if (GridParser.PairEqual(hLine.BR, vLine.TL)) {
+            /**
+             * --+
+             *   |
+             */
+            corner = {...hLine.BR};
+            h = hLine.TL;
+            v = vLine.BR;
+        } else if (GridParser.PairEqual(hLine.TL, vLine.BR)) {
+            /**
+             * | 
+             * +--
+             */
+            corner = {...hLine.TL};
+            h = hLine.BR;
+            v = vLine.TL;
+        } else if (GridParser.PairEqual(hLine.TL, vLine.TL)) {
+            /**
+             * +--
+             * | 
+             */
+            corner = {...hLine.TL};
+            h = hLine.BR;
+            v = vLine.BR;
+        }
+
+        return {corner, h, v};
+    }
+
+    static PairEqual(a: Pair, b: Pair): boolean {
+        return a.x === b.x && a.y === b.y
     }
 
     getMatchNeighbors(gpm: GridParserMatch, typeIndex: number|undefined): Array<GridParserMatch> {
@@ -103,8 +146,8 @@ export class GridParser {
         let result = new Array<[Pair, Direction]>();
         if (p.x > 0)           result.push([{x: p.x-1, y: p.y}, Direction.LEFT]);
         if (p.y > 0)           result.push([{x: p.x, y: p.y-1}, Direction.UP]);
-        if (p.y < this.height) result.push([{x: p.x, y: p.y+1}, Direction.DOWN]);
-        if (p.x < this.width)  result.push([{x: p.x+1, y: p.y}, Direction.RIGHT]);
+        if (p.y+1 < this.height) result.push([{x: p.x, y: p.y+1}, Direction.DOWN]);
+        if (p.x+1 < this.width)  result.push([{x: p.x+1, y: p.y}, Direction.RIGHT]);
         return result;
     }
 
