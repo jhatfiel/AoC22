@@ -2,3 +2,4 @@ node_modules
 **/input
 **/*.js
 **/*.js.map
+**/cache/*
