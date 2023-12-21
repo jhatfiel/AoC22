@@ -21,7 +21,6 @@ await puzzle.run()
         });
 
         let rectagon = tr.getRectagon();
-        generateGraph(rectagon);
 
         let rectangles = RectagonToRectangles(rectagon);
 
@@ -33,5 +32,6 @@ await puzzle.run()
         })
 
         // 122103870175946 is too high
+        // 122103870019106 is too high
         console.log(`Total Area: ${totalArea}`);
     });
