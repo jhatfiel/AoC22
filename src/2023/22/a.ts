@@ -47,7 +47,9 @@ await puzzle.run()
     .then((lines: Array<string>) => {
         lines.forEach((line, index) => {
             let [x1, y1, z1, x2, y2, z2] = line.split(/[,\~]/g).map(Number);
-            bricks.push(new Brick(`Brick #${index}`, {x: x1, y: y1, z: z1}, {x: x2, y: y2, z: z2}));
+            let name = `Brick #${index}`;
+            //name = 'ABCDEFG'.charAt(index);
+            bricks.push(new Brick(name, {x: x1, y: y1, z: z1}, {x: x2, y: y2, z: z2}));
         });
         
         bricks.sort(sortBrick);
@@ -72,12 +74,12 @@ await puzzle.run()
             if (b.pMin.z === 1) { b.restingOn.push(ground); ground.supporting.push(b); }
         })
 
-        //debugBricks();
+        debugBricks();
 
         let canRemove = bricks.filter(b =>
             b.supporting.length === 0 || b.supporting.every(supportedBrick => supportedBrick.restingOn.length > 1)
         );
-        console.log(`Can remove: ${canRemove.length}`);
+        console.log(`Can remove: ${canRemove.length} [${canRemove.map(b => b.name)}]`);
         // 445 is too high
     });
 
