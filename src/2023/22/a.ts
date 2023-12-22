@@ -127,8 +127,8 @@ await puzzle.run()
                 //console.debug('toProcess: ', toProcess.map(b => b.name));
             }
             // If we remove this brick, every brick above it that is supported by ONLY this brick will fall, triggering the ones above them, etc
-            //console.debug(`Removing brick ${tryRemove.name} would cause ${fallers.map(b => b.name)} to fall`);
-            console.debug(`Removing brick ${tryRemove.name} would cause ${fallers.size-1} to fall`);
+            //console.debug(`Removing brick ${tryRemove.name} would cause ${Array.from(fallers.keys()).map(b => b.name)} to fall`);
+            //console.debug(`Removing brick ${tryRemove.name} would cause ${fallers.size-1} to fall`);
             totalFall += fallers.size-1;
         })
         console.log(`Total falling bricks: ${totalFall}`);
