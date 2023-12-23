@@ -38,6 +38,8 @@ await puzzle.run()
             }
         }
 
+        console.debug(`Total chokepoints: ${choke.size}`);
+
         // get distances between all pairs of chokepoints
         for (let ind = 0; ind < choke.size; ind++) {
             // get distance
