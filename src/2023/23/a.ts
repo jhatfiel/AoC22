@@ -1,4 +1,3 @@
-import { stripVTControlCharacters } from "util";
 import { GridParser, Pair, PairFromKey, PairToKey } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
@@ -6,24 +5,22 @@ const puzzle = new Puzzle(process.argv[2]);
 
 type State = {
     at:Pair,
-    seen: Set<string>,
-    finished: boolean
+    seen: Set<string>
 };
 function copyState(s: State) {
     return {
         at: {x: s.at.x, y: s.at.y},
-        seen: new Set(s.seen),
-        finished: s.finished
+        seen: new Set(s.seen)
     }
 }
 let states = new Array<State>();
-states.push({at: {x: 1, y: 0}, seen: new Set<string>(), finished: false});
+states.push({at: {x: 1, y: 0}, seen: new Set<string>()});
 
 await puzzle.run()
     .then((lines: Array<string>) => {
         let gp = new GridParser(lines, []);
 
-        let toProcess = states.filter(s => !s.finished);
+        let toProcess = [...states];
         while (toProcess.length) {
             //console.debug(`processing ${states.length} states (${toProcess.length} are unfinished)`)
             let state = toProcess.pop();
@@ -41,9 +38,7 @@ await puzzle.run()
                 })
                 .filter(n => !state.seen.has(PairToKey(n)));
 
-            if (neighbors.length === 0) {
-                state.finished = true;
-            } else {
+            if (neighbors.length > 0) {
                 if (neighbors.length > 1) {
                     for (let ns=1; ns<neighbors.length; ns++) {
                         let newState = copyState(state);
@@ -53,14 +48,15 @@ await puzzle.run()
                     }
                 }
                 state.at = {x: neighbors[0].x, y: neighbors[0].y};
+                toProcess.push(state);
             }
-            if (toProcess.length === 0) toProcess = states.filter(s => !s.finished);
         }
 
+        let longest = 0;
         states.forEach(s => {
             console.debug(`Path length: ${s.seen.size}`)
+            longest = Math.max(longest, s.seen.size-1);
         })
 
-        let longest = states.reduce((acc, l) => acc = Math.max(acc, l.seen.size-1), 0);
         console.log(`Longest path: ${longest}`);
     });
