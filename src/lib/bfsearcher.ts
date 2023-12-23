@@ -18,7 +18,8 @@ export class BFS_State<T=string> {
 
 export class BFS<T=string> {
     constructor(
-        private getNeighbors: (state: BFS_State<T>) => Map<T, number>
+        private getNeighbors: (state: BFS_State<T>) => Map<T, number>,
+        private keepFinalState: (state: BFS_State<T>) => boolean = (state:BFS_State<T>) => { return true; }
     ) {};
 
 
@@ -41,12 +42,16 @@ export class BFS<T=string> {
                         newState.at = n;
                         newState.cost += neighbors.get(n);
                         toProcess.push(newState);
-                        states.push(newState);
                     })
                 }
                 state.at = canVisit[0];
                 state.cost += neighbors.get(state.at);
                 toProcess.push(state);
+            } else {
+                // no new neighbors, see if we need to keep this one
+                if (this.keepFinalState(state)) {
+                    states.push(state);
+                }
             }
 
         }
