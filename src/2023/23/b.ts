@@ -1,4 +1,3 @@
-import { stripVTControlCharacters } from "util";
 import { GridParser, Pair, PairFromKey, PairToKey } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 

@@ -1,5 +1,5 @@
 import { BFS, BFS_State } from "../../lib/bfsearcher.js";
-import { GridParser, Pair, PairFromKey, PairToKey } from "../../lib/gridParser.js";
+import { GridParser, PairFromKey, PairToKey } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle(process.argv[2]);
@@ -37,8 +37,6 @@ function getNeighbors(state: BFS_State): Map<string, number> {
             if (ch === '^') return p.y === at.y-1;
             return true;
         })
-        .forEach(n => {
-            result.set(PairToKey(n), 1);
-        })
+        .forEach(n => result.set(PairToKey(n), 1));
     return result;
 }
