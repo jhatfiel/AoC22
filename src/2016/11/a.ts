@@ -1,5 +1,5 @@
 import { cross } from 'd3-array';
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 
 const TOP_FLOOR = 4;
 const dij = new Dijkstra(getNeighbors);
@@ -82,7 +82,7 @@ let combinations = [...floorsArray.map((f) => f.toString())];
 startKinds.forEach((k) => combinations = cross(combinations, floorCombinations, (a, b) => a.toString()+k+b))
 let validKeys = new Set();
 combinations.forEach((c) => {
-    if (new State(c).isValid()) { validKeys.add(c); dij.addNode(c); /*console.log(`Valid key: ${c}`)*/}
+    if (new State(c).isValid()) { validKeys.add(c); /*dij.addNode(c); console.log(`Valid key: ${c}`)*/}
 });
 console.timeEnd('combinations');
 console.log(`Combinations length: ${validKeys.size}`);
@@ -122,6 +122,7 @@ function getNeighbors(node: string): Map<string, number> {
     return result;
 }
 
-let path = dij.getShortestPath(startKey, endKey);
-console.log(path.join('/'));
-console.log(`Fewest steps: ${path.length}`);
+let pathsMap = dij.getShortestPaths(startKey, false, node => node === endKey, node => node === endKey);
+let path = pathsMap.get(endKey)[0];
+console.log(path.join(' / '));
+console.log(`Fewest steps: ${path.length-1}`);
