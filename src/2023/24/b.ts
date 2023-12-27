@@ -51,6 +51,11 @@ await puzzle.run()
     });
 
 /**
+ * doodles
+ * https://www.desmos.com/calculator/4gc00wyjiz 
+ * https://www.desmos.com/calculator/8y6dxskxdr
+ */
+/**
  * https://sagecell.sagemath.org/
  *
 var('Rx Ry Rz a b c d e Rxv Ryv Rzv')
