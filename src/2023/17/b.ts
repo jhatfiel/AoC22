@@ -1,6 +1,5 @@
-import { BFS } from "../../lib/bfs.js";
-import { Dijkstra } from "../../lib/dijkstra.js";
-import { GridParser, Pair, Direction } from "../../lib/gridParser.js";
+import { Dijkstra } from "../../lib/dijkstraBetter.js";
+import { GridParser, Direction } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle(process.argv[2]);
@@ -13,34 +12,24 @@ await puzzle.run()
 
         let dij = new Dijkstra(getNeighbors);
 
-        for (let x=0; x<gp.width; x++) {
-            for (let y=0; y<gp.height; y++) {
-                dij.addNode(gp.toKey({x, y}));
-
-                for (let n=1; n<=10; n++) {
-                    dij.addNode(gp.toKey({x, y}) + ',' + 'U'.padStart(n, 'U'));
-                    dij.addNode(gp.toKey({x, y}) + ',' + 'R'.padStart(n, 'R'));
-                    dij.addNode(gp.toKey({x, y}) + ',' + 'L'.padStart(n, 'L'));
-                    dij.addNode(gp.toKey({x, y}) + ',' + 'D'.padStart(n, 'D'));
-                }
+        let pathMap = dij.getShortestPaths(gp.toKey(gp.TL), false, node => !node.startsWith(gp.toKey(gp.BR)), node => node.startsWith(gp.toKey(gp.BR)));
+        //console.debug(`${Array.from(pathMap.keys()).join(' / ')}`);
+        let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(gp.toKey(gp.BR)))[0];
+        let paths = pathMap.get(finalNode);
+        paths.forEach(path => {
+            console.debug(`path: ${path.join(' / ')}`);
+            let totalHeat = 0;
+            if (path.length > 1) {
+                path.slice(1).forEach(piece => {
+                    let [xStr, yStr, history] = piece.split(',');
+                    let x = Number(xStr);
+                    let y = Number(yStr);
+                    let heat = Number(gp.grid[y][x]);
+                    totalHeat += heat;
+                })
             }
-        }
-
-        // > 20 minutes to run...
-        let path = dij.getShortestPath(gp.toKey(gp.TL), gp.toKey(gp.BR));
-        console.debug(path);
-        let totalHeat = 0;
-        if (path.length > 1) {
-            path.slice(1).forEach(piece => {
-                let [xStr, yStr, history] = piece.split(',');
-                let x = Number(xStr);
-                let y = Number(yStr);
-                let heat = Number(gp.grid[y][x]);
-                totalHeat += heat;
-            })
-        }
-        totalHeat += Number(gp.grid[gp.height-1][gp.width-1])
-        console.log(`Total heat: ${totalHeat}`)
+            console.log(`Total heat: ${totalHeat}`)
+        })
     });
 
 function getNeighbors(node: string): Map<string, number> {
@@ -55,10 +44,7 @@ function getNeighbors(node: string): Map<string, number> {
         let heat = Number(gp.grid[y][x]);
         if (history.startsWith(dirKey)) {
             // can't take more than 10 steps in the same direction
-            if (history.length <= 10) {
-                if (p.x === gp.BR.x && p.y === gp.BR.y) {
-                    result.set(`${p.x},${p.y}`, heat);
-                }
+            if (history.length < 10) {
                 result.set(`${p.x},${p.y},${history}${dirKey}`, heat);
             }
         } else {
@@ -71,9 +57,6 @@ function getNeighbors(node: string): Map<string, number> {
                     // going in a new direction
                     // but can't go in the opposite direction!
                     if (!history.startsWith(reverseKey)) result.set(`${p.x},${p.y},${dirKey}`, heat);
-                    if (p.x === gp.BR.x && p.y === gp.BR.y) {
-                        result.set(`${p.x},${p.y}`, heat);
-                    }
                 }
             }
         }
