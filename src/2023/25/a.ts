@@ -1,4 +1,5 @@
 import { BFS, BFS_State } from "../../lib/bfsearcher.js";
+import { Dijkstra } from "../../lib/dijkstraBetter.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle(process.argv[2]);
@@ -32,18 +33,55 @@ await puzzle.run()
         console.debug(`Number of nodes: ${graph.size}`);
         console.debug(`Number of edges: ${Array.from(graph.keys()).flatMap(n => Array.from(graph.get(n))).length}`);
         let edges = Array.from(graph.keys()).flatMap(n => Array.from(graph.get(n)).map(c => [n,c]));
-        console.debug(`edges: ${edges.map(([a1,a2])=>`${a1}-${a2}`).join('/')}`);
+        //console.debug(`edges: ${edges.map(([a1,a2])=>`${a1}-${a2}`).join('/')}`);
         //console.debug(`hfx connected: ${Array.from(graph.get('hfx'))}`)
         generateEdotorCode(graph);
 
-        // edges = edges.filter(e => {
-        // })
+        let nodes = Array.from(graph.keys());
+        edges.forEach(([a,b]) => {
+            edgeCount.set(`${a}.${b}`, 0);
+        })
+        nodes.forEach(node => {
+            let dij = new Dijkstra(getNeighbors);
+            let pathMaps = dij.getShortestPaths(node);
 
+            Array.from(pathMaps.keys()).forEach(to => {
+                let shortestPaths = pathMaps.get(to);
+                //console.debug(`Number of paths from ${node} to ${to}: ${shortestPaths.length}`);
+
+                shortestPaths.forEach(path => {
+                    let prevNode = path[0];
+
+                    path.slice(1).forEach(n => {
+                        let edge = `${prevNode}.${n}`;
+                        edgeCount.set(edge, edgeCount.get(edge)+1);
+                        edge = `${n}.${prevNode}`;
+                        edgeCount.set(edge, edgeCount.get(edge)+1);
+                        prevNode = n;
+                    })
+                })
+
+            });
+        })
+
+        Array.from(edgeCount.keys()).sort((a, b) => (edgeCount.get(a) === edgeCount.get(b))?0:((edgeCount.get(a) > edgeCount.get(b))?-1:1)).slice(0,6).forEach(edge => {
+            console.debug(`Cutting edge: ${edge}`);
+            let [n1, n2] = edge.split('.');
+            graph.get(n1).delete(n2);
+        })
+
+        let groups = getGroups(graph);
+        console.debug(`Num groups: ${groups.map(s => s.size)}`);
+        console.log(`Product of group sizes: ${groups.map(s => s.size).reduce((acc, s) => acc *= s, 1)}`);
+
+        // answer here...
+        /*
         graph.get('bbp').delete('dvr'); graph.get('dvr').delete('bbp');
         graph.get('jzv').delete('qvq'); graph.get('qvq').delete('jzv');
         graph.get('gtj').delete('tzj'); graph.get('tzj').delete('gtj');
         let groups = getGroups(graph);
         console.debug(`Num groups: ${groups.map(s => s.size)}`);
+        */
 
         // naive solution - try all triplets
         /*
@@ -81,9 +119,6 @@ await puzzle.run()
         //graph.forEach((_, k) => dij.addNode(k));
         //let path = dij.getShortestPath('bvb', 'qnr');
         /*
-        edges.forEach(([a,b]) => {
-            edgeCount.set(`${a}.${b}`, 0);
-        })
         let bfs = new BFS(getNeighbors, state => false);
 
         let nodes = Array.from(graph.keys());
@@ -116,9 +151,9 @@ await puzzle.run()
 
     });
 
-function getNeighbors(state: BFS_State): Map<string, number> {
+function getNeighbors(node: string): Map<string, number> {
     let result = new Map<string, number>();
-    graph.get(state.at).forEach((_, n) => result.set(n, 1));
+    graph.get(node).forEach((_, n) => result.set(n, 1));
     return result;
 }
 
