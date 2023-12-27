@@ -22,6 +22,44 @@ export class BFS<T=string> {
         private keepFinalState: (state: BFS_State<T>) => boolean = (state:BFS_State<T>) => { return true; }
     ) {};
 
+    getPathsBetweenNodes(startNode: T, endNode: T, stopOnFirst=false): Array<BFS_State<T>> {
+        let states = new Array<BFS_State<T>>(new BFS_State(startNode));
+        let toProcess = new Array<BFS_State<T>>(states[0]);
+
+        while (toProcess.length) {
+            let state = toProcess.pop();
+            state.visited.add(state.at);
+            if (state.at === endNode && stopOnFirst) {
+                return [state];
+            }
+
+            let neighbors = this.getNeighbors(state);
+
+            let canVisit = Array.from(neighbors.keys()).filter(n => !state.visited.has(n));
+
+            if (canVisit.length > 0) {
+                if (canVisit.length > 1) {
+                    canVisit.slice(1).forEach(n => {
+                        let newState = state.clone();
+                        newState.at = n;
+                        newState.cost += neighbors.get(n);
+                        toProcess.push(newState);
+                    })
+                }
+                state.at = canVisit[0];
+                state.cost += neighbors.get(state.at);
+                toProcess.push(state);
+            } else {
+                // no new neighbors, see if we need to keep this one
+                if (this.keepFinalState(state)) {
+                    states.push(state);
+                }
+            }
+
+        }
+
+        return states;
+    }
 
     getPathsFrom(startState: BFS_State<T>): Array<BFS_State<T>> {
         let states = new Array<BFS_State<T>>(startState);
