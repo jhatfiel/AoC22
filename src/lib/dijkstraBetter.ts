@@ -14,6 +14,7 @@ export class Dijkstra {
 
     // if to is passed, return immediately and don't keep other paths
     getShortestPaths(from: string, keepAllPaths = true, shouldStop: (node: string, distance: number) => boolean = (node, distance) => false, shouldRecord: (node: string) => boolean = _ => true): Map<string, Array<Array<string>>> {
+        if (this.cache.has(from)) return this.cache.get(from);
         let fromCache = new Map<string, Array<Array<string>>>();
         this.cache.set(from, fromCache);
 

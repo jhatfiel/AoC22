@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 
 class Valve {
     constructor(public name: string) {};
@@ -21,6 +21,7 @@ type State = {
 }
 
 class C {
+    dij = new Dijkstra(this.getNeighbors.bind(this));
     constructor() { }
 
     valves = new Map<string, Valve>();
@@ -67,19 +68,14 @@ class C {
             let triedSomething = false;
 
             // find the shortest path from this room to another unopened room that has a flow rate > 0, navigate there and turn it on
-            let dij = new Dijkstra(this.getNeighbors.bind(this),
-                (node: string) => {
-                    // bet: part 2 says you can't re-visit a room after turning on the valve
-                    return true;
-                });
-            this.valves.forEach((v, n) => dij.addNode(n));
 
             this.valves.forEach((v, n) => {
                 let newTime = time;
                 let newState = state;
                 // if this valve has flow and is unopened, find the shortest path there
                 if (n !== newState.cv && v.flowRate > 0 && !newState.opened.has(n)) {
-                    let shortestRoute = dij.getShortestPath(newState.cv, n);
+                    let pathsMap = this.dij.getShortestPaths(newState.cv, false);
+                    let shortestRoute = pathsMap.get(n)[0];
                     // simulate moving to this new room and continuing from there
                     if (shortestRoute.length + newTime < MAX_TIME-1) {
                         this.clog(`[${newTime}] [${newState.path}]: trying shortestRoute from ${newState.cv} to ${n}: ${shortestRoute}`);
@@ -90,12 +86,6 @@ class C {
                             newTime++;
                             this.clog(`[${newTime}] [${newState.path}]: ..... moved to ${nextRoom}, released=${newState.released}`);
                         })
-                        // make final move
-                        newState = this.copyState(newState);
-                        newState.path += n;
-                        newState.cv = n;
-                        newTime++;
-                        this.clog(`[${newTime}] [${newState.path}]: ..... moved to ${n}, released=${newState.released}`);
 
                         // and open this room's valve
                         newState = this.copyState(newState);
