@@ -1,4 +1,4 @@
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 import fs from 'fs';
 import readline from 'readline';
 
@@ -86,14 +86,9 @@ class C {
             this.unvisited.delete(nearestUnvisited);
         }
 
-        for (let row=0; row<this.height; row++) {
-            for (let col=0; col<this.width; col++) {
-                this.dij.addNode(this.makeKey(row, col));
-            }
-        }
-
-        let path = this.dij.getShortestPath(this.start, this.exit);
-        console.log(`Dijkstra path=${path.join('/')} length=${path.length}`);
+        let pathsMap = this.dij.getShortestPaths(this.start, false, node => node === this.exit, node => node === this.exit);
+        let path = pathsMap.get(this.exit)[0];
+        console.log(`Dijkstra path=${path.join(' / ')} length=${path.length-1}`);
 
         return this.distance.get(this.exit);
     }
