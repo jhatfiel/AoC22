@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 
 class Valve {
     constructor(public name: string) {};
@@ -63,7 +63,6 @@ class C {
         let state = {uPath: '', ePath: '', uCur: 'AA', eCur: 'AA', released: 0, opened: new Set<string>()};
 
         this.valves.forEach((v, n) => {
-            this.dij.addNode(n);
             this.maxFlow += v.flowRate;
         });
 
@@ -91,10 +90,10 @@ class C {
                              (state.eNext.length == 0 && state.eCur !== v.name)
                             )
                         ) {
-                        newState.uNext = this.dij.getShortestPath(state.uCur, v.name).slice(1);
+                        let pathsMap = this.dij.getShortestPaths(newState.uCur, false);
+                        newState.uNext = pathsMap.get(v.name)[0].slice(1);
                         // if we were to think about jumping ahead to when we get to the next location and turning on that valve, then "instantly" turn on all others, is it worth pursuing?
-                        if (time+newState.uNext.length < MAX_TIME-2) {
-                            newState.uNext.push(v.name);
+                        if (time+newState.uNext.length < MAX_TIME-1) {
                             this.clog(`[${time}] [${newState.uPath}] [${newState.uPath}]: trying u shortestRoute from ${newState.uCur} to ${v.name}: ${newState.uNext}`);
                             this.try(time, newState);
                             triedSomething = true;
@@ -119,9 +118,9 @@ class C {
                              (state.uNext.length == 0 && state.uCur !== v.name)
                             )
                         ) {
-                        newState.eNext = this.dij.getShortestPath(state.eCur, v.name).slice(1);
-                        if (time+newState.eNext.length < MAX_TIME-2) {
-                            newState.eNext.push(v.name);
+                        let pathsMap = this.dij.getShortestPaths(newState.eCur, false);
+                        newState.eNext = pathsMap.get(v.name)[0].slice(1);
+                        if (time+newState.eNext.length < MAX_TIME-1) {
                             this.clog(`[${time}] [${newState.ePath}]: trying e shortestRoute from ${newState.eCur} to ${v.name}: ${newState.eNext}`);
                             this.try(time, newState);
                             triedSomething = true;
