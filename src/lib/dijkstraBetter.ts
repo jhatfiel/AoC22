@@ -13,7 +13,7 @@ export class Dijkstra {
     cache = new Map<string, Map<string, Array<Array<string>>>>();
 
     // if to is passed, return immediately and don't keep other paths
-    getShortestPaths(from: string, keepAllPaths = true, shouldContinue: (node: string, distance: number) => boolean = (node, distance) => true, shouldRecord: (node: string) => boolean = _ => true): Map<string, Array<Array<string>>> {
+    getShortestPaths(from: string, keepAllPaths = true, shouldStop: (node: string, distance: number) => boolean = (node, distance) => false, shouldRecord: (node: string) => boolean = _ => true): Map<string, Array<Array<string>>> {
         let fromCache = new Map<string, Array<Array<string>>>();
         this.cache.set(from, fromCache);
 
@@ -81,7 +81,7 @@ export class Dijkstra {
                 fromCache.set(nearestUnvisited, nearestUnvisitedPaths.map(p => p.reverse()));
             }
 
-            if (!shouldContinue(nearestUnvisited, nearestDistance)) break;
+            if (shouldStop(nearestUnvisited, nearestDistance)) break;
         }
 
         // store the result

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 
 const WALL = '█';
 
@@ -21,7 +21,6 @@ class C {
     ec = 0;
     dij = new Dijkstra(this.getNeighbors.bind(this))
     storms = new Array<Storm>();
-    path = new Array<string>();
     waitTime = 0*1000;
 
     makeKey(row: number, col: number, depth: number) { return row+','+col+','+depth; }
@@ -76,39 +75,43 @@ class C {
     }
 
     getResult() {
-        //this.debug(false);
+        this.debug(false);
         this.buildDepth();
 
         let root = this.makeKey(this.cr, this.cc, 0); // 0,1,0
-        let exit = this.makeKey(this.er, this.ec, 0); 
+        let exit = `${this.er},${this.ec}`; 
         console.log(`root = ${root}, exit = ${exit}`);
 
-        this.path = this.dij.getShortestPath(root, exit);
-        console.log(this.path);
-        const pathLen = this.path.length;
+        let pathMap = this.dij.getShortestPaths(root, false, node => node.startsWith(exit), node => node.startsWith(exit));
+        console.debug(`All final paths endpoints: ${Array.from(pathMap.keys()).join(' / ')}`);
+        let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
+        let paths = pathMap.get(finalNode);
+        let path = paths[0];
+        console.debug(path.join(' / '));
 
         this.minute = 0;
-        //this.debug(false);
-
-        this.path.shift();
+        this.debug(false);
 
         // walk the path
-        /*
-        while (this.path.length) {
+        path.shift();
+        const pathLen = path.length;
+        while (path.length) {
             this.minute++;
-            const next = this.path.shift();
+            const next = path.shift();
             const [row,col,depth] = next!.split(',').map(Number);
             if (depth !== this.minute%this.depth) throw new Error(`next doesn't match ${next}`);
+            if (this.grid[depth][row][col] !== '.') throw new Error(`can't move to ${next}`);
             this.cr = row;
             this.cc = col;
 
+            //let waitTill = new Date(new Date().getTime() + 1000); while (waitTill > new Date()) {};
             this.debug(false);
         }
-        */
+        console.debug(path.join(' / '));
 
         this.cr = this.er;
         this.cc = this.ec;
-        //this.debug(false);
+        this.debug(false);
 
         return pathLen;
     }
@@ -124,17 +127,13 @@ class C {
         const [row,col,depth] = node.split(',').map(Number);
         let newd = (depth+1)%this.depth;
         // we can go to one of 5 locations.  This location on the next "depth" layer, or N/E/S/W on the next depth layer (assuming not walls)
-        result.set(this.makeKey(row,col,newd), 1);
+        if (this.grid[newd][row][col] === '.') result.set(this.makeKey(row,col,newd), 1);
         if (row>0             && this.grid[newd][row-1][col] === '.') result.set(this.makeKey(row-1,col,newd), 1);
         if (col>0             && this.grid[newd][row][col-1] === '.') result.set(this.makeKey(row,col-1,newd), 1);
         if (row<this.height-1 && this.grid[newd][row+1][col] === '.') result.set(this.makeKey(row+1,col,newd), 1);
         if (col<this.width-1  && this.grid[newd][row][col+1] === '.') result.set(this.makeKey(row,col+1,newd), 1);
 
-        // special case for exit cell - we can hit it at any depth
-        if (row === this.height-2 && col === this.ec)
-            for (let d=0; d<this.depth; d++)
-                if (d !== newd) result.set(this.makeKey(row+1,col,d), 1);
-
+        //console.debug(`getNeighbors ${node} => ${Array.from(result.keys()).join(' / ')}`)
         return result;
     }
 
@@ -157,14 +156,6 @@ class C {
             }
             this.grid[this.minute].push(this.grid[0][this.height-1]);
             this.storms.forEach((s) => s.move(s));
-        }
-
-        for (let row=0; row<this.height; row++) {
-            for (let col=0; col<this.width; col++) {
-                for (let z=0; z<this.depth; z++) {
-                    if (this.grid[z][row][col] === '.') this.dij.addNode(this.makeKey(row, col, z));
-                }
-            }
         }
 
         console.log()

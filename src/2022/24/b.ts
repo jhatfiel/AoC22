@@ -1,6 +1,6 @@
 import fs from 'fs';
 import readline from 'readline';
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 
 const WALL = '█';
 
@@ -22,7 +22,6 @@ class C {
     dij = new Dijkstra(this.getNeighbors.bind(this))
     storms = new Array<Storm>();
     waitTime = 0*1000;
-    direction = 0;
 
     makeKey(row: number, col: number, depth: number) { return row+','+col+','+depth; }
 
@@ -82,49 +81,38 @@ class C {
         let root = this.makeKey(this.cr, this.cc, 0); // 0,1,0
         let totalLength = 0;
 
-        this.direction = 0;
-        let exit = this.makeKey(this.er, this.ec, 0);
-        let path = this.dij.getShortestPath(root, exit);
-        console.log(`root = ${root}, exit = ${exit}, path length=${path.length}`);
+        let exit = `${this.er},${this.ec}`; 
+        let pathMap = this.dij.getShortestPaths(root, false, node => node.startsWith(exit), node => node.startsWith(exit));
+        let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
+        let paths = pathMap.get(finalNode);
+        let path = paths[0];
+        console.debug(path.join(' / '));
+        console.debug(`Made it to exit: ${finalNode}`);
+
+        path.shift();
         totalLength += path.length;
 
-        this.direction = 1;
-        root = this.makeKey(this.er, this.ec, totalLength%this.depth);
-        exit = this.makeKey(this.cr, this.cc, 0); 
-        path = this.dij.getShortestPath(root, exit);
-        console.log(`root = ${root}, exit = ${exit}, path length=${path.length}`);
+        exit = `0,1`;
+        pathMap = this.dij.getShortestPaths(finalNode, false, node => node.startsWith(exit), node => node.startsWith(exit));
+        finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
+        paths = pathMap.get(finalNode);
+        path = paths[0];
+        console.debug(path.join(' / '));
+        console.debug(`Made it to exit: ${finalNode}`);
+
+        path.shift();
         totalLength += path.length;
 
-        this.direction = 0;
-        root = this.makeKey(this.cr, this.cc, totalLength%this.depth);
-        exit = this.makeKey(this.er, this.ec, 0); 
-        path = this.dij.getShortestPath(root, exit);
-        console.log(`root = ${root}, exit = ${exit}, path length=${path.length}`);
+        exit = `${this.er},${this.ec}`;
+        pathMap = this.dij.getShortestPaths(finalNode, false, node => node.startsWith(exit), node => node.startsWith(exit));
+        finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
+        paths = pathMap.get(finalNode);
+        path = paths[0];
+        console.debug(path.join(' / '));
+        console.debug(`Made it to exit: ${finalNode}`);
 
+        path.shift();
         totalLength += path.length;
-
-        //console.log(this.path);
-        //this.debug(false);
-        //this.path.shift();
-
-        // walk the path
-        /*
-        this.minute = 0;
-        while (this.path.length) {
-            this.minute++;
-            const next = this.path.shift();
-            const [row,col,depth] = next!.split(',').map(Number);
-            if (depth !== this.minute%this.depth) throw new Error(`next doesn't match ${next}`);
-            this.cr = row;
-            this.cc = col;
-
-            this.debug(false);
-        }
-        */
-
-        //this.cr = this.er;
-        //this.cc = this.ec;
-        //this.debug(false);
 
         return totalLength;
     }
@@ -136,24 +124,11 @@ class C {
         const [row,col,depth] = node.split(',').map(Number);
         let newd = (depth+1)%this.depth;
         // we can go to one of 5 locations.  This location on the next "depth" layer, or N/E/S/W on the next depth layer (assuming not walls)
-        result.set(this.makeKey(row,col,newd), 1);
+        if (this.grid[newd][row][col] === '.') result.set(this.makeKey(row,col,newd), 1);
         if (row>0             && this.grid[newd][row-1][col] === '.') result.set(this.makeKey(row-1,col,newd), 1);
         if (col>0             && this.grid[newd][row][col-1] === '.') result.set(this.makeKey(row,col-1,newd), 1);
         if (row<this.height-1 && this.grid[newd][row+1][col] === '.') result.set(this.makeKey(row+1,col,newd), 1);
         if (col<this.width-1  && this.grid[newd][row][col+1] === '.') result.set(this.makeKey(row,col+1,newd), 1);
-
-        if (this.direction === 0) {
-            // special case for exit cell - we can hit it at any depth
-            if (row === this.height-2 && col === this.ec)
-                for (let d=0; d<this.depth; d++) 
-                    if (d !== newd) result.set(this.makeKey(row+1,col,d), 1);
-        } else {
-            // special case for entrance cell - we can hit it at any depth
-            if (row === 1 && col === this.cc)
-                for (let d=0; d<this.depth; d++) 
-                    if (d !== newd) result.set(this.makeKey(0,col,d), 1);
-
-        }
 
         return result;
     }
@@ -177,14 +152,6 @@ class C {
             }
             this.grid[this.minute].push(this.grid[0][this.height-1]);
             this.storms.forEach((s) => s.move(s));
-        }
-
-        for (let row=0; row<this.height; row++) {
-            for (let col=0; col<this.width; col++) {
-                for (let z=0; z<this.depth; z++) {
-                    if (this.grid[z][row][col] === '.') this.dij.addNode(this.makeKey(row, col, z));
-                }
-            }
         }
 
         console.log()

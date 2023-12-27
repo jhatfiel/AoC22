@@ -12,8 +12,7 @@ await puzzle.run()
 
         let dij = new Dijkstra(getNeighbors);
 
-        let pathMap = dij.getShortestPaths(gp.toKey(gp.TL), false, node => !node.startsWith(gp.toKey(gp.BR)));
-        //console.debug(`${Array.from(pathMap.keys()).join(' / ')}`);
+        let pathMap = dij.getShortestPaths(gp.toKey(gp.TL), false, node => node.startsWith(gp.toKey(gp.BR)), node => node.startsWith(gp.toKey(gp.BR)));
         let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(gp.toKey(gp.BR)))[0];
         let paths = pathMap.get(finalNode);
         paths.forEach(path => {
