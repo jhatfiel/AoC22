@@ -1,4 +1,4 @@
-import { Dijkstra } from '../../lib/dijkstra.js';
+import { Dijkstra } from '../../lib/dijkstraBetter.js';
 import fs from 'fs';
 import readline from 'readline';
 
@@ -36,14 +36,13 @@ class C {
 
     getNeighbors(node: string) {
         let result = new Map<string, number>();
-        //this.valves.get(node)?.connected.forEach((v) => result.set(v.name, 1));
         let [x,y,z] = node.split(',').map(Number);
-        if (x>0 && this.grid[x-1][y][z] !== true) result.set(this.makeKey(x-1,y,z), 1);
-        if (this.grid[x+1][y][z] !== true) result.set(this.makeKey(x+1,y,z), 1);
-        if (y>0 && this.grid[x][y-1][z] !== true) result.set(this.makeKey(x,y-1,z), 1);
-        if (this.grid[x][y+1][z] !== true) result.set(this.makeKey(x,y+1,z), 1);
-        if (z>0 && this.grid[x][y][z-1] !== true) result.set(this.makeKey(x,y,z-1), 1);
-        if (this.grid[x][y][z+1] !== true) result.set(this.makeKey(x,y,z+1), 1);
+        if (x>0 && (this.grid[x-1][y][z] ?? false) !== true) result.set(this.makeKey(x-1,y,z), 1);
+        if (x<=this.xMax && (this.grid[x+1][y][z] ?? false) !== true) result.set(this.makeKey(x+1,y,z), 1);
+        if (y>0 && (this.grid[x][y-1][z] ?? false) !== true) result.set(this.makeKey(x,y-1,z), 1);
+        if (y<=this.yMax && (this.grid[x][y+1][z] ?? false) !== true) result.set(this.makeKey(x,y+1,z), 1);
+        if (z>0 && (this.grid[x][y][z-1] ?? false) !== true) result.set(this.makeKey(x,y,z-1), 1);
+        if (z<=this.zMax && (this.grid[x][y][z+1] ?? false) !== true) result.set(this.makeKey(x,y,z+1), 1);
         return result;
     }
 
@@ -53,31 +52,36 @@ class C {
         let result = 0;
         console.log(this.makeKey(this.xMax, this.yMax, this.zMax));
         let dij = new Dijkstra(this.getNeighbors.bind(this))
-        for (let x=0; x<=this.xMax; x++) {
-            for (let y=0; y<=this.yMax; y++) {
-                for (let z=0; z<=this.zMax; z++) {
-                    dij.addNode(this.makeKey(x, y, z));
-                }
-            }
-        }
         let root = "0,0,0"
         // find what faces "root" can get to using Dijkstra.  That will tell us the exposed faces
+        let pathsMap = dij.getShortestPaths(root, false);
         this.pieces.forEach((p) => {
-            console.log(`${p} path from root to faces`);
+            //console.log(`${p} path from root to faces`);
             let [x,y,z] = p.split(',').map(Number);
-            console.log(this.makeKey(x-1,y,z) + ':' + dij.getShortestPath(root, this.makeKey(x-1,y,z)).join('/'));
-            console.log(this.makeKey(x+1,y,z) + ':' + dij.getShortestPath(root, this.makeKey(x+1,y,z)).join('/'));
-            console.log(this.makeKey(x,y-1,z) + ':' + dij.getShortestPath(root, this.makeKey(x,y-1,z)).join('/'));
-            console.log(this.makeKey(x,y+1,z) + ':' + dij.getShortestPath(root, this.makeKey(x,y+1,z)).join('/'));
-            console.log(this.makeKey(x,y,z-1) + ':' + dij.getShortestPath(root, this.makeKey(x,y,z-1)).join('/'));
-            console.log(this.makeKey(x,y,z+1) + ':' + dij.getShortestPath(root, this.makeKey(x,y,z+1)).join('/'));
+/*
 
+            console.log(this.makeKey(x-1,y,z) + ':' + dij.getShortestPaths(root, this.makeKey(x-1,y,z)).join('/'));
+            console.log(this.makeKey(x+1,y,z) + ':' + dij.getShortestPaths(root, this.makeKey(x+1,y,z)).join('/'));
+            console.log(this.makeKey(x,y-1,z) + ':' + dij.getShortestPaths(root, this.makeKey(x,y-1,z)).join('/'));
+            console.log(this.makeKey(x,y+1,z) + ':' + dij.getShortestPaths(root, this.makeKey(x,y+1,z)).join('/'));
+            console.log(this.makeKey(x,y,z-1) + ':' + dij.getShortestPaths(root, this.makeKey(x,y,z-1)).join('/'));
+            console.log(this.makeKey(x,y,z+1) + ':' + dij.getShortestPaths(root, this.makeKey(x,y,z+1)).join('/'));
+            */
+            if (pathsMap.get(this.makeKey(x-1,y,z))?.length) result++;
+            if (pathsMap.get(this.makeKey(x+1,y,z))?.length) result++;
+            if (pathsMap.get(this.makeKey(x,y-1,z))?.length) result++;
+            if (pathsMap.get(this.makeKey(x,y+1,z))?.length) result++;
+            if (pathsMap.get(this.makeKey(x,y,z-1))?.length) result++;
+            if (pathsMap.get(this.makeKey(x,y,z+1))?.length) result++;
+
+            /*
             if (dij.getShortestPath(root, this.makeKey(x-1,y,z)).length !== 0) result++;
             if (dij.getShortestPath(root, this.makeKey(x+1,y,z)).length !== 0) result++;
             if (dij.getShortestPath(root, this.makeKey(x,y-1,z)).length !== 0) result++;
             if (dij.getShortestPath(root, this.makeKey(x,y+1,z)).length !== 0) result++;
             if (dij.getShortestPath(root, this.makeKey(x,y,z-1)).length !== 0) result++;
             if (dij.getShortestPath(root, this.makeKey(x,y,z+1)).length !== 0) result++;
+            */
         });
         return result;
     }
