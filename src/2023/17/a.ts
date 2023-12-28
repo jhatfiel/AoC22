@@ -1,4 +1,6 @@
 import { Dijkstra } from "../../lib/dijkstraBetter.js";
+import { PairMove } from "../../lib/gridParser.js";
+import { PAIR_LEFT, PAIR_RIGHT } from "../../lib/gridParser.js";
 import { GridParser, Direction } from "../../lib/gridParser.js";
 import { Puzzle } from "../../lib/puzzle.js";
 
@@ -27,21 +29,35 @@ function getNeighbors(node: string): Map<string, number> {
     let [xStr, yStr, history] = node.split(',');
     let x = Number(xStr);
     let y = Number(yStr);
-    if (history === undefined) history = '';
-    gp.gridOrthogonalP({x,y}).forEach(([p, d]) => {
-        let dirKey = Direction[d].substring(0, 1);
-        let reverseKey = Direction[(d+2)%4].substring(0, 1);
-        let heat = Number(gp.grid[p.y][p.x]);
-        if (history.startsWith(dirKey)) {
-            // can't take more than 3 steps in the same direction
-            if (history.length < 3) {
-                result.set(`${p.x},${p.y},${history}${dirKey}`, heat);
+
+    const maxStepLength = 3;
+    let facing = [history];
+    if (history === undefined) facing = ['R', 'D'];
+
+    facing.forEach(d => {
+        let p = {x, y};
+        let pLeft = {x, y};
+        let pLeftDir = PAIR_LEFT.get(d);
+        PairMove(pLeft, pLeftDir);
+        let pRight = {x, y}; 
+        let pRightDir = PAIR_RIGHT.get(d);
+        PairMove(pRight, pRightDir);
+        let pDistance = 0;
+        for (let i=0; i<maxStepLength; i++) {
+            if (gp.valid(pLeft)) {
+                result.set(`${pLeft.x},${pLeft.y},${pLeftDir}`, pDistance + Number(gp.grid[pLeft.y][pLeft.x]));
+                PairMove(pLeft, d);
             }
-        } else {
-            // going in a new direction
-            // but can't go in the opposite direction!
-            if (!history.startsWith(reverseKey)) result.set(`${p.x},${p.y},${dirKey}`, heat);
+            if (gp.valid(pRight)) {
+                result.set(`${pRight.x},${pRight.y},${pRightDir}`, pDistance + Number(gp.grid[pRight.y][pRight.x]));
+                PairMove(pRight, d);
+            }
+
+            PairMove(p, d);
+            if (gp.valid(p)) pDistance += Number(gp.grid[p.y][p.x]);
+            else break;
         }
     })
+    //console.debug(`From: ${node} neighbors are: `, JSON.stringify(Object.fromEntries(result)));
     return result;
 }
