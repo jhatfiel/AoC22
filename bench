@@ -1,4 +1,4 @@
-time node a sample | tee benchmark.txt
-time node a input | tee -a benchmark.txt
-time node b sample | tee -a benchmark.txt
-time node b input | tee -a benchmark.txt
+/usr/bin/time -pao benchmark.txt node a sample > benchmark.txt 2>&1
+/usr/bin/time -pao benchmark.txt node a input  >> benchmark.txt 2>&1
+/usr/bin/time -pao benchmark.txt node b sample >> benchmark.txt 2>&1
+/usr/bin/time -pao benchmark.txt node b input  >> benchmark.txt 2>&1
