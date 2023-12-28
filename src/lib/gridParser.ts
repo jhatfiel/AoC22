@@ -172,6 +172,10 @@ export class GridParser {
         return result;
     }
 
+    valid(p: Pair): boolean {
+        return p.x >= 0 && p.y >= 0 && p.x < this.width && p.y < this.height;
+    }
+
     debugGrid() {
         this.grid.forEach(row => {
             console.debug(row.join(''))
