@@ -12,24 +12,15 @@ await puzzle.run()
 
         let dij = new Dijkstra(getNeighbors);
 
-        let pathMap = dij.getShortestPaths(gp.toKey(gp.TL), false, node => node.startsWith(gp.toKey(gp.BR)), node => node.startsWith(gp.toKey(gp.BR)));
+        let distanceToEnd = Infinity;
+        let pathMap = dij.getShortestPaths(gp.toKey(gp.TL), false, (node, distance) => {
+                if (node.startsWith(gp.toKey(gp.BR))) { distanceToEnd = distance; return true; }
+                return false;
+            }, node => node.startsWith(gp.toKey(gp.BR)));
         //console.debug(`${Array.from(pathMap.keys()).join(' / ')}`);
         let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(gp.toKey(gp.BR)))[0];
         let paths = pathMap.get(finalNode);
-        paths.forEach(path => {
-            console.debug(`path: ${path.join(' / ')}`);
-            let totalHeat = 0;
-            if (path.length > 1) {
-                path.slice(1).forEach(piece => {
-                    let [xStr, yStr, history] = piece.split(',');
-                    let x = Number(xStr);
-                    let y = Number(yStr);
-                    let heat = Number(gp.grid[y][x]);
-                    totalHeat += heat;
-                })
-            }
-            console.log(`Total heat: ${totalHeat}`)
-        })
+        paths.forEach(path => console.debug(`path: ${path.join(' / ')}: Total Heat: ${distanceToEnd}`));
     });
 
 function getNeighbors(node: string): Map<string, number> {
@@ -41,7 +32,7 @@ function getNeighbors(node: string): Map<string, number> {
     gp.gridOrthogonalP({x,y}).forEach(([p, d]) => {
         let dirKey = Direction[d].substring(0, 1);
         let reverseKey = Direction[(d+2)%4].substring(0, 1);
-        let heat = Number(gp.grid[y][x]);
+        let heat = Number(gp.grid[p.y][p.x]);
         if (history.startsWith(dirKey)) {
             // can't take more than 10 steps in the same direction
             if (history.length < 10) {
