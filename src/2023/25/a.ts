@@ -147,8 +147,6 @@ await puzzle.run()
         })
         */
 
-
-
     });
 
 function getNeighbors(node: string): Map<string, number> {
@@ -216,6 +214,7 @@ function generateEdotorCode(graph: Map<string, Set<string>>) {
     /**
      * Generate input for https://edotor.net/
      * http://magjac.com/graphviz-visual-editor/ handled the massive graph better
+     * https://dreampuf.github.io/GraphvizOnline/ another graph site
      */
     let link = 'https://edotor.net';
     console.debug(`Generating input for ${link}`);
