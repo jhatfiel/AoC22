@@ -4,6 +4,7 @@ import { Puzzle } from "../../lib/puzzle.js";
 
 const puzzle = new Puzzle(process.argv[2]);
 let branchToBranchDistance = new Map<string, Map<string, number>>(); 
+let finalKey: string;
 
 let gp: GridParser;
 await puzzle.run()
@@ -11,7 +12,7 @@ await puzzle.run()
         gp = new GridParser(lines, []);
 
         let longest = 0;
-        let finalKey = `${gp.width-2},${gp.height-1}`;
+        finalKey = `${gp.width-2},${gp.height-1}`;
 
         let bfsNodes = new BFS(getNodeNeighbors, state => {
             if (state.at === finalKey && state.cost > longest) {
@@ -36,6 +37,10 @@ function getNodeNeighbors(state: BFS_State): Map<string, number> {
         branchToBranchDistance.set(state.at, result);
         let bfs = new BFS(getNeighbors);
         let states = bfs.getPathsFrom(new BFS_State(state.at));
+        // if this state can reach the final state, then it HAS to go to the final state (because it is the only one who can)
+        if (states.some(p => p.at === finalKey)) {
+            states = states.filter(p => p.at === finalKey);
+        }
         states.forEach(s => {
             //console.debug(`state from ${state.at} ends at ${s.at} cost=${s.cost}`);
             result.set(s.at, s.cost);
