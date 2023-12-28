@@ -1,0 +1,4 @@
+time node a sample | tee benchmark.txt
+time node a input | tee -a benchmark.txt
+time node b sample | tee -a benchmark.txt
+time node b input | tee -a benchmark.txt
