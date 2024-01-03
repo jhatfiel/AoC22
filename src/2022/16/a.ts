@@ -61,8 +61,10 @@ class C {
 
     try(time: number, state: State) {
         if (time == MAX_TIME) {
-            console.log(`${state.path}, released=${state.released}                         `);
-            process.stdout.moveCursor(0, -1);
+            if (process.stdout.moveCursor) {
+                console.log(`${state.path}, released=${state.released}                         `);
+                process.stdout.moveCursor(0, -1);
+            }
             if (state.released > this.best) { this.best = state.released; console.log(`${state.path}, released=${state.released}                         `); }
         } else {
             let triedSomething = false;
@@ -74,8 +76,7 @@ class C {
                 let newState = state;
                 // if this valve has flow and is unopened, find the shortest path there
                 if (n !== newState.cv && v.flowRate > 0 && !newState.opened.has(n)) {
-                    let pathsMap = this.dij.getShortestPaths(newState.cv, false);
-                    let shortestRoute = pathsMap.get(n)[0];
+                    let shortestRoute = this.dij.pathTo(newState.cv, n, false)[0];
                     // simulate moving to this new room and continuing from there
                     if (shortestRoute.length + newTime < MAX_TIME-1) {
                         this.clog(`[${newTime}] [${newState.path}]: trying shortestRoute from ${newState.cv} to ${n}: ${shortestRoute}`);

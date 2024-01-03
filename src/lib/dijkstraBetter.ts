@@ -1,29 +1,27 @@
-/*
-This is actually more like a Bellman-Ford algorithm...
-*/
-
 import { PriorityHeap } from "./priorityHeap.js";
 
 export class Dijkstra {
     constructor(
         private getNeighbors: (node: string) => Map<string, number>
     ) {};
-    // turns out, caching dijkstra speeds things up . . . like... a lot (duh).
-    // from: to: [shortest path1, shortest path2, ...] where paths are [n1, n2, ...]
-    cache = new Map<string, Map<string, Array<Array<string>>>>();
+    // keep track of the best way to get to each node based on where we are starting from
+    // from: to: parent
+    parent = new Map<string, Map<string, Set<string>>>();
 
-    // if to is passed, return immediately and don't keep other paths
-    getShortestPaths(from: string, keepAllPaths = true, shouldStop: (node: string, distance: number) => boolean = (node, distance) => false, shouldRecord: (node: string) => boolean = _ => true): Map<string, Array<Array<string>>> {
-        if (this.cache.has(from)) return this.cache.get(from);
-        let fromCache = new Map<string, Array<Array<string>>>();
-        this.cache.set(from, fromCache);
+    // from: to: [shortest path1, shortest path2, ...] where paths are [n1, n2, ...]
+    paths = new Map<string, Map<string, Array<Array<string>>>>();
+
+    distanceTo = new Map<string, Map<string, number>>();
+
+    compute(from: string, shouldStop: (node: string, distance: number) => boolean = _ => false): Dijkstra {
+        let parent = new Map<string, Set<string>>();
+        this.parent.set(from, parent);
+        let distanceTo = new Map<string, number>();
+        this.distanceTo.set(from, distanceTo);
 
         let unvisited = new PriorityHeap<string>((a, b) => distanceTo.get(b) <= distanceTo.get(a));
-        let distanceTo = new Map<string, number>();
-        let parent = new Map<string, Set<string>>();
 
         distanceTo.set(from, 0);
-        //unvisited.sort((a, b) => { return distanceTo.get(b)! - distanceTo.get(a)! })
         let lastDistance = 0;
         unvisited.enqueue(from);
 
@@ -50,7 +48,7 @@ export class Dijkstra {
                     distanceTo.set(n, newDistance);
                     unvisited.reorder(n);
                     parent.set(n, new Set([nearestUnvisited]));
-                } else if (newDistance === currentDistance && keepAllPaths) {
+                } else if (newDistance === currentDistance) {
                     //console.debug(`- tied`);
                     parent.get(n).add(nearestUnvisited);
                     // no need to enqueue anything
@@ -58,44 +56,61 @@ export class Dijkstra {
                     //console.debug(`- not better`);
                 }
             })
-
-            // process path(s) for nearestUnvisited
-            if (shouldRecord(nearestUnvisited)) {
-                //console.debug(`Found to!`);
-                let nearestUnvisitedPaths = [[nearestUnvisited]];
-                let parentSearch = nearestUnvisitedPaths.map(p => parent.get(p[p.length-1])); // get the parents of the latest step on each path
-
-                while (parentSearch?.some(parentToExpand => parentToExpand !== undefined)) {
-                    //console.debug(`Finishing ${nearestUnvisited}, parentSearch = ${parentSearch.map(s => Array.from(s??[])).join(' / ')}`);
-                    parentSearch.forEach((nextParents, ind) => {
-                        //console.debug(`-Processing nextParents=${Array.from(nextParents??[]).join(' / ')}`);
-                        if (nextParents?.size) {
-                            Array.from(nextParents).slice(1).forEach(parent => {
-                                let newPath = [...nearestUnvisitedPaths[ind], parent];
-                                nearestUnvisitedPaths.push(newPath);
-                            })
-                            nearestUnvisitedPaths[ind].push(Array.from(nextParents)[0]);
-                        }
-                    })
-                    parentSearch = nearestUnvisitedPaths.map(p => parent.get(p[p.length-1])); // get the parents of the latest step on each path
-                }
-                fromCache.set(nearestUnvisited, nearestUnvisitedPaths.map(p => p.reverse()));
-            }
-
             if (shouldStop(nearestUnvisited, nearestDistance)) break;
         }
+        return this;
+    }
 
-        // store the result
-        /*
-        let result = new Array<string>();
-        let trace = parent.get(to);
-        while (trace !== undefined && trace !== '') {
-            result.push(trace);
-            trace = parent.get(trace);
+    pathTo(from: string, to: string, keepAllPaths = true): Array<Array<string>> {
+        if (!this.parent.has(from) || !this.parent.get(from).has(to)) this.compute(from, node => node === to);
+        let parent = this.parent.get(from);
+        let nearestUnvisitedPaths = [[to]];
+        let parentSearch = nearestUnvisitedPaths.map(p => parent.get(p[p.length-1])); // get the parents of the latest step on each path
+
+        while (parentSearch?.some(parentToExpand => parentToExpand !== undefined)) {
+            //console.debug(`Finishing ${nearestUnvisited}, parentSearch = ${parentSearch.map(s => Array.from(s??[])).join(' / ')}`);
+            parentSearch.forEach((parentToExpand, ind) => {
+                //console.debug(`-Processing parentToExpand=${Array.from(parentToExpand??[]).join(' / ')}`);
+                if (parentToExpand?.size) {
+                    if (keepAllPaths) {
+                        Array.from(parentToExpand).slice(1).forEach(parent => {
+                            let newPath = [...nearestUnvisitedPaths[ind], parent];
+                            nearestUnvisitedPaths.push(newPath);
+                        })
+                    }
+                    nearestUnvisitedPaths[ind].push(Array.from(parentToExpand)[0]);
+                }
+            })
+            parentSearch = nearestUnvisitedPaths.map(p => parent.get(p[p.length-1])); // get the parents of the latest step on each path
         }
-        return result.reverse();
-        */
-       return fromCache;
+        return nearestUnvisitedPaths.map(p => p.reverse());
+    }
+
+    pathToAny(from: string, toFunc: (node: string) => boolean, keepAllPaths = true): Map<string, Array<Array<string>>> {
+        if (!this.parent.has(from)) this.compute(from, toFunc);
+        let pathCache = this.paths.get(from);
+        if (pathCache === undefined) {
+            pathCache = new Map<string, Array<Array<string>>>();
+        }
+        let parent = this.parent.get(from);
+        parent.forEach((parents, to) => {
+            if (toFunc(to)) {
+                pathCache.set(to, this.pathTo(from, to, keepAllPaths));
+            }
+        })
+        return pathCache;
+    }
+
+    distance(from: string, to: string): number {
+        if (!this.distanceTo.has(from) || !this.distanceTo.get(from).has(to)) this.compute(from, node => node === to);
+        return this.distanceTo.get(from).get(to);
+    }
+
+    distanceAny(from: string, toFunc: (node: string) => boolean = _ => true): Map<string, number> {
+        if (!this.distanceTo.has(from)) this.compute(from);
+        let result = new Map<string, number>();
+        this.distanceTo.get(from).forEach((distance, to) => { if (toFunc(to)) result.set(to, distance); });
+        return result;
     }
 }
 

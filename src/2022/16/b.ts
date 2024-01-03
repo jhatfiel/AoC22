@@ -71,8 +71,10 @@ class C {
 
     try(time: number, state: State) {
         if (time == MAX_TIME) {
-            console.log(`${state.uPath} / ${state.ePath}, released=${state.released}                         `);
-            process.stdout.moveCursor(0, -1);
+            if (process.stdout.moveCursor) {
+                console.log(`${state.uPath} / ${state.ePath}, released=${state.released}                         `);
+                process.stdout.moveCursor(0, -1);
+            }
             if (state.released > this.best) { this.best = state.released; console.log(`${state.uPath} / ${state.ePath}, released=${state.released}                         `); }
         } else {
             // if u has no planned rooms, see if we can find potential rooms to move u to, and recurse
@@ -90,8 +92,7 @@ class C {
                              (state.eNext.length == 0 && state.eCur !== v.name)
                             )
                         ) {
-                        let pathsMap = this.dij.getShortestPaths(newState.uCur, false);
-                        newState.uNext = pathsMap.get(v.name)[0].slice(1);
+                        newState.uNext = this.dij.pathTo(newState.uCur, v.name, false)[0].slice(1);
                         // if we were to think about jumping ahead to when we get to the next location and turning on that valve, then "instantly" turn on all others, is it worth pursuing?
                         if (time+newState.uNext.length < MAX_TIME-1) {
                             this.clog(`[${time}] [${newState.uPath}] [${newState.uPath}]: trying u shortestRoute from ${newState.uCur} to ${v.name}: ${newState.uNext}`);
@@ -118,8 +119,7 @@ class C {
                              (state.uNext.length == 0 && state.uCur !== v.name)
                             )
                         ) {
-                        let pathsMap = this.dij.getShortestPaths(newState.eCur, false);
-                        newState.eNext = pathsMap.get(v.name)[0].slice(1);
+                        newState.eNext = this.dij.pathTo(newState.eCur, v.name, false)[0].slice(1);
                         if (time+newState.eNext.length < MAX_TIME-1) {
                             this.clog(`[${time}] [${newState.ePath}]: trying e shortestRoute from ${newState.eCur} to ${v.name}: ${newState.eNext}`);
                             this.try(time, newState);
