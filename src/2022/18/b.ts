@@ -54,7 +54,7 @@ class C {
         let dij = new Dijkstra(this.getNeighbors.bind(this))
         let root = "0,0,0"
         // find what faces "root" can get to using Dijkstra.  That will tell us the exposed faces
-        let pathsMap = dij.getShortestPaths(root, false);
+        let distanceMap = dij.distanceAny(root);
         this.pieces.forEach((p) => {
             //console.log(`${p} path from root to faces`);
             let [x,y,z] = p.split(',').map(Number);
@@ -67,12 +67,12 @@ class C {
             console.log(this.makeKey(x,y,z-1) + ':' + dij.getShortestPaths(root, this.makeKey(x,y,z-1)).join('/'));
             console.log(this.makeKey(x,y,z+1) + ':' + dij.getShortestPaths(root, this.makeKey(x,y,z+1)).join('/'));
             */
-            if (pathsMap.get(this.makeKey(x-1,y,z))?.length) result++;
-            if (pathsMap.get(this.makeKey(x+1,y,z))?.length) result++;
-            if (pathsMap.get(this.makeKey(x,y-1,z))?.length) result++;
-            if (pathsMap.get(this.makeKey(x,y+1,z))?.length) result++;
-            if (pathsMap.get(this.makeKey(x,y,z-1))?.length) result++;
-            if (pathsMap.get(this.makeKey(x,y,z+1))?.length) result++;
+            if (distanceMap.has(this.makeKey(x-1,y,z))) result++;
+            if (distanceMap.has(this.makeKey(x+1,y,z))) result++;
+            if (distanceMap.has(this.makeKey(x,y-1,z))) result++;
+            if (distanceMap.has(this.makeKey(x,y+1,z))) result++;
+            if (distanceMap.has(this.makeKey(x,y,z-1))) result++;
+            if (distanceMap.has(this.makeKey(x,y,z+1))) result++;
 
             /*
             if (dij.getShortestPath(root, this.makeKey(x-1,y,z)).length !== 0) result++;

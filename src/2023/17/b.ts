@@ -13,13 +13,13 @@ await puzzle.run()
         let dij = new Dijkstra(getNeighbors);
 
         let distanceToEnd = Infinity;
-        let pathMap = dij.getShortestPaths(gp.toKey(gp.TL), false, (node, distance) => {
-                if (node.startsWith(gp.toKey(gp.BR))) { distanceToEnd = distance; return true; }
-                return false;
-            }, node => node.startsWith(gp.toKey(gp.BR)));
-        //console.debug(`${Array.from(pathMap.keys()).join(' / ')}`);
-        let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(gp.toKey(gp.BR)))[0];
-        let paths = pathMap.get(finalNode);
+        let from = gp.toKey(gp.TL);
+        let to   = gp.toKey(gp.BR);
+        dij.compute(from, (node, distance) => {
+            if (node.startsWith(to)) { to = node; distanceToEnd = distance; return true; }
+            return false;
+        });
+        let paths = dij.pathTo(from, to, false);
         paths.forEach(path => console.debug(`path: ${path.join(' / ')}: Total Heat: ${distanceToEnd}`));
     });
 

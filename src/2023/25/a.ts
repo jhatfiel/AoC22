@@ -41,33 +41,31 @@ await puzzle.run()
         edges.forEach(([a,b]) => {
             edgeCount.set(`${a}.${b}`, 0);
         })
-        nodes.forEach(node => {
+        nodes.forEach(from => {
             let dij = new Dijkstra(getNeighbors);
-            let pathMaps = dij.getShortestPaths(node);
+            dij.compute(from);
+            nodes.filter(to => to !== from).forEach(to => {
+                let path = dij.pathTo(from, to, false)[0];
+                let prevNode = path[0];
 
-            Array.from(pathMaps.keys()).forEach(to => {
-                let shortestPaths = pathMaps.get(to);
-                //console.debug(`Number of paths from ${node} to ${to}: ${shortestPaths.length}`);
-
-                shortestPaths.forEach(path => {
-                    let prevNode = path[0];
-
-                    path.slice(1).forEach(n => {
-                        let edge = `${prevNode}.${n}`;
-                        edgeCount.set(edge, edgeCount.get(edge)+1);
-                        edge = `${n}.${prevNode}`;
-                        edgeCount.set(edge, edgeCount.get(edge)+1);
-                        prevNode = n;
-                    })
+                path.slice(1).forEach(n => {
+                    let edge = `${prevNode}.${n}`;
+                    edgeCount.set(edge, edgeCount.get(edge)+1);
+                    edge = `${n}.${prevNode}`;
+                    edgeCount.set(edge, edgeCount.get(edge)+1);
+                    prevNode = n;
                 })
-
             });
         })
 
-        Array.from(edgeCount.keys()).sort((a, b) => (edgeCount.get(a) === edgeCount.get(b))?0:((edgeCount.get(a) > edgeCount.get(b))?-1:1)).slice(0,6).forEach(edge => {
-            console.debug(`Cutting edge: ${edge}`);
+        Array.from(edgeCount.keys()).filter(edge => {
+            let [n1, n2] = edge.split('.');
+            return n1.localeCompare(n2) < 0;
+        }).sort((a, b) => (edgeCount.get(a) === edgeCount.get(b))?0:((edgeCount.get(a) > edgeCount.get(b))?-1:1)).slice(0,3).forEach(edge => {
+            console.debug(`Cutting edge: ${edge} (${edgeCount.get(edge)})`);
             let [n1, n2] = edge.split('.');
             graph.get(n1).delete(n2);
+            graph.get(n2).delete(n1);
         })
 
         let groups = getGroups(graph);

@@ -75,22 +75,21 @@ class C {
     }
 
     getResult() {
-        this.debug(false);
+        //this.debug(false);
         this.buildDepth();
 
         let root = this.makeKey(this.cr, this.cc, 0); // 0,1,0
         let exit = `${this.er},${this.ec}`; 
         console.log(`root = ${root}, exit = ${exit}`);
 
-        let pathMap = this.dij.getShortestPaths(root, false, node => node.startsWith(exit), node => node.startsWith(exit));
-        console.debug(`All final paths endpoints: ${Array.from(pathMap.keys()).join(' / ')}`);
-        let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
-        let paths = pathMap.get(finalNode);
-        let path = paths[0];
+        this.dij.compute(root, node => { if (node.startsWith(exit)) { exit = node; return true; } return false; });
+        console.debug(`Finished compute ${exit}`);
+        let path = this.dij.pathTo(root, exit, false)[0];
+        console.debug(`Finished pathTo`);
         console.debug(path.join(' / '));
 
         this.minute = 0;
-        this.debug(false);
+        //this.debug(false);
 
         // walk the path
         path.shift();
@@ -105,13 +104,14 @@ class C {
             this.cc = col;
 
             //let waitTill = new Date(new Date().getTime() + 1000); while (waitTill > new Date()) {};
-            this.debug(false);
+            //this.debug(false);
         }
         console.debug(path.join(' / '));
+        console.debug(pathLen);
 
         this.cr = this.er;
         this.cc = this.ec;
-        this.debug(false);
+        //this.debug(false);
 
         return pathLen;
     }
@@ -144,7 +144,7 @@ class C {
         // need to make $depth copies of the grid
         console.log('Initializing depth grid');
         for (this.minute=1; this.minute<this.depth; this.minute++) {
-            process.stdout.moveCursor(0, -1);
+            //process.stdout.moveCursor(0, -1);
             console.log(`Initializing depth grid ${this.minute}/${this.depth-1}`);
             this.grid.push(new Array<Array<string>>());
             this.grid[this.minute].push(this.grid[0][0]);

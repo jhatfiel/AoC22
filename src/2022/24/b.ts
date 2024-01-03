@@ -82,34 +82,48 @@ class C {
         let totalLength = 0;
 
         let exit = `${this.er},${this.ec}`; 
-        let pathMap = this.dij.getShortestPaths(root, false, node => node.startsWith(exit), node => node.startsWith(exit));
-        let finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
-        let paths = pathMap.get(finalNode);
-        let path = paths[0];
+        this.dij.compute(root, node => {
+            if (node.startsWith(exit)) {
+                exit = node;
+                return true;
+            }
+            return false;
+        });
+        let path = this.dij.pathTo(root, exit, false)[0];
         console.debug(path.join(' / '));
-        console.debug(`Made it to exit: ${finalNode}`);
+        console.debug(`Made it to exit: ${exit}`);
 
         path.shift();
         totalLength += path.length;
 
+        root = exit;
         exit = `0,1`;
-        pathMap = this.dij.getShortestPaths(finalNode, false, node => node.startsWith(exit), node => node.startsWith(exit));
-        finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
-        paths = pathMap.get(finalNode);
-        path = paths[0];
+        this.dij.compute(root, node => {
+            if (node.startsWith(exit)) {
+                exit = node;
+                return true;
+            }
+            return false;
+        });
+        path = this.dij.pathTo(root, exit, false)[0];
         console.debug(path.join(' / '));
-        console.debug(`Made it to exit: ${finalNode}`);
+        console.debug(`Made it to exit: ${exit}`);
 
         path.shift();
         totalLength += path.length;
 
+        root = exit;
         exit = `${this.er},${this.ec}`;
-        pathMap = this.dij.getShortestPaths(finalNode, false, node => node.startsWith(exit), node => node.startsWith(exit));
-        finalNode = Array.from(pathMap.keys()).filter(n => n.startsWith(exit))[0];
-        paths = pathMap.get(finalNode);
-        path = paths[0];
+        this.dij.compute(root, node => {
+            if (node.startsWith(exit)) {
+                exit = node;
+                return true;
+            }
+            return false;
+        });
+        path = this.dij.pathTo(root, exit, false)[0];
         console.debug(path.join(' / '));
-        console.debug(`Made it to exit: ${finalNode}`);
+        console.debug(`Made it to exit: ${exit}`);
 
         path.shift();
         totalLength += path.length;
