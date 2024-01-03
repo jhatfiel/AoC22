@@ -19,21 +19,21 @@ export class Dijkstra {
         let distanceTo = new Map<string, number>();
         this.distanceTo.set(from, distanceTo);
 
-        let unvisited = new PriorityHeap<string>((a, b) => distanceTo.get(b) <= distanceTo.get(a));
+        let unvisited = new PriorityHeap<{node: string, distance: number}>((a, b) => b.distance <= a.distance);
 
         distanceTo.set(from, 0);
         let lastDistance = 0;
-        unvisited.enqueue(from);
+        unvisited.enqueue({node: from, distance: 0});
 
         while (unvisited.size()) {
             // get the closest unvisited node
             //unvisited.debugArray();
-            let nearestUnvisited = unvisited.dequeue();
-            let nearestDistance = distanceTo.get(nearestUnvisited);
+            let {node: nearestUnvisited, distance: nearestDistance} = unvisited.dequeue();
             lastDistance = nearestDistance;
             //console.debug(`Working with ${nearestUnvisited}[${nearestDistance}] (${unvisited.size()} unvisited)`);
 
             // set the distance for all its neighbors
+            if (shouldStop(nearestUnvisited, nearestDistance)) break;
             this.getNeighbors(nearestUnvisited)?.forEach((d, n) => {
                 let currentDistance = distanceTo.get(n);
                 let newDistance = nearestDistance + d;
@@ -41,22 +41,21 @@ export class Dijkstra {
                 if (currentDistance === undefined) {
                     //console.debug(`- First time finding ${n}`);
                     distanceTo.set(n, newDistance);
-                    unvisited.enqueue(n);
+                    unvisited.enqueue({node: n, distance: newDistance});
                     parent.set(n, new Set([nearestUnvisited]));
                 } else if (newDistance < currentDistance) {
                     //console.debug(`- BETTER!!!!`);
                     distanceTo.set(n, newDistance);
-                    unvisited.reorder(n);
+                    unvisited.reorder(obj => {
+                        if (obj.node === n) { obj.distance = newDistance; return true; }
+                        return false;
+                    });
                     parent.set(n, new Set([nearestUnvisited]));
                 } else if (newDistance === currentDistance) {
                     //console.debug(`- tied`);
                     parent.get(n).add(nearestUnvisited);
-                    // no need to enqueue anything
-                } else {
-                    //console.debug(`- not better`);
                 }
             })
-            if (shouldStop(nearestUnvisited, nearestDistance)) break;
         }
         return this;
     }

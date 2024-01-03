@@ -154,8 +154,10 @@ class C {
         // need to make $depth copies of the grid
         console.log('Initializing depth grid');
         for (this.minute=1; this.minute<this.depth; this.minute++) {
-            process.stdout.moveCursor(0, -1);
-            console.log(`Initializing depth grid ${this.minute}/${this.depth-1}`);
+            if (process.stdout.moveCursor) {
+                process.stdout.moveCursor(0, -1);
+                console.log(`Initializing depth grid ${this.minute}/${this.depth-1}`);
+            }
             this.grid.push(new Array<Array<string>>());
             this.grid[this.minute].push(this.grid[0][0]);
             for (let row=1; row<this.height-1; row++) {
@@ -180,7 +182,7 @@ class C {
     }
 
     debug(clear=true) {
-        if (clear) process.stdout.moveCursor(0, -1*(1+this.height));
+        if (clear && process.stdout.moveCursor) process.stdout.moveCursor(0, -1*(1+this.height));
         console.log(`[${this.minute.toString().padStart(3, ' ')}] --------`);
         for (let row=0; row<this.height; row++) {
             let d = this.minute%this.depth;
