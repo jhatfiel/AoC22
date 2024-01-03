@@ -25,40 +25,28 @@ await puzzle.run()
         paths.forEach(path => console.debug(`path: ${path.join(' / ')}: Total Heat: ${distanceToEnd}`));
     });
 
-function getNeighbors(node: string): Map<string, number> {
-    let result = new Map<string, number>();
-    let [xStr, yStr, history] = node.split(',');
-    let x = Number(xStr);
-    let y = Number(yStr);
-
-    const maxStepLength = 3;
-    let facing = [history];
-    if (history === undefined) facing = ['R', 'D'];
-
-    facing.forEach(d => {
-        let p = {x, y};
-        let pLeft = {x, y};
-        let pLeftDir = PAIR_LEFT.get(d);
-        PairMove(pLeft, pLeftDir);
-        let pRight = {x, y}; 
-        let pRightDir = PAIR_RIGHT.get(d);
-        PairMove(pRight, pRightDir);
-        let pDistance = 0;
-        for (let i=0; i<maxStepLength; i++) {
-            if (gp.valid(pLeft)) {
-                result.set(`${pLeft.x},${pLeft.y},${pLeftDir}`, pDistance + Number(gp.grid[pLeft.y][pLeft.x]));
-                PairMove(pLeft, d);
+    function getNeighbors(node: string): Map<string, number> {
+        let result = new Map<string, number>();
+        let [xStr, yStr, direction, distanceStr] = node.split(',');
+        let x = Number(xStr);
+        let y = Number(yStr);
+        if (direction === undefined) direction = '';
+        let distance = 0;
+        if (distanceStr !== undefined) distance = Number(distanceStr);
+        gp.gridOrthogonalP({x,y}).forEach(([p, d]) => {
+            let dirKey = Direction[d].substring(0, 1);
+            let reverseKey = Direction[(d+2)%4].substring(0, 1);
+            let heat = Number(gp.grid[p.y][p.x]);
+            if (direction === dirKey) {
+                // can't take more than 3 steps in the same direction
+                if (distance < 3) {
+                    result.set(`${p.x},${p.y},${direction},${distance+1}`, heat);
+                }
+            } else {
+                // going in a new direction
+                // but can't go in the opposite direction!
+                if (direction !== reverseKey) result.set(`${p.x},${p.y},${dirKey},1`, heat);
             }
-            if (gp.valid(pRight)) {
-                result.set(`${pRight.x},${pRight.y},${pRightDir}`, pDistance + Number(gp.grid[pRight.y][pRight.x]));
-                PairMove(pRight, d);
-            }
-
-            PairMove(p, d);
-            if (gp.valid(p)) pDistance += Number(gp.grid[p.y][p.x]);
-            else break;
-        }
-    })
-    //console.debug(`From: ${node} neighbors are: `, JSON.stringify(Object.fromEntries(result)));
-    return result;
-}
+        })
+        return result;
+    }

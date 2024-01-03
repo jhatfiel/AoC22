@@ -1,17 +1,19 @@
 export class PriorityHeap<T=number> {
     constructor(private isLessThanEqualTo: (a: T, b: T) => boolean = (a: T, b: T) => a <= b ) {
-        this.values = new Array<T>();
+        this.values = new Array<T>(10000); // decent sized heap to reduce memory thrash
     }
     values: Array<T>;
+    nextIdx = 0;
 
-    size(): number { return this.values.length; }
+    size(): number { return this.nextIdx; }
 
     enqueue(e: T) {
-        this.values.push(e);
+        this.values[this.nextIdx] = e;
+        this.nextIdx++;
         this.bubbleUp();
     }
 
-    bubbleUp(idx = this.values.length-1) {
+    bubbleUp(idx = this.nextIdx-1) {
         const e = this.values[idx];
         while (idx > 0) {
             let parentIdx = Math.floor((idx-1)/2);
@@ -26,8 +28,9 @@ export class PriorityHeap<T=number> {
 
     dequeue(): T {
         const max = this.values[0];
-        const end = this.values.pop();
-        if (this.values.length > 0) {
+        const end = this.values[this.nextIdx-1];
+        this.nextIdx--;
+        if (this.nextIdx > 0) {
             this.values[0] = end;
             this.sinkDown();
         }
@@ -35,7 +38,7 @@ export class PriorityHeap<T=number> {
     }
 
     sinkDown(idx = 0) {
-        const length = this.values.length;
+        const length = this.nextIdx;
         const e = this.values[0];
         while (true) {
             let leftChildIdx = 2*idx + 1;
@@ -61,8 +64,8 @@ export class PriorityHeap<T=number> {
         return idx;
     }
 
-    reorder(obj: T) {
-        let idx = this.values.indexOf(obj);
+    reorder(findObj: (o: T) => boolean) {
+        let idx = this.values.findIndex(findObj);
         if (idx !== -1) this.bubbleUp(this.sinkDown(idx));
     }
 
@@ -71,7 +74,7 @@ export class PriorityHeap<T=number> {
         let str = '';
         let ind = 0;
         let pow = 0;
-        while (ind < this.values.length) {
+        while (ind < this.nextIdx) {
             str += '[' + this.values.slice(ind, ind+Math.pow(2, pow)).join(',') + '] / ';
             ind += Math.pow(2, pow);
             pow++;
