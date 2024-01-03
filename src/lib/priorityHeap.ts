@@ -1,8 +1,6 @@
 export class PriorityHeap<T=number> {
-    constructor(private isLessThanEqualTo: (a: T, b: T) => boolean = (a: T, b: T) => a <= b ) {
-        this.values = new Array<T>(10000); // decent sized heap to reduce memory thrash
-    }
-    values: Array<T>;
+    constructor(private isLessThanEqualTo: (a: T, b: T) => boolean = (a: T, b: T) => a <= b ) { }
+    values = new Array<T>(10000); // decent sized heap to reduce memory thrash
     nextIdx = 0;
 
     size(): number { return this.nextIdx; }
