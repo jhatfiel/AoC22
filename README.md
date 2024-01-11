@@ -2,13 +2,13 @@
 
 `npm i --save-dev @types/node` to initialize node_modules folder
 
-run most things using `ts-node a.ts input`
+run most things using `ts-node a.ts ../../../data/YYYY/MM/input`
 
-or... (updating) run most things using `npx tsx a.ts input.txt`
+or... (updating) run most things using `npx tsx a.ts ../../../data/YYYY/MM/input.txt`
 
-or... `npx tsx aoc a202325 2023/25/sample.txt` or via the webpage
+or... `npx tsx aoc aYYYYMM ../../../data/YYYY/MM/sample.txt` or via the webpage
 
-or... `node --experimental-specifier-resolution=node ../dist/out-tsc/aoc a202325 2023/25/input.txt`
+or... `node --experimental-specifier-resolution=node dist/out-tsc/aoc aYYYYMM input.txt`
 
 `ng serve` for webserver
 

@@ -1,4 +1,0 @@
-/usr/bin/time -pao benchmark.txt node a sample > benchmark.txt 2>&1
-/usr/bin/time -pao benchmark.txt node a input  >> benchmark.txt 2>&1
-/usr/bin/time -pao benchmark.txt node b sample >> benchmark.txt 2>&1
-/usr/bin/time -pao benchmark.txt node b input  >> benchmark.txt 2>&1

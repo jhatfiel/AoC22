@@ -1,0 +1,2 @@
+[ip-172-31-43-116.eu-] / 2024-01-11T13:08:07.013Z: [      2.11ms] Ran a202324 with ./data/2023/24/sample.txt resulting in 2
+[ip-172-31-43-116.eu-] / 2024-01-11T13:08:10.518Z: [     25.55ms] Ran a202324 with ./data/2023/24/input.txt resulting in 13149
