@@ -6,11 +6,11 @@ let year = classname.substring(1, 5);
 let day = classname.substring(5, 7);
 
 const dir = `${year}/${day}`;
-const javafile = `./${dir}/${classname}.js`;
+const jsfile = `./${dir}/${classname}.js`;
 const datafile = `./data/${dir}/${process.argv[3]}`;
 const benchfile = `./src/${dir}/bench.txt`;
 console.debug(`@@@@@@@@@@ DATAFILE: ${datafile} @@@@@@@@@@`); 
-import(javafile).then(clazz => {
+import(jsfile).then(clazz => {
     performance.mark("start");
     let puzzle = new clazz[classname](process.argv[3]);
 

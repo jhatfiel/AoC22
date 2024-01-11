@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
-import { a202325 } from 'src/2023/25/a202325';
-import value from 'data/2023/25/sample.txt';
+/*
+import value2325 from 'data/2023/25/sample.txt';
+import value2324 from 'data/2023/24/sample.txt';
+import value2323 from 'data/2023/23/sample.txt';
+*/
 
 @Component({
     selector: 'app-root',
@@ -9,14 +12,26 @@ import value from 'data/2023/25/sample.txt';
 })
 export class AppComponent {
     title = 'AoC';
-    puzzle = new a202325();
-    value = value;
     output = '';
 
     go() {
-        this.puzzle.loadData(value.split('\n'));
-        while (this.puzzle.runStep()) { }
-        
-        this.output = `Final result: ${this.puzzle.result}`;
+        let year = '2023';
+        let day = '25';
+        let part = 'a';
+
+        const classname = `${part}${year}${day}`;
+        const dir = `${year}/${day}`;
+        const inputfile = 'sample.txt'
+        const datafile = `data/${dir}/${inputfile}`;
+
+        const clazzPromise = import(/* webpackInclude: /src\/20\d\d\/\d\d\/[ab]20\d\d\d\d.ts$/ */ `src/${dir}/${classname}`);
+        const valuePromise = import(`data/${dir}/sample.txt`);
+        Promise.all([clazzPromise, valuePromise]).then(([clazz, value]) => {
+            console.log(`value is [${value}]`, value);
+            let puzzle = new clazz[classname](inputfile);
+            puzzle.loadData(value.split('\n'));
+            while (puzzle.runStep()) {}
+            this.output = `Final result: ${puzzle.result}`;
+        })
     }
 }

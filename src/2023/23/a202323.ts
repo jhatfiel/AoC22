@@ -1,6 +1,6 @@
-import { AoCPuzzle } from "../../lib/AoCPuzzle.js";
-import { BFS, BFS_State } from "../../lib/bfsearcher.js";
-import { GridParser, PairFromKey, PairToKey } from "../../lib/gridParser.js";
+import { AoCPuzzle } from "../../lib/AoCPuzzle";
+import { BFS, BFS_State } from "../../lib/bfsearcher";
+import { GridParser, PairFromKey, PairToKey } from "../../lib/gridParser";
 
 export class a202323 extends AoCPuzzle {
     gp: GridParser;
