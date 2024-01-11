@@ -1,3 +1,4 @@
+export {};
 type Disc = { pCnt: number, p: number };
 
 let discs = new Array<Disc>();

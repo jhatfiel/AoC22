@@ -1,9 +1,10 @@
-import fs from 'fs';
-import readline from 'readline';
 
 // for part b, 1 trillion rocks drop.  I couldn't get my head around what the solution would be, so I read
 // https://fasterthanli.me/series/advent-of-code-2022/part-17
 // to see that it requires cycle detection.  Now trying to implement that
+
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 interface IShape {
     add(): void;       // add it temporarily to the grid
@@ -221,7 +222,7 @@ class C {
 let c = new C();
 
 let fn = process.argv[2];
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     c.process(line);

@@ -1,3 +1,4 @@
+export {};
 /*
 const SIZE = 20;
 const STATE='10000';

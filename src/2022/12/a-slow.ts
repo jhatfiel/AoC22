@@ -1,7 +1,8 @@
-import fs from 'fs';
-import readline from 'readline';
 
 // part 2 is going to ask how many possible routes have the optimal number of steps, isn't it?
+
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 class Point { 
     constructor(public row: number, public col: number) {};
@@ -178,7 +179,7 @@ class C {
 let c = new C();
 
 let fn = process.argv[2];
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     c.process(line);

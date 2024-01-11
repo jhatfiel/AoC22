@@ -1,3 +1,4 @@
+export {};
 let maxSteps = 6;
 let states = new Map<string, Array<any>>();
 states.set('a', [[1, 1, 'b'], [0, -1, 'b']]);

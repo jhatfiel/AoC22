@@ -1,5 +1,5 @@
-import fs from 'fs';
-import readline from 'readline';
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 type P = { row: number, col: number };
 
@@ -109,7 +109,7 @@ class C {
 let c = new C();
 
 let fn = process.argv[2];
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     c.process(line);

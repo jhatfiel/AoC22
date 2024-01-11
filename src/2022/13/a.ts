@@ -1,6 +1,5 @@
-import fs from 'fs';
-import readline from 'readline';
-import util from 'node:util';
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 class C {
     result=0;
@@ -38,7 +37,7 @@ class C {
 
     _evaluate(p1: any, p2: any, spacing: string): number {
         let result = 0;
-        console.log(`${spacing}- Compare ${util.inspect(p1, {depth: null, compact: true, breakLength: Infinity})} vs ${util.inspect(p2, {depth: null, compact: true, breakLength: Infinity})}`);
+        console.log(`${spacing}- Compare ${JSON.stringify(p1)} vs ${JSON.stringify(p2)}`);
         if (typeof p1 === 'number' && typeof p2 === 'number') {
              if (p1-p2 > 0) console.log(`${spacing}- Right side is smaller, so inputs are not in the right order`);
              if (p2-p1 > 0) console.log(`${spacing}- Left side is smaller, so inputs are in the right order`);
@@ -77,7 +76,7 @@ class C {
 let c = new C();
 
 let fn = process.argv[2];
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     if (line.length) c.process(line);

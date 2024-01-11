@@ -1,5 +1,5 @@
-import fs from 'fs';
-import readline from 'readline';
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 type P = { x: number, y: number };
 
@@ -121,7 +121,7 @@ let c = new C();
 
 let fn = process.argv[2];
 //c.setLOI(Number(process.argv[3]));
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     c.store(line);

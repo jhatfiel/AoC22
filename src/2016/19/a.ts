@@ -1,3 +1,4 @@
+export {};
 //const NUM=5;
 const NUM=3001330;
 

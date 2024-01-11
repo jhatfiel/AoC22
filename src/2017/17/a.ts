@@ -1,3 +1,4 @@
+export {};
 let input = (process.argv[2] === 'sample')?3:303;
 
 let buffer = new Array<number>(2018);

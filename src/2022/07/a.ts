@@ -1,5 +1,5 @@
-import fs from 'fs';
-import readline from 'readline';
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 
 class DirEntry {
     constructor(public name: string, public parent?: Directory, private size=0) { };
@@ -82,7 +82,7 @@ class C {
 var c = new C();
 
 var fn = process.argv[2];
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     // if line starts with $, it's a command

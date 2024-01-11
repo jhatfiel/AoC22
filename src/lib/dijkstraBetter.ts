@@ -1,4 +1,4 @@
-import { PriorityHeap } from "./priorityHeap.js";
+import { PriorityHeap } from "./priorityHeap";
 
 export class Dijkstra {
     constructor(

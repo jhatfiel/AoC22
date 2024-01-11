@@ -1,6 +1,6 @@
+import { createReadStream } from 'fs';
+import { createInterface } from 'readline';
 import { Dijkstra } from '../../lib/dijkstraBetter.js';
-import fs from 'fs';
-import readline from 'readline';
 
 class C {
     grid = new Array<Array<string>>();
@@ -49,7 +49,7 @@ class C {
 let c = new C();
 
 let fn = process.argv[2];
-const rl = readline.createInterface({ input: fs.createReadStream(fn), crlfDelay: Infinity, terminal: false});
+const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
 
 rl.on('line', (line) => {
     c.process(line);

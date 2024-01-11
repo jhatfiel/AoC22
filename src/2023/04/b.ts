@@ -1,5 +1,4 @@
 import { Puzzle } from "../../lib/puzzle.js";
-import fs from 'fs';
 import chalk from 'chalk';
 
 const puzzle = new Puzzle(process.argv[2]);

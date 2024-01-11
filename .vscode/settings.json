@@ -2,5 +2,6 @@
     "files.exclude":{ "**/*.js": true,
                     "**/*.js.map": true
                 },
-                "debug.console.collapseIdenticalLines": false
+    "debug.console.collapseIdenticalLines": false,
+    "typescript.preferences.importModuleSpecifier": "relative"
 }

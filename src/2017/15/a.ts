@@ -1,3 +1,4 @@
+export {};
 let aStart = 722, bStart = 354; // input
 if (process.argv[2] === 'sample') { aStart = 65, bStart = 8921; }
 

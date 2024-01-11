@@ -6,7 +6,7 @@ export class Puzzle {
 
     async run() {
         const rl = createInterface({ input: createReadStream(this.fn), crlfDelay: Infinity, terminal: false});
-        return new Promise((resolve, reject) => {
+        return new Promise<Array<string>>((resolve, reject) => {
             rl.on('line', line => { this.lines.push(line); this.onLine(line) } ); 
             rl.on('close', () => { resolve(this.lines); this.onClose(); });
         })
@@ -182,12 +182,12 @@ export class Puzzle {
     }
 
     waitForEnter() {
-        if (process.stdout.moveCursor) {
+        if (process && process.stdout && process.stdout.moveCursor !== undefined) {
             let buffer = Buffer.alloc(1);
             let done = false;
             while (!done) {
                 try {
-                    readSync(0, buffer, 0, 1, undefined)
+                    readSync(0, buffer, 0, 1, null)
                     done = true;
                 } catch (error) {
                 }
@@ -199,7 +199,7 @@ export class Puzzle {
         writeFileSync(fn, JSON.stringify(obj), 'utf-8');
     }
 
-    restore(fn): any {
+    restore(fn: any): any {
         return JSON.parse(readFileSync(fn).toString());
     }
 }
