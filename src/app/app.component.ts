@@ -26,9 +26,11 @@ export class AppComponent {
 
         const clazzPromise = import(/* webpackInclude: /src\/20\d\d\/\d\d\/[ab]20\d\d\d\d.ts$/ */ `src/${dir}/${classname}`);
         const valuePromise = import(`data/${dir}/sample.txt`);
-        Promise.all([clazzPromise, valuePromise]).then(([clazz, value]) => {
+        Promise.all([clazzPromise, valuePromise]).then(([clazzModule, valueModule]) => {
+            let value = valueModule['default'];
+            let clazz = clazzModule[classname];
             console.log(`value is [${value}]`, value);
-            let puzzle = new clazz[classname](inputfile);
+            let puzzle = new clazz(inputfile);
             puzzle.loadData(value.split('\n'));
             while (puzzle.runStep()) {}
             this.output = `Final result: ${puzzle.result}`;
