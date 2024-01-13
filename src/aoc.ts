@@ -14,10 +14,10 @@ import(jsfile).then(clazz => {
     performance.mark("start");
     let puzzle = new clazz[classname](process.argv[3]);
 
-    puzzle.loadData(readFileSync(datafile, 'utf8').toString().split('\n'));
+    puzzle.loadData(readFileSync(datafile, 'utf8').toString().split(/\r?\n/));
 
     while (puzzle.runStep()) { }
 
     console.log(`Final result: ${puzzle.result}`);
-    appendFileSync(benchfile, `[${process.env['HOSTNAME'].padStart(20, ' ').substring(0, 20)}] / ${(new Date()).toISOString()}: [${performance.measure(classname, "start").duration.toFixed(2).toString().padStart(10, ' ')}ms] Ran ${classname} with ${datafile} resulting in ${puzzle.result}\n`);
+    appendFileSync(benchfile, `[${(process.env['HOSTNAME'] ?? process.env['COMPUTERNAME'] ?? 'UNKNOWN').padStart(20, ' ').substring(0, 20)}] / ${(new Date()).toISOString()}: [${performance.measure(classname, "start").duration.toFixed(2).toString().padStart(10, ' ')}ms] Ran ${classname} with ${datafile} resulting in ${puzzle.result}\n`);
 })

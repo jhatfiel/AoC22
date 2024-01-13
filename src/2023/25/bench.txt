@@ -2,3 +2,11 @@
 [ip-172-31-43-116.eu-] / 2024-01-11T13:08:29.228Z: [  11892.79ms] Ran a202325 with ./data/2023/25/input.txt resulting in 495607
 [ip-172-31-43-116.eu-] / 2024-01-11T13:21:26.883Z: [     48.10ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
 [ip-172-31-43-116.eu-] / 2024-01-11T14:18:20.593Z: [     27.69ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
+[                  HP] / 2024-01-11T17:06:14.149Z: [     61.32ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
+[                  HP] / 2024-01-11T17:06:32.380Z: [   6092.30ms] Ran a202325 with ./data/2023/25/input.txt resulting in 495607
+[                  HP] / 2024-01-12T20:38:09.598Z: [   5951.21ms] Ran a202325 with ./data/2023/25/input.txt resulting in 495607
+[                  HP] / 2024-01-12T20:38:16.475Z: [   5587.94ms] Ran a202325 with ./data/2023/25/input.txt resulting in 495607
+[                  HP] / 2024-01-12T20:38:21.340Z: [     33.92ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
+[                  HP] / 2024-01-12T20:38:29.204Z: [     26.90ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
+[                  HP] / 2024-01-12T20:42:30.344Z: [   6810.56ms] Ran a202325 with ./data/2023/25/input.txt resulting in 495607
+[                  HP] / 2024-01-12T20:46:39.398Z: [    108.78ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54

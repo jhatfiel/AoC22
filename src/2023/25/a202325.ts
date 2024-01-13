@@ -41,6 +41,7 @@ export class a202325 extends AoCPuzzle {
         })
 
         this.toProcess = Array.from(this.graph.keys());
+        this.generateEdotorCode();
     }
 
     _runStep() {
@@ -65,7 +66,7 @@ export class a202325 extends AoCPuzzle {
                     })
                 })
             });
-            console.debug(`Processed: ${from} (${this.stepIdx} / ${this.nodes.length})`);
+            console.log(`Processed: ${from} (${this.stepIdx} / ${this.nodes.length})`);
             return true;
         } else {
             // all nodes have been processed, all shortest path edges counted, process results
