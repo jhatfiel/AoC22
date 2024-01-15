@@ -1,0 +1,23 @@
+.mat-sidenav {
+    width: 360px;
+}
+
+.mat-sidenav-container {
+    background-color: white !important;
+    height: 100vh;
+}
+
+.mat-sidenav-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidenav-toolbar {
+    height: 64px;
+    display: flex;
+    flex-direction: row;
+}
+
+.mat-list-item-content {
+    flex: 1 1 100%;
+}

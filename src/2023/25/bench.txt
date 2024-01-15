@@ -10,3 +10,4 @@
 [                  HP] / 2024-01-12T20:38:29.204Z: [     26.90ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
 [                  HP] / 2024-01-12T20:42:30.344Z: [   6810.56ms] Ran a202325 with ./data/2023/25/input.txt resulting in 495607
 [                  HP] / 2024-01-12T20:46:39.398Z: [    108.78ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54
+[                  HP] / 2024-01-14T08:43:28.559Z: [     48.47ms] Ran a202325 with ./data/2023/25/sample.txt resulting in 54

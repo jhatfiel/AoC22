@@ -1,13 +1,37 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { a202323 } from '../2023/23/a202323';
+import { b202323 } from '../2023/23/b202323';
+import { a202324 } from '../2023/24/a202324';
+import { a202325 } from '../2023/25/a202325';
+import { NavItem } from './nav-item';
+import { NavService } from './nav.service';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-    title = 'AoC';
-    output = '';
+export class AppComponent implements AfterViewInit {
+    @ViewChild('appDrawer') appDrawer: ElementRef;
+    navItems: NavItem[] = [
+        {displayName: '2015'},
+        {displayName: '2016'},
+        {displayName: '2017'},
+        {displayName: '2018'},
+        {displayName: '2019'},
+        {displayName: '2020'},
+        {displayName: '2021'},
+        {displayName: '2022'},
+        {displayName: '2023', children: [
+            {displayName: '25: Snowverload', route: '2023/25'}
+        ]},
+    ]
+
+    constructor(private navService: NavService) { }
+
+    ngAfterViewInit(): void {
+        this.navService.appDrawer = this.appDrawer;
+    }
 
     go(year: number, day: number, part: string, inputfile: string) {
         const classname = `${part}${year}${day}`;
@@ -28,7 +52,7 @@ export class AppComponent {
             let puzzle = new clazz(inputfile);
             puzzle.loadData(value.split(/\r?\n/));
             while (puzzle.runStep()) {}
-            this.output = `Final result: ${puzzle.result}`;
+            //this.output = `Final result: ${puzzle.result}`;
         })
     }
 }

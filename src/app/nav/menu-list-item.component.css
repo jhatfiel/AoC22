@@ -1,0 +1,13 @@
+.mat-list-item.active {
+    background-color: gray;
+}
+
+.mat-list-item {
+    padding: 8px 0;
+    display: flex;
+    width: auto;
+}
+
+.routeIcon {
+    margin-right: 40px;
+}

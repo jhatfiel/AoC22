@@ -4,3 +4,5 @@
 [ip-172-31-43-116.eu-] / 2024-01-11T13:19:34.076Z: [     22.54ms] Ran b202323 with ./data/2023/23/sample.txt resulting in 154
 [ip-172-31-43-116.eu-] / 2024-01-11T13:20:05.800Z: [     33.52ms] Ran b202323 with ./data/2023/23/sample.txt resulting in 154
 [ip-172-31-43-116.eu-] / 2024-01-11T13:20:32.392Z: [  23627.28ms] Ran b202323 with ./data/2023/23/input.txt resulting in 6406
+[                  HP] / 2024-01-14T08:43:12.500Z: [     19.28ms] Ran b202323 with ./data/2023/23/sample.txt resulting in 154
+[                  HP] / 2024-01-14T08:43:17.978Z: [     13.28ms] Ran a202323 with ./data/2023/23/sample.txt resulting in 94
