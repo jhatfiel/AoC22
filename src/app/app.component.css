@@ -18,6 +18,10 @@
     flex-direction: row;
 }
 
-.mat-list-item-content {
-    flex: 1 1 100%;
+.mat-mdc-list-item-unscoped-content {
+    display: flex;
+}
+
+.mdc-list-item__content {
+    padding-left: 16px;
 }

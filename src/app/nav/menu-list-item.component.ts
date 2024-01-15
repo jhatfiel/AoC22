@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input, OnInit } from "@angular/core";
+import { Component, HostBinding, Input, OnInit, ViewEncapsulation } from "@angular/core";
 import { NavItem } from "../nav-item";
 import { NavService } from "../nav.service";
 import { Router } from "@angular/router";

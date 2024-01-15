@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { a202323 } from '../2023/23/a202323';
 import { b202323 } from '../2023/23/b202323';
 import { a202324 } from '../2023/24/a202324';
@@ -9,7 +9,8 @@ import { NavService } from './nav.service';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css']
+    styleUrls: ['./app.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements AfterViewInit {
     @ViewChild('appDrawer') appDrawer: ElementRef;
@@ -23,6 +24,9 @@ export class AppComponent implements AfterViewInit {
         {displayName: '2021'},
         {displayName: '2022'},
         {displayName: '2023', children: [
+            {displayName: '23: A Long Walk', route: '2023/23'},
+            {displayName: '23: A Long Walk (Part 2)', route: '2023/23b'},
+            {displayName: '24: Never Tell Me The Odds', route: '2023/24'},
             {displayName: '25: Snowverload', route: '2023/25'}
         ]},
     ]
