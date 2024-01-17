@@ -3,5 +3,7 @@
                     "**/*.js.map": true
                 },
     "debug.console.collapseIdenticalLines": false,
-    "typescript.preferences.importModuleSpecifier": "relative"
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "html.autoCreateQuotes": false,
+    "html.autoClosingTags": false
 }

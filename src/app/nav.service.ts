@@ -22,4 +22,8 @@ export class NavService {
     public openNav() {
         this.appDrawer.open();
     }
+
+    public play() {
+
+    }
 }

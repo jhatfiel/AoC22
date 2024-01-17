@@ -16,6 +16,7 @@ import { MainComponent } from './main.component';
 import { NavComponent } from './nav/nav.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MenuListItemComponent } from './nav/menu-list-item.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { MenuListItemComponent } from './nav/menu-list-item.component';
     NavComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,

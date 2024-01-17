@@ -2,5 +2,9 @@
     <button mat-icon-button id="menu" (click)="navService.openNav()">
         <mat-icon>menu</mat-icon>
     </button>
-    <span>AoC</span>
+    <a href='/'>top</a>
+    <span class="currentPuzzle">{{path}}</span>
+    <button mat-icon-button id="step" (click)="navService.play()">
+        <mat-icon>play_arrow</mat-icon>
+    </button>
 </mat-toolbar>
