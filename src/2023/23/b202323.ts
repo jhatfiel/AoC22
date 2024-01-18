@@ -9,7 +9,7 @@ export class b202323 extends AoCPuzzle {
     toKey(x:number,y:number): number { return ((x&0xFF)<<16) | (y&0xFF); }
     fromKey(k: number): {x: number, y: number} { return {x: 0xFF&(k>>16), y: 0xFF&k};}
 
-    loadData(lines: string[]) {
+    _loadData(lines: string[]) {
         this.gp = new GridParser(lines, []);
     }
 
@@ -20,15 +20,15 @@ export class b202323 extends AoCPuzzle {
         let bfsNodes = new BFS<number>(this.getNodeNeighbors.bind(this), state => {
             if (state.at === this.finalKey && state.cost > longest) {
                 longest = state.cost;
-                console.debug(`Found longer state: ${longest}`);
-                console.debug(`Path: ${Array.from(state.visited).map(n => this.fromKey(n)).map(n => `${n.x},${n.y}`).join(' / ')} cost = ${state.cost}`);
+                this.log(`Found longer state: ${longest}`);
+                this.log(`Path: ${Array.from(state.visited).map(n => this.fromKey(n)).map(n => `${n.x},${n.y}`).join(' / ')} cost = ${state.cost}`);
                 return true;
             }
             return false;
         });
         bfsNodes.getPathsFrom(new BFS_State(this.toKey(1,0)));
 
-        console.log(`Longest path: ${longest}`);
+        this.log(`Longest path: ${longest}`);
         this.result = longest.toString();
         return false;
     }

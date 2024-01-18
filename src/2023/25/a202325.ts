@@ -8,7 +8,7 @@ export class a202325 extends AoCPuzzle {
     toProcess = new Array<string>();
     nodes = new Array<string>();
 
-    loadData(lines: Array<string>) {
+    _loadData(lines: Array<string>) {
         lines.forEach(line => {
             let arr = line.split(': ');
             let node = arr[0];
@@ -30,12 +30,12 @@ export class a202325 extends AoCPuzzle {
             });
         });
         this.nodes = Array.from(this.graph.keys());
-        console.debug(`Number of nodes: ${this.graph.size}`);
+        this.log(`Number of nodes: ${this.graph.size}`);
 
         this.edges = Array.from(this.graph.keys()).flatMap(n => Array.from(this.graph.get(n)!).map(c => [n,c]));
-        console.debug(`Number of edges: ${this.edges.length}`);
-        //console.debug(`edges: ${edges.map(([a1,a2])=>`${a1}-${a2}`).join('/')}`);
-        //console.debug(`hfx connected: ${Array.from(graph.get('hfx'))}`)
+        this.log(`Number of edges: ${this.edges.length}`);
+        //this.log(`edges: ${edges.map(([a1,a2])=>`${a1}-${a2}`).join('/')}`);
+        //this.log(`hfx connected: ${Array.from(graph.get('hfx'))}`)
         this.edges.forEach(([a,b]) => {
             this.edgeCount.set(`${a}.${b}`, 0);
         })
@@ -66,7 +66,7 @@ export class a202325 extends AoCPuzzle {
                     })
                 })
             });
-            console.log(`Processed: ${from} (${this.stepIdx} / ${this.nodes.length})`);
+            this.log(`Processed: ${from} (${this.stepIdx} / ${this.nodes.length})`);
             return true;
         } else {
             // all nodes have been processed, all shortest path edges counted, process results
@@ -75,7 +75,7 @@ export class a202325 extends AoCPuzzle {
                 return n1.localeCompare(n2) < 0;
             }).sort((a, b) => (this.edgeCount.get(a) === this.edgeCount.get(b))?0:((this.edgeCount.get(a)! > this.edgeCount.get(b)!)?-1:1)).slice(0,3);
             edges.forEach(edge => {
-                console.debug(`Cutting edge: ${edge} (${this.edgeCount.get(edge)})`);
+                this.log(`Cutting edge: ${edge} (${this.edgeCount.get(edge)})`);
                 let [n1, n2] = edge.split('.');
                 this.graph.get(n1)!.delete(n2);
                 this.graph.get(n2)!.delete(n1);
@@ -83,14 +83,14 @@ export class a202325 extends AoCPuzzle {
 
             Array.from(this.edgeCount.keys())
                      .sort((a, b) => (this.edgeCount.get(a) === this.edgeCount.get(b))?0:((this.edgeCount.get(a)! > this.edgeCount.get(b)!)?-1:1)).slice(0, 10).forEach(edge => {
-                console.debug(`Edge: ${edge} count=${this.edgeCount.get(edge)}`)
+                this.log(`Edge: ${edge} count=${this.edgeCount.get(edge)}`)
             });
 
             let groups = this.getGroups(this.graph);
-            console.debug(`Group sizes: ${groups.map(s => s.size)}`);
+            this.log(`Group sizes: ${groups.map(s => s.size)}`);
 
             this.result = groups.map(s => s.size).reduce((acc, s) => acc *= s, 1).toString();
-            console.log(`Finished: Cutting: ${edges.join(' / ')}`);
+            this.log(`Finished: Cutting: ${edges.join(' / ')}`);
             return false;
         }
     }
@@ -104,7 +104,7 @@ export class a202325 extends AoCPuzzle {
     getGroups(graph: Map<string, Set<string>>): Array<Set<string>> {
         let sets = new Array<Set<string>>();
         graph.forEach((connectedSet, node) => {
-            //console.debug(`Processing ${node}: ${Array.from(connectedSet)}`);
+            //this.log(`Processing ${node}: ${Array.from(connectedSet)}`);
             let found = Array<Set<string>>();
             sets.forEach(set => {
                 if (set.has(node) || Array.from(connectedSet.keys()).some(connectedNode => set.has(connectedNode))) {
@@ -122,17 +122,17 @@ export class a202325 extends AoCPuzzle {
             let destinationSet = found[0];
 
             if (destinationSet === undefined) {
-                //console.debug(`Need new set for ${node}`)
+                //this.log(`Need new set for ${node}`)
                 destinationSet = new Set<string>();
                 sets.push(destinationSet);
             }
             destinationSet.add(node);
             connectedSet.forEach(connectedNode => destinationSet.add(connectedNode));
         
-            //console.debug(`After processing ${node}, there are ${sets.length} sets`);
+            //this.log(`After processing ${node}, there are ${sets.length} sets`);
             /*
             sets.forEach(s => {
-                    console.debug(`     ${Array.from(s)}`);
+                    this.log(`     ${Array.from(s)}`);
             })
             */
         })
@@ -144,7 +144,7 @@ export class a202325 extends AoCPuzzle {
          * Generate input for https://edotor.net/
          */
         let link = 'https://edotor.net';
-        console.debug(`Generating input for ${link}`);
+        this.log(`Generating input for ${link}`);
         link += '/?engine=dot#graph%7B%7B'
         link += '%7D';
         this.graph.forEach((connections, node) => {
@@ -153,7 +153,7 @@ export class a202325 extends AoCPuzzle {
             })
         });
         link += '%7D'
-        console.debug(link);
+        this.log(link);
     }
 
     generateEdotorCode() {
@@ -163,7 +163,7 @@ export class a202325 extends AoCPuzzle {
          * https://dreampuf.github.io/GraphvizOnline/ another graph site
          */
         let link = 'https://edotor.net';
-        console.debug(`Generating input for ${link}`);
+        this.log(`Generating input for ${link}`);
         let code = 'graph {\n';
         this.graph.forEach((connections, node) => {
             connections.forEach(connectedNode => {
@@ -171,6 +171,6 @@ export class a202325 extends AoCPuzzle {
             })
         });
         code += '}'
-        console.debug(code);
+        this.log(code);
     }
 }

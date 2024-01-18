@@ -4,7 +4,7 @@ import { GridParser, PairFromKey, PairToKey } from "../../lib/gridParser";
 
 export class a202323 extends AoCPuzzle {
     gp: GridParser;
-    loadData(lines: string[]) {
+    _loadData(lines: string[]) {
         this.gp = new GridParser(lines, []);
     }
     _runStep(): boolean {
@@ -14,11 +14,11 @@ export class a202323 extends AoCPuzzle {
 
         let longest = 0;
         states.forEach(s => {
-            console.debug(`Path length: ${s.cost} ends at ${Array.from(s.visited.keys()).slice(s.visited.size-6).join(' / ')}`)
+            this.log(`Path length: ${s.cost} ends at ${Array.from(s.visited.keys()).slice(s.visited.size-6).join(' / ')}`)
             longest = Math.max(longest, s.cost);
         })
 
-        console.log(`Longest path: ${longest}`);
+        this.log(`Longest path: ${longest}`);
         this.result = longest.toString();
         return false;
     }
@@ -26,7 +26,7 @@ export class a202323 extends AoCPuzzle {
     getNeighbors(state: BFS_State): Map<string, number> {
         let result = new Map<string, number>();
         let at = PairFromKey(state.at);
-        //console.debug(`getNeighbors: ${state.at} current cost: ${state.cost}, [${Array.from(state.visited.keys()).join(' / ')}]`)
+        //this.log(`getNeighbors: ${state.at} current cost: ${state.cost}, [${Array.from(state.visited.keys()).join(' / ')}]`)
         //if (state.visited.size > 5) return result;
         Array.from(this.gp.getNeighbors(state.at))
             .map(k => PairFromKey(k[0]))

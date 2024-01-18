@@ -7,9 +7,10 @@
     height: 100vh;
 }
 
-.mat-sidenav-content {
+mat-sidenav-content.mat-sidenav-content {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .sidenav-toolbar {

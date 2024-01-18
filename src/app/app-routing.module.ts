@@ -7,10 +7,12 @@ import { GenericPuzzleComponent } from './visualization/GenericPuzzleComponent';
 
 const routes: Routes = [
     { path: '', component: MainComponent, pathMatch: 'full'},
+    /*
     { path: '2023', children: [
         { path: '24/a', component: a202324Component },
         { path: '25/a', component: a202325Component }
     ]},
+    */
     { path: '**', component: GenericPuzzleComponent }
 ];
 
