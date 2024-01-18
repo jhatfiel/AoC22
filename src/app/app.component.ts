@@ -11,6 +11,7 @@ import { NavService } from './nav.service';
 export class AppComponent implements AfterViewInit {
     @ViewChild('appDrawer') appDrawer: ElementRef;
     navItems: NavItem[] = [
+        {displayName: 'Home', route: '/'},
         {displayName: '2015'},
         {displayName: '2016'},
         {displayName: '2017'},

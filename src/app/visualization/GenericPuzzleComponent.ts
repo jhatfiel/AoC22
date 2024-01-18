@@ -1,16 +1,22 @@
 import { Component, OnInit } from "@angular/core";
 import { NavigationEnd, Event, Router } from "@angular/router";
 import { AoCPuzzle } from "../../lib/AoCPuzzle";
+import { NavService } from "../nav.service";
+import { PuzzleVisualizationComponent } from "./PuzzleVisualization.component";
 
 @Component({
     selector: 'GenericPuzzleComponent',
     templateUrl: './GenericPuzzleComponent.html',
     styleUrls: ['./GenericPuzzleComponent.css']
 })
-export class GenericPuzzleComponent implements OnInit {
-    constructor(public router: Router) {
+export class GenericPuzzleComponent extends PuzzleVisualizationComponent implements OnInit {
+    constructor(public router: Router, public navService: NavService) {
+        super();
+        this.navService.currentPuzzleComponent = this;
         this.router.events.subscribe((event: Event) => {
             if (event instanceof NavigationEnd) {
+                this.output = '';
+                this.puzzle = undefined;
                 this.url = event.urlAfterRedirects;
                 let arr = this.url.split('/');
                 this.year = Number(arr[1]);
@@ -23,7 +29,6 @@ export class GenericPuzzleComponent implements OnInit {
                     `src/${this.year}/${this.day}/${this.classname}`
                 ).then(clazzModule => {
                     this.clazzModule = clazzModule;
-                    this.go('sample');
                 });
             }
         });
@@ -38,24 +43,27 @@ export class GenericPuzzleComponent implements OnInit {
     clazzModule: any; 
     puzzle: AoCPuzzle;
     output: string = '';
+    lines: string[];
 
     ngOnInit() {
     }
 
-    go(inputfile: string) {
-        this.output = '';
-        const datafile = `${this.year}/${this.day}/${inputfile}`;
+    go() {
+            this.puzzle.loadData(this.lines);
+            while (this.puzzle.runStep()) {}
+    }
 
+    selectFile(inputFile: string) {
+        this.output = '';
+        const datafile = `${this.year}/${this.day}/${inputFile}`;
         import(
             `data/${datafile}.txt`
         ).then((valueModule) => {
-            let value = valueModule['default'];
-            console.log(`value is [${value}]`);
-            this.puzzle = new this.clazzModule[this.classname](inputfile, msg => {
+            this.lines = valueModule['default'].split(/\r?\n/);
+            this.puzzle = new this.clazzModule[this.classname](inputFile, msg => {
                 this.output += msg + "\n";
             });
-            this.puzzle.loadData(value.split(/\r?\n/));
-            while (this.puzzle.runStep()) {}
+            this.navService.canPlay = true;
         })
     }
 }

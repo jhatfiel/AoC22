@@ -1,10 +1,14 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button id="menu" (click)="navService.openNav()">
-        <mat-icon>menu</mat-icon>
+    top
+    <span class="currentPuzzle" (click)="navService.openNav()">{{path}}</span>
+    <button [disabled]="!navService.canPlay" mat-icon-button id="step" (click)="navService.play()">
+        <mat-icon>skip_next</mat-icon>
     </button>
-    <a href='/'>top</a>
-    <span class="currentPuzzle">{{path}}</span>
-    <button mat-icon-button id="step" (click)="navService.play()">
+    <button [disabled]="!navService.canPlay" mat-icon-button id="play" (click)="navService.play()">
         <mat-icon>play_arrow</mat-icon>
     </button>
+    <mat-checkbox>Auto-run</mat-checkbox>
+    <span>Input File: </span>
+    <button id="sample" (click)="navService.selectFile('sample')">sample.txt</button>
+    <button id="input" (click)="navService.selectFile('input')">input.txt</button>
 </mat-toolbar>

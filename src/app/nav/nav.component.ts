@@ -10,6 +10,7 @@ import { NavigationEnd, Event, Router } from "@angular/router";
 export class NavComponent implements OnInit {
     constructor(public navService: NavService, public router: Router) {
         this.router.events.subscribe((event: Event) => {
+            this.navService.canPlay = false;
             if (event instanceof NavigationEnd) {
                 this.path = event.urlAfterRedirects;
             }
@@ -17,6 +18,7 @@ export class NavComponent implements OnInit {
     }
 
     path: string;
+    files = ['sample', 'input'];
 
     ngOnInit(): void { }
 }
