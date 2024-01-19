@@ -39,7 +39,7 @@ export class MenuListItemComponent implements OnInit {
 
     onItemSelected(item: NavItem) {
         if (!item.children || !item.children.length) {
-            this.router.navigate([item.route]);
+            this.router.navigate([item.route], { queryParams: {files: item.files?.join(',') } });
             this.navService.closeNav();
         }
         if (item.children && item.children.length) {

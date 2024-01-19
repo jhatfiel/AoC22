@@ -1,7 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { NavigationEnd, Event, Router } from "@angular/router";
 import { AoCPuzzle } from "../../lib/AoCPuzzle";
-import { NavService } from "../nav.service";
+import { NavService, PUZZLE_STATE } from "../nav.service";
 import { PuzzleVisualizationComponent } from "./PuzzleVisualization.component";
 
 @Component({
@@ -9,61 +9,27 @@ import { PuzzleVisualizationComponent } from "./PuzzleVisualization.component";
     templateUrl: './GenericPuzzleComponent.html',
     styleUrls: ['./GenericPuzzleComponent.css']
 })
-export class GenericPuzzleComponent extends PuzzleVisualizationComponent implements OnInit {
-    constructor(public router: Router, public navService: NavService) {
-        super();
-        this.navService.currentPuzzleComponent = this;
-        this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationEnd) {
-                this.output = '';
-                this.puzzle = undefined;
-                this.url = event.urlAfterRedirects;
-                let arr = this.url.split('/');
-                this.year = Number(arr[1]);
-                this.day = Number(arr[2]);
-                this.part = arr[3];
-                this.classname = `${this.part}${this.year}${this.day}`;
-
-                import(
-                    /* webpackInclude: /src[\/\\]20\d\d[\/\\]\d\d[\/\\][ab]20\d\d\d\d.ts$/ */
-                    `src/${this.year}/${this.day}/${this.classname}`
-                ).then(clazzModule => {
-                    this.clazzModule = clazzModule;
-                });
-            }
-        });
-    }
-
-    classname: string;
-    year: number;
-    day: number;
-    part: string;
-
-    url: string;
-    clazzModule: any; 
-    puzzle: AoCPuzzle;
+export class GenericPuzzleComponent extends PuzzleVisualizationComponent implements OnInit, AfterViewChecked {
+    @ViewChild('scrollOutput') private scrollOutput: ElementRef
     output: string = '';
-    lines: string[];
 
-    ngOnInit() {
+    constructor(public router: Router, public navService: NavService) {
+        super(navService);
+        this.navService.currentUrl.subscribe(_ => { this.output = ''; })
     }
 
-    go() {
-            this.puzzle.loadData(this.lines);
-            while (this.puzzle.runStep()) {}
+    ngOnInit() { }
+    ngAfterViewChecked(): void {
+        this.scrollOutput.nativeElement.scrollTop = this.scrollOutput.nativeElement.scrollHeight;
     }
 
-    selectFile(inputFile: string) {
+    reset() {
         this.output = '';
-        const datafile = `${this.year}/${this.day}/${inputFile}`;
-        import(
-            `data/${datafile}.txt`
-        ).then((valueModule) => {
-            this.lines = valueModule['default'].split(/\r?\n/);
-            this.puzzle = new this.clazzModule[this.classname](inputFile, msg => {
-                this.output += msg + "\n";
-            });
-            this.navService.canPlay = true;
-        })
     }
+
+    log(msg) {
+        this.output += msg + "\n";
+    }
+
+    step() { }
 }

@@ -24,7 +24,7 @@ export class AppComponent implements AfterViewInit {
             {displayName: '23: A Long Walk', route: '2023/23/a'},
             {displayName: '23: A Long Walk (Part 2)', route: '2023/23/b'},
             {displayName: '24: Never Tell Me The Odds', route: '2023/24/a'},
-            {displayName: '25: Snowverload', route: '2023/25/a'}
+            {displayName: '25: Snowverload', route: '2023/25/a', files: ['sample', 'sample2', 'input']}
         ]},
     ]
 

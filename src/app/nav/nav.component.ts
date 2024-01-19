@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { NavService } from "../nav.service";
-import { NavigationEnd, Event, Router } from "@angular/router";
+import { NavService, PUZZLE_STATE } from "../nav.service";
 
 @Component({
     selector: 'app-nav',
@@ -8,17 +7,44 @@ import { NavigationEnd, Event, Router } from "@angular/router";
     styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-    constructor(public navService: NavService, public router: Router) {
-        this.router.events.subscribe((event: Event) => {
-            this.navService.canPlay = false;
-            if (event instanceof NavigationEnd) {
-                this.path = event.urlAfterRedirects;
-            }
-        });
+    playIcon = 'play_arrow';
+    constructor(public navService: NavService) {
+        this.navService.stateBehavior.subscribe(state => {
+            if (state === PUZZLE_STATE.PLAYING) this.playIcon = 'pause'; 
+            if (state === PUZZLE_STATE.PAUSED) this.playIcon = 'play_arrow'; 
+            if (state === PUZZLE_STATE.DONE) this.playIcon = 'replay';
+        })
     }
 
-    path: string;
-    files = ['sample', 'input'];
+    PUZZLE_STATE() { return PUZZLE_STATE; }
 
     ngOnInit(): void { }
+
+    savePreferences(event) {
+        localStorage.setItem('autoPlay', event.source.checked);
+    }
+
+    step() {
+        this.navService.init();
+        this.playIcon = 'play_arrow';
+        this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
+        this.navService.step();
+    }
+
+    playPause() {
+        if (this.navService.stateBehavior.value === PUZZLE_STATE.PLAYING) {
+            this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
+        } else {
+            this.playIcon = 'pause';
+            this.navService.init();
+            this.navService.stateBehavior.next(PUZZLE_STATE.PLAYING);
+            this.navService.play();
+        }
+    }
+
+    pause() {
+        this.navService.init();
+        this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
+        this.playIcon = 'play';
+    }
 }

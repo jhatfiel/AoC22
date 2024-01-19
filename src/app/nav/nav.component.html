@@ -1,14 +1,17 @@
 <mat-toolbar color="primary">
     top
-    <span class="currentPuzzle" (click)="navService.openNav()">{{path}}</span>
-    <button [disabled]="!navService.canPlay" mat-icon-button id="step" (click)="navService.play()">
+    <span class="currentPuzzle" (click)="navService.openNav()">{{this.navService.getPuzzleDescription()}}</span>
+    <button #stepBtn [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED" 
+        mat-icon-button
+        (click)="step()">
         <mat-icon>skip_next</mat-icon>
     </button>
-    <button [disabled]="!navService.canPlay" mat-icon-button id="play" (click)="navService.play()">
-        <mat-icon>play_arrow</mat-icon>
+    <button #playBtn [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED"
+        mat-icon-button
+        (click)="playPause()">
+        <mat-icon>{{playIcon}}</mat-icon>
     </button>
-    <mat-checkbox>Auto-run</mat-checkbox>
+    <mat-checkbox #autoPlayCB (change)="savePreferences($event)" [(ngModel)]='navService.auto'>Auto</mat-checkbox> &nbsp; 
     <span>Input File: </span>
-    <button id="sample" (click)="navService.selectFile('sample')">sample.txt</button>
-    <button id="input" (click)="navService.selectFile('input')">input.txt</button>
+    <button *ngFor="let file of navService.files" (click)="navService.selectFile(file)">{{file}}</button>
 </mat-toolbar>

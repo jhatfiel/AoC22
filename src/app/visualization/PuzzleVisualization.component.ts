@@ -9,12 +9,15 @@ import { NavService } from "../nav.service";
     styles: []
 })
 export abstract class PuzzleVisualizationComponent implements OnInit {
-    constructor() {
+    constructor(public navService: NavService) {
+        this.navService.currentPuzzleComponent = this;
     }
 
-    ngOnInit() {
-    }
+    done = true;
 
-    abstract selectFile(fn: string);
-    abstract go();
+    ngOnInit() {};
+
+    reset() {};
+    abstract step();
+    log(msg: string) { console.log(msg) };
 }
