@@ -1,0 +1,29 @@
+:host {
+    overflow: hidden;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    overflow: hidden;
+}
+
+.viz {
+    height: 100%;
+    width: 50%;
+}
+
+.scrollOutput {
+    height: 100%;
+    width: 50%;
+    overflow-y: auto;
+}

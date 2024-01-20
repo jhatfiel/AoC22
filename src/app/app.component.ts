@@ -15,7 +15,9 @@ export class AppComponent implements AfterViewInit {
         {displayName: '2015'},
         {displayName: '2016'},
         {displayName: '2017'},
-        {displayName: '2018'},
+        {displayName: '2018', children: [
+            {displayName: '15: Beverage Bandits', route: '2018/15/a', files: ['sample', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6', 'input']},
+        ]},
         {displayName: '2019'},
         {displayName: '2020'},
         {displayName: '2021'},

@@ -46,6 +46,8 @@ export class NavService {
                     this.classname = `${this.part}${this.year}${this.day}`;
                     if (httpParams.get('files')) {
                         this.files = httpParams.get('files').split(',');
+                    } else {
+                        this.files = ['sample', 'input'];
                     }
                     import(
                         /* webpackInclude: /src[\/\\]20\d\d[\/\\]\d\d[\/\\][ab]20\d\d\d\d.ts$/ */
@@ -103,12 +105,12 @@ export class NavService {
 
     public init() {
         if (!this.puzzle || this.stateBehavior.value === PUZZLE_STATE.DONE) {
-            this.currentPuzzleComponent.reset();
             this.puzzle = new this.clazzModule[this.classname](this.inputFile, msg => {
                 if (this.currentPuzzleComponent) this.currentPuzzleComponent.log(msg);
             });
             this.puzzle.loadData(this.lines);
             this.stateBehavior.next(PUZZLE_STATE.PAUSED);
+            this.currentPuzzleComponent.reset();
         }
     }
 

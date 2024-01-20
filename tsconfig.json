@@ -21,6 +21,7 @@
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",
+      "scripthost",
       "dom"
     ],
     "typeRoots": [

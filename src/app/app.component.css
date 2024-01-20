@@ -26,3 +26,7 @@ mat-sidenav-content.mat-sidenav-content {
 .mdc-list-item__content {
     padding-left: 16px;
 }
+
+hr {
+    width: 100%;
+}
