@@ -1,0 +1,17 @@
+[                  HP] / 2024-01-20T16:16:04.144Z: [     19.52ms] Ran a201815 with ./data/2018/15/sample.txt resulting in Result
+[                  HP] / 2024-01-20T20:15:25.574Z: [     12.62ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-20T20:15:41.052Z: [      4.14ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-20T20:16:44.047Z: [     10.27ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-20T20:18:31.942Z: [      7.58ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-20T20:33:26.643Z: [      4.10ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-20T20:34:08.546Z: [      7.49ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-20T20:41:10.238Z: [     46.20ms] Ran a201815 with ./data/2018/15/input.txt resulting in 
+[                  HP] / 2024-01-20T20:41:28.755Z: [     17.50ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T08:39:27.933Z: [     29.63ms] Ran a201815 with ./data/2018/15/input.txt resulting in 
+[                  HP] / 2024-01-21T08:39:48.873Z: [     21.03ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T08:52:04.342Z: [      5.97ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T08:52:55.813Z: [     23.24ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T08:55:40.558Z: [      9.69ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T09:11:59.689Z: [    280.42ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T09:15:20.633Z: [     13.99ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 
+[                  HP] / 2024-01-21T09:17:18.998Z: [     42.18ms] Ran a201815 with ./data/2018/15/sample.txt resulting in 

@@ -93,7 +93,7 @@ export class NavService {
         ).then((valueModule) => {
             this.lines = valueModule['default'].trimRight().split(/\r?\n/);
             this.stateBehavior.next(PUZZLE_STATE.PAUSED);
-            //this.currentPuzzleComponent.reset();
+            this.init();
 
             if (this.auto) {
                 this.init();
