@@ -6,6 +6,65 @@ import * as Phaser from "phaser";
 import { a201815 } from "../../../../2018/15/a201815";
 import { Pair } from "../../../../lib/gridParser";
 
+class GameScene extends Phaser.Scene {
+    puzzle: a201815;
+    elves: Phaser.GameObjects.Image[] = [];
+    goblins: Phaser.GameObjects.Image[] = [];
+
+    constructor() { super('puzzle'); }
+
+    init(data: any) { this.puzzle = data.puzzle; }
+
+    preload() {
+        this.load.image('wall', '/assets/MossyWall.png');
+        this.load.image('floor', '/assets/Floor.png');
+        this.load.image('goblin', '/assets/Goblin.png');
+        this.load.image('elf', '/assets/Elf.png');
+    }
+
+    create() {
+        this.puzzle.gp.grid.forEach((row, rowNdx) => {
+            row.forEach((c, colNdx) => {
+                if (c === '#') this.add.image(64*colNdx, 64*rowNdx, 'wall').setOrigin(0);
+                else           this.add.image(64*colNdx, 64*rowNdx, 'floor').setOrigin(0);
+            })
+        })
+
+        this.puzzle.elves.forEach((elf, ndx) => {
+            this.elves.push(this.createCharacter(this, this.puzzle, elf.pos, 'elf'));
+        })
+        
+        this.puzzle.goblins.forEach((goblin, ndx) => {
+            this.goblins.push(this.createCharacter(this, this.puzzle, goblin.pos, 'goblin'));
+        })
+    }
+
+    update(time: number, delta: number) {
+        this.goblins.forEach((goblin, ndx) => {
+            if (this.puzzle.goblins[ndx].hp <= 0) goblin.destroy();
+            goblin.x = this.puzzle.goblins[ndx].pos.x*64 + 32;
+            goblin.y = this.puzzle.goblins[ndx].pos.y*64 + 32;
+        })
+        this.elves.forEach((elf, ndx) => {
+            if (this.puzzle.elves[ndx].hp <= 0) elf.destroy();
+            elf.x = this.puzzle.elves[ndx].pos.x*64 + 32;
+            elf.y = this.puzzle.elves[ndx].pos.y*64 + 32;
+        })
+    }
+
+    createCharacter(game: Phaser.Scene, puzzle: a201815, pos: Pair, imageName: string) {
+        let rotation = 0;
+        let rowHalfDistance = puzzle.gp.height/2 - pos.y;
+        let colHalfDistance = puzzle.gp.width/2 - pos.x;
+        if (Math.abs(rowHalfDistance) > Math.abs(colHalfDistance)) {
+            rotation = (rowHalfDistance > 0)?Math.PI:0;
+        } else {
+            rotation = (colHalfDistance > 0)?Math.PI/2:3*Math.PI/2;
+        }
+        return game.add.image(64*pos.x + 32, 64*pos.y + 32, imageName).setRotation(rotation);
+    }
+}
+
 @Component({
     selector: 'a201815',
     templateUrl: './a201815.html',
@@ -15,6 +74,7 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
     @ViewChild('scrollOutput') private scrollOutput: ElementRef
     output: string = '';
     game: Phaser.Game;
+    puzzle: a201815;
 
     constructor(public router: Router, public navService: NavService) {
         super(navService);
@@ -29,81 +89,23 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
         this.scrollOutput.nativeElement.scrollTop = this.scrollOutput.nativeElement.scrollHeight;
     }
 
-    elves: Phaser.GameObjects.Image[] = [];
-    goblins: Phaser.GameObjects.Image[] = [];
-
-    createCharacter(game: Phaser.Scene, puzzle: a201815, pos: Pair, imageName: string) {
-        let rotation = 0;
-        let rowHalfDistance = puzzle.gp.height/2 - pos.y;
-        let colHalfDistance = puzzle.gp.width/2 - pos.x;
-        if (Math.abs(rowHalfDistance) > Math.abs(colHalfDistance)) {
-            rotation = (rowHalfDistance > 0)?Math.PI:0;
-        } else {
-            rotation = (colHalfDistance > 0)?Math.PI/2:3*Math.PI/2;
-        }
-        return game.add.image(64*pos.x + 32, 64*pos.y + 32, imageName).setRotation(rotation);
-    }
-
     reset() {
-        let that = this;
         this.output = '';
-        this.goblins = [];
-        this.elves = [];
         if (this.game) {
             this.game.destroy(true);
         }
-        let puzzle = this.navService.puzzle as a201815;
-        let preload = function () {
-            this.load.image('wall', '/assets/MossyWall.png');
-            this.load.image('floor', '/assets/Floor.png');
-            this.load.image('goblin', '/assets/Goblin.png');
-            this.load.image('elf', '/assets/Elf.png');
-        };
-        let create = function () {
-            puzzle.gp.grid.forEach((row, rowNdx) => {
-                row.forEach((c, colNdx) => {
-                    if (c === '#') this.add.image(64*colNdx, 64*rowNdx, 'wall').setOrigin(0);
-                    else           this.add.image(64*colNdx, 64*rowNdx, 'floor').setOrigin(0);
-                })
-            })
-
-            puzzle.elves.forEach((elf, ndx) => {
-                that.elves.push(that.createCharacter(this, puzzle, elf.pos, 'elf'));
-            })
-            
-            puzzle.goblins.forEach((goblin, ndx) => {
-                that.goblins.push(that.createCharacter(this, puzzle, goblin.pos, 'goblin'));
-            })
-
-        };
-
-        let update = function () {
-            that.goblins.forEach((goblin, ndx) => {
-                if (puzzle.goblins[ndx].hp <= 0) goblin.destroy();
-                goblin.x = puzzle.goblins[ndx].pos.x*64 + 32;
-                goblin.y = puzzle.goblins[ndx].pos.y*64 + 32;
-            })
-            that.elves.forEach((elf, ndx) => {
-                if (puzzle.elves[ndx].hp <= 0) elf.destroy();
-                elf.x = puzzle.elves[ndx].pos.x*64 + 32;
-                elf.y = puzzle.elves[ndx].pos.y*64 + 32;
-            })
-        };
-
+        this.puzzle = this.navService.puzzle as a201815;
         let config: Phaser.Types.Core.GameConfig = {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
             scale: {},
-            width: puzzle.gp.width*64,
-            height: puzzle.gp.height*64,
+            width: this.puzzle.gp.width*64,
+            height: this.puzzle.gp.height*64,
             parent: 'viz',
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            },
+            scene: GameScene,
         };
         this.game = new Phaser.Game(config);
+        this.game.scene.start('puzzle', {puzzle: this.puzzle})
     }
 
     log(msg) {

@@ -66,7 +66,7 @@ export class a202325 extends AoCPuzzle {
                     })
                 })
             });
-            this.log(`Processed: ${from} (${this.stepIdx} / ${this.nodes.length})`);
+            this.log(`Processed: ${from} (${this.stepNumber} / ${this.nodes.length})`);
             return true;
         } else {
             // all nodes have been processed, all shortest path edges counted, process results

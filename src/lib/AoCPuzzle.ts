@@ -7,7 +7,7 @@ export abstract class AoCPuzzle {
     }
     inSampleMode = false;
     result = '';
-    stepIdx = 0;
+    stepNumber = 0;
 
     loadData(lines: Array<string>) {
         if (this.inSampleMode) this.sampleMode();
@@ -19,7 +19,7 @@ export abstract class AoCPuzzle {
      * 
      * @returns boolean true if there is more to do, false if we are done (`this.result` should how the answer at this point)
      */
-    runStep(): boolean { this.stepIdx++; return this._runStep(); }
+    runStep(): boolean { this.stepNumber++; return this._runStep(); }
     abstract _runStep(): boolean;
     sampleMode() { };
 };

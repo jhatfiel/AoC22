@@ -5,6 +5,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { AppComponent } from './app.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule  } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -35,6 +36,7 @@ import { CommonModule } from '@angular/common';
     MatToolbarModule,
     MatListModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatExpansionModule,
     MatRadioModule,
     MatIconModule,

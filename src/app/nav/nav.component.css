@@ -4,3 +4,7 @@
     background: black;
     color: white;
 }
+
+::ng-deep .mat-button-toggle.inputButton span {
+    line-height: unset;
+}

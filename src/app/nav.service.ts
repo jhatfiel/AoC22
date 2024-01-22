@@ -20,7 +20,7 @@ export class NavService {
     public currentPuzzleComponent: PuzzleVisualizationComponent;
     public puzzle: AoCPuzzle;
     public auto = localStorage.getItem('autoPlay') === 'true';
-    public inputFile: string;
+    public inputFileBehavior = new BehaviorSubject<string>('');
     public lines: string[];
     public classname: string;
     public year: number;
@@ -80,13 +80,19 @@ export class NavService {
         else return 'Select Day';
     }
 
+    public getPuzzleIndex() {
+        if (this.puzzle) return `${this.puzzle.stepNumber}`;
+        else return '';
+    }
+
     public selectFile(inputFile: string) {
+        this.inputFileBehavior.next(inputFile);
         this.router.navigate([], {queryParams: { inputFile }, queryParamsHandling: 'merge'})
     }
 
     public loadFile(inputFile: string) {
         this.puzzle = null;
-        this.inputFile = inputFile;
+        this.inputFileBehavior.next(inputFile);
         const datafile = `${this.year}/${this.day}/${inputFile}`;
         import(
             `data/${datafile}.txt`
@@ -105,7 +111,7 @@ export class NavService {
 
     public init() {
         if (!this.puzzle || this.stateBehavior.value === PUZZLE_STATE.DONE) {
-            this.puzzle = new this.clazzModule[this.classname](this.inputFile, msg => {
+            this.puzzle = new this.clazzModule[this.classname](this.inputFileBehavior.value, msg => {
                 if (this.currentPuzzleComponent) this.currentPuzzleComponent.log(msg);
             });
             this.puzzle.loadData(this.lines);

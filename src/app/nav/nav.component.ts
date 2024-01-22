@@ -8,7 +8,13 @@ import { NavService, PUZZLE_STATE } from "../nav.service";
 })
 export class NavComponent implements OnInit {
     playIcon = 'play_arrow';
+    inputFile: string;
+
     constructor(public navService: NavService) {
+        this.navService.inputFileBehavior.subscribe(inputFile => {
+            console.log(`Changed inputFile to ${inputFile}`);
+            this.inputFile = inputFile;
+        })
         this.navService.stateBehavior.subscribe(state => {
             if (state === PUZZLE_STATE.PLAYING) this.playIcon = 'pause'; 
             if (state === PUZZLE_STATE.PAUSED) this.playIcon = 'play_arrow'; 
@@ -46,5 +52,10 @@ export class NavComponent implements OnInit {
         this.navService.init();
         this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
         this.playIcon = 'play';
+    }
+
+    selectFile(inputFile: string) {
+        this.inputFile = inputFile;
+        this.navService.selectFile(inputFile);
     }
 }
