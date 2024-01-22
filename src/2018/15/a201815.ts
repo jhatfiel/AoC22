@@ -50,6 +50,7 @@ export class a201815 extends AoCPuzzle {
     }
 
     _runStep(): boolean {
+        this.log(`Step: ${this.stepNumber}`);
         let moved = false;
         let moreToDo = false;
         [...this.elves, ...this.goblins].filter(c => c.hp > 0).sort(Character.sort).some(c => {
@@ -66,18 +67,30 @@ export class a201815 extends AoCPuzzle {
                 let dij = new Dijkstra(this.getNeighbors.bind(this));
 
                 let cPosKey = PairToKey(c.pos);
+                let bestDistance = Infinity;
                 let targetSquare: string;
+                let tPos: Pair;
+                let foundCount = 0;
                 dij.compute(cPosKey, (node: string, distance: number) => {
-                    this.log(`${c.toString()} can get to ${node} in ${distance} steps`);
                     if (inRange.has(node)) {
-                        if (targetSquare === undefined) targetSquare = node;
-                        //return true;
-                    } else {
-                        return false;
+                        let nPos = PairFromKey(node);
+                        foundCount++;
+                        this.log(`${c.toString()} can get to ${node} in ${distance} steps`);
+                        let better = distance < bestDistance || 
+                                     (distance === bestDistance && 
+                                      (nPos.y < tPos.y || (nPos.y === tPos.y && nPos.x < tPos.x)));
+                        if (better) {
+                            targetSquare = node;
+                            bestDistance = distance;
+                            tPos = {...nPos};
+                        }
                     }
+                    return inRange.size === foundCount;;
                 });
                 if (targetSquare) {
-                    let path = dij.pathTo(cPosKey, targetSquare)[0];
+                    let paths = dij.pathTo(cPosKey, targetSquare, true);
+                    let path = paths[0]
+                    this.log(`${c.toString()} moving to ${targetSquare} paths are ${paths.map(p => p.join(' / ')).join(' -OR- ')}`);
                     let newPos = PairFromKey(path[1]);
                     c.pos.x = newPos.x;
                     c.pos.y = newPos.y;
