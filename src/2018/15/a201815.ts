@@ -5,9 +5,9 @@ import { GridParser, Pair, PairFromKey, PairToKey } from "../../lib/gridParser";
 const elfNames = ['Aymer', 'Beluar', 'Connak', 'Dyffros', 'Eldrin', 'Folen', 'Gaelin', 'Haladavar', 'Illitran', 'Jhaan', 'Khyrmin', 'Lhoris', 'Myriil', 'Nesterin', 'Omazeiros', 'Pirphal', 'Qican', 'Rydel', 'Saleh', 'Taeral', 'Urihorn', 'Vesryn', 'Wralen', 'Xeshest', 'Yhendorn', 'Zumdithas'];
 const goblinNames = ['Abbas', 'Bumbub', 'Crothu', 'Drikdarok', 'Egharod', 'Fodagog', 'Gholug', 'Hugmug', 'Igmut', 'Jughog', 'Khadba', 'Lob', 'Mabub', 'Nehrakgu', 'Oghuglat', 'Piggu', 'Quordud', 'Romarod', 'Sahgigoth', 'Tuggug', 'Ulam', 'Vukgilug', 'Wumkbanok', 'Xurek', 'Yashnarz', 'Zumhug'];
 
-class Character {
+export abstract class Character {
     constructor(public name: string, public pos: Pair) {}
-    plannedMoves: Pair[];
+    plannedMoves: Pair[] = [];
     hp = 200;
     ap = 3;
     static sort(a: Character, b: Character): number {
@@ -18,13 +18,18 @@ class Character {
         if (a.hp === b.hp) return Character.sort(a, b);
         return a.hp - b.hp;
     }
+    public abstract getEnemies(): Character[];
 }
 
 class Elf extends Character {
+    static enemies: Character[];
+    public getEnemies(): Character[] { return Elf.enemies; }
     public toString() { return `Elf ${this.name}`; }
 }
 
 class Goblin extends Character {
+    static enemies: Character[];
+    public getEnemies(): Character[] { return Goblin.enemies; }
     public toString() { return `Goblin ${this.name}`; }
 }
 
@@ -36,20 +41,18 @@ export class a201815 extends AoCPuzzle {
     _loadData(lines: string[]) {
         this.gp = new GridParser(lines, [/[EG]/g]);
         this.gp.matches.forEach(m => {
-            if (m.value === 'E') {
-                this.elves.push(new Elf(elfNames[this.elves.length], {x: m.x, y: m.y}));
-                this.gp.grid[m.y][m.x] = '.';
-            }
-            if (m.value === 'G') {
-                this.goblins.push(new Goblin(goblinNames[this.goblins.length], {x: m.x, y: m.y}));
-                this.gp.grid[m.y][m.x] = '.';
-            }
+            if (m.value === 'E') this.elves.push(new Elf(elfNames[this.elves.length], {x: m.x, y: m.y}));
+            if (m.value === 'G') this.goblins.push(new Goblin(goblinNames[this.goblins.length], {x: m.x, y: m.y}));
+            this.gp.grid[m.y][m.x] = '.';
         });
+        Elf.enemies = this.goblins;
+        Goblin.enemies = this.elves;
     }
 
     _runStep(): boolean {
         let moved = false;
-        [...this.elves, ...this.goblins].filter(c => c.hp > 0).sort(Character.sort).forEach(c => {
+        let moreToDo = false;
+        [...this.elves, ...this.goblins].filter(c => c.hp > 0).sort(Character.sort).some(c => {
             // characters only move if there is no enemy adjacent
             let t = this.getAttackTarget(c);
             if (!t) {
@@ -65,9 +68,10 @@ export class a201815 extends AoCPuzzle {
                 let cPosKey = PairToKey(c.pos);
                 let targetSquare: string;
                 dij.compute(cPosKey, (node: string, distance: number) => {
+                    this.log(`${c.toString()} can get to ${node} in ${distance} steps`);
                     if (inRange.has(node)) {
-                        targetSquare = node;
-                        return true;
+                        if (targetSquare === undefined) targetSquare = node;
+                        //return true;
                     } else {
                         return false;
                     }
@@ -77,9 +81,11 @@ export class a201815 extends AoCPuzzle {
                     let newPos = PairFromKey(path[1]);
                     c.pos.x = newPos.x;
                     c.pos.y = newPos.y;
+                    c.plannedMoves = path.slice(1).map(PairFromKey);
                     moved = true;
+                } else {
+                    c.plannedMoves = [];
                 }
-
 
                 // after moving, try to get the attack target
                 t = this.getAttackTarget(c);
@@ -89,12 +95,25 @@ export class a201815 extends AoCPuzzle {
             // attack t here
             if (t) {
                 t.hp = Math.max(0, t.hp - c.ap);
-                this.log(`${t.toString()} is down to ${t.hp}hp`);
             }
+
+            // return true if we have eliminated one or the other side
+            moreToDo = this.numElves() > 0 && this.numGoblins() > 0;
+            return !moreToDo;
         })
 
-        return !(this.elves.filter(c => c.hp>0).length === 0 || this.goblins.filter(c => c.hp>0).length === 0);
+        if (!moreToDo) {
+            // calculate result
+            let totalHealth = [...this.elves, ...this.goblins].map(c => c.hp).reduce((sum, hp) => sum += hp, 0);
+            this.result = (totalHealth * this.stepNumber).toString();
+            this.log(`Step: ${this.stepNumber} done, total = ${totalHealth}`);
+        }
+        // 203660 is too low
+        return moreToDo;
     }
+
+    numElves(): number { return this.elves.filter(c => c.hp > 0).length; }
+    numGoblins(): number { return this.goblins.filter(c => c.hp > 0).length; }
 
     getNeighbors(node: string): Map<string, number> {
         let result = new Map<string, number>();
@@ -111,9 +130,7 @@ export class a201815 extends AoCPuzzle {
 
     getAttackTarget(c: Character): Character {
         let t: Character;
-        let enemies: Character[] = this.elves;
-        if (c instanceof Elf) enemies = this.goblins;
-        enemies.filter(c => c.hp > 0).sort(Character.sortByHealth).some(e => {
+        c.getEnemies().filter(c => c.hp > 0).sort(Character.sortByHealth).some(e => {
             if ((e.pos.y === c.pos.y && (e.pos.x === c.pos.x-1 || e.pos.x === c.pos.x+1)) ||
                 (e.pos.x === c.pos.x && (e.pos.y === c.pos.y-1 || e.pos.y === c.pos.y+1))) {
                 t = e;
@@ -124,9 +141,7 @@ export class a201815 extends AoCPuzzle {
     }
 
     getEnemySquares(c: Character): Set<string> {
-        let enemies: Character[] = this.elves;
-        if (c instanceof Elf) enemies = this.goblins;
-        return new Set<string>(enemies.filter(c => c.hp > 0).flatMap(e => {
+        return new Set<string>(c.getEnemies().filter(c => c.hp > 0).flatMap(e => {
             return [{x: e.pos.x, y: e.pos.y-1},
                     {x: e.pos.x-1, y: e.pos.y},
                     {x: e.pos.x+1, y: e.pos.y},

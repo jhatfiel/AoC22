@@ -3,13 +3,14 @@ import { Router } from "@angular/router";
 import { NavService } from "../../../nav.service";
 import { PuzzleVisualizationComponent } from "../../PuzzleVisualization.component";
 import * as Phaser from "phaser";
-import { a201815 } from "../../../../2018/15/a201815";
+import { Character, a201815 } from "../../../../2018/15/a201815";
 import { Pair } from "../../../../lib/gridParser";
 
 class GameScene extends Phaser.Scene {
     puzzle: a201815;
     elves: Phaser.GameObjects.Image[] = [];
     goblins: Phaser.GameObjects.Image[] = [];
+    graphics: Phaser.GameObjects.Graphics;
 
     constructor() { super('puzzle'); }
 
@@ -31,11 +32,11 @@ class GameScene extends Phaser.Scene {
         })
 
         this.puzzle.elves.forEach((elf, ndx) => {
-            this.elves.push(this.createCharacter(this, this.puzzle, elf.pos, 'elf'));
+            this.elves.push(this.createCharacter(this, this.puzzle, elf, 'elf'));
         })
         
         this.puzzle.goblins.forEach((goblin, ndx) => {
-            this.goblins.push(this.createCharacter(this, this.puzzle, goblin.pos, 'goblin'));
+            this.goblins.push(this.createCharacter(this, this.puzzle, goblin, 'goblin'));
         })
     }
 
@@ -52,16 +53,31 @@ class GameScene extends Phaser.Scene {
         })
     }
 
-    createCharacter(game: Phaser.Scene, puzzle: a201815, pos: Pair, imageName: string) {
+    createCharacter(game: Phaser.Scene, puzzle: a201815, c: Character, imageName: string): Phaser.GameObjects.Image {
         let rotation = 0;
-        let rowHalfDistance = puzzle.gp.height/2 - pos.y;
-        let colHalfDistance = puzzle.gp.width/2 - pos.x;
+        let rowHalfDistance = puzzle.gp.height/2 - c.pos.y;
+        let colHalfDistance = puzzle.gp.width/2 - c.pos.x;
         if (Math.abs(rowHalfDistance) > Math.abs(colHalfDistance)) {
             rotation = (rowHalfDistance > 0)?Math.PI:0;
         } else {
             rotation = (colHalfDistance > 0)?Math.PI/2:3*Math.PI/2;
         }
-        return game.add.image(64*pos.x + 32, 64*pos.y + 32, imageName).setRotation(rotation);
+
+        let image = game.add.image(64*c.pos.x + 32, 64*c.pos.y + 32, imageName).setRotation(rotation).setInteractive({ useHandCursor: true });
+        this.graphics = game.add.graphics();
+        image.on('pointerover', (pointer, gameObject) => {
+            this.graphics.lineStyle(16, 0xFFFFFF, 1.0);
+            this.graphics.beginPath();
+            this.graphics.moveTo(image.x, image.y);
+            c.plannedMoves?.forEach(p => {
+                this.graphics.lineTo(32+64*p.x, 32+64*p.y);
+            })
+            this.graphics.strokePath();
+        });
+        image.on('pointerout', (pointer, gameObject) => {
+            this.graphics.clear();
+        });
+        return image;
     }
 }
 
