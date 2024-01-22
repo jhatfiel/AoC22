@@ -12,7 +12,7 @@
       ],
       "args": [
         "${fileBasenameNoExtension}",
-        "${input:input}"
+        "${input:selectInputFileRemember}"
       ],
       "outFiles": [
         "${workspaceFolder}/dist/out-tsc/**/*.js"
@@ -29,7 +29,7 @@
       ],
       "args": [
         "${fileBasenameNoExtension}",
-        "${input:input}"
+        "${input:selectInputFile}"
       ],
       "outFiles": [
         "${workspaceFolder}/dist/out-tsc/**/*.js"
@@ -48,10 +48,58 @@
       "request": "launch",
       "preLaunchTask": "npm: test",
       "url": "http://localhost:9876/debug.html"
-    }
+    },
   ],
   "inputs": [
-    {"id": "input", "type": "pickString", "description": "Select input file", "options": ["sample.txt", "input.txt"]},
+    {
+      "id": "blah",
+      "type": "command",
+      "command": "extension.commandvariable.file.fileDirBasename1Up",
+    },
+    {
+      "id": "selectInputFileRemember",
+      "type": "command",
+      "command": "extension.commandvariable.pickStringRemember",
+      "args": {
+        "description": "Select Input File",
+        "options": [
+          {"label": "${remember:inputfile}", "value": "${remember:inputfile}"},
+          {"label": "Pick file", "value": "${pickFile:filename}"}
+        ],
+        "rememberTransformed": true,
+        "key": "inputfile",
+        "pickFile": {
+          "filename": {
+            "description": "Select Input File",
+            "include": "*.txt",
+            "exclude": "desc.txt",
+            "fromFolder": { "fixed": "${workspaceFolder}/data/${command:extension.commandvariable.file.fileDirBasename1Up}/${command:extension.commandvariable.file.fileDirBasename}" },
+            "rememberTransformed": true,
+            "keyRemember": "filename",
+            "transform": {
+              "text": "${file}",
+              "find": ".*/",
+              "replace": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "selectInputFile",
+      "type": "command",
+      "command": "extension.commandvariable.file.pickFile",
+      "args": {
+        "display": "fileName",
+        "include": "data/${file}/15/*.txt",
+        "exclude": "data/${file}/15/desc.txt",
+        "transform": {
+          "text": "${file}",
+          "find": ".*/",
+          "replace": ""
+        }
+      }
+    },
     {
       "id": "pickFile",
       "type": "command",
