@@ -123,7 +123,11 @@ export class a201815 extends AoCPuzzle {
                 this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y}`);
             })
             //this.debug();
-            // part b 60080 too low, 60083 too low, 60200 is incorrect (no hints) 
+            // part b 
+            // 60080 too low 40*1502
+            // 60200 is incorrect (no hints) 40*1505
+            // 61582 is wrong (41*1502)
+            // 40*1499=59960 wrong
         }
         return moreToDo;
     }
