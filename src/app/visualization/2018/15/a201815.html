@@ -3,9 +3,19 @@ Result: {{ this.navService.puzzle?.result }}
 <hr>
 <div class="content">
     <div id="viz" class="viz"></div>
-    <div #scrollOutput class="scrollOutput">
-        Scroll Output is here
-        <pre>{{ this.output }}</pre>
+    <div class="rightPanel">
+        <div class="selectedCharacter">
+            <span *ngIf="selectedCharacter !== undefined">
+                {{ selectedCharacter.toString() }}
+                Location: {{ selectedCharacter.pos.x }},{{ selectedCharacter.pos.y }}<br>
+                Path: {{ selectedCharacterMoves() }}<br>
+                Attacking: {{ (selectedCharacter.attacking??'NONE').toString() }}<br>
+            </span>
+        </div>
+        <div #scrollOutput class="scrollOutput">
+            Scroll Output is here
+            <pre>{{ this.output }}</pre>
+        </div>
     </div>
 </div>
 </div>

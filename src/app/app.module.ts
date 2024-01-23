@@ -19,6 +19,7 @@ import { NavComponent } from './nav/nav.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MenuListItemComponent } from './nav/menu-list-item.component';
 import { CommonModule } from '@angular/common';
+import { a201815Component } from './visualization/2018/15/a201815';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { CommonModule } from '@angular/common';
     MainComponent,
     MenuListItemComponent,
     NavComponent,
+    a201815Component
   ],
   imports: [
     CommonModule,
@@ -41,7 +43,7 @@ import { CommonModule } from '@angular/common';
     MatRadioModule,
     MatIconModule,
     MatCheckboxModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   providers: [NavService],
   bootstrap: [AppComponent]

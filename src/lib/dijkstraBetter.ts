@@ -19,17 +19,16 @@ export class Dijkstra {
         let distanceTo = new Map<string, number>();
         this.distanceTo.set(from, distanceTo);
 
-        let unvisited = new PriorityHeap<{node: string, distance: number}>((a, b) => b.distance <= a.distance);
+        let unvisited = new PriorityHeap<{node: string, distance: number, counter: number}>((a, b) => b.distance === a.distance?b.counter<a.counter:b.distance < a.distance);
+        let counter = 0;
 
         distanceTo.set(from, 0);
-        let lastDistance = 0;
-        unvisited.enqueue({node: from, distance: 0});
+        unvisited.enqueue({node: from, distance: 0, counter: counter++});
 
         while (unvisited.size()) {
             // get the closest unvisited node
             //unvisited.debugArray();
             let {node: nearestUnvisited, distance: nearestDistance} = unvisited.dequeue();
-            lastDistance = nearestDistance;
             //console.debug(`Working with ${nearestUnvisited}[${nearestDistance}] (${unvisited.size()} unvisited)`);
 
             // set the distance for all its neighbors
@@ -41,7 +40,7 @@ export class Dijkstra {
                 if (currentDistance === undefined) {
                     //console.debug(`- First time finding ${n}`);
                     distanceTo.set(n, newDistance);
-                    unvisited.enqueue({node: n, distance: newDistance});
+                    unvisited.enqueue({node: n, distance: newDistance, counter: counter++});
                     parent.set(n, new Set([nearestUnvisited]));
                 } else if (newDistance < currentDistance) {
                     //console.debug(`- BETTER!!!!`);

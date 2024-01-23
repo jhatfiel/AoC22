@@ -4,17 +4,18 @@ import { NavService } from "../../../nav.service";
 import { PuzzleVisualizationComponent } from "../../PuzzleVisualization.component";
 import * as Phaser from "phaser";
 import { Character, a201815 } from "../../../../2018/15/a201815";
-import { Pair } from "../../../../lib/gridParser";
 
 class GameScene extends Phaser.Scene {
     puzzle: a201815;
     elves: Phaser.GameObjects.Image[] = [];
     goblins: Phaser.GameObjects.Image[] = [];
-    graphics: Phaser.GameObjects.Graphics;
+    pathGraphics: Phaser.GameObjects.Graphics;
+    highlightGraphics: Phaser.GameObjects.Graphics;
+    component: a201815Component;
 
     constructor() { super('puzzle'); }
 
-    init(data: any) { this.puzzle = data.puzzle; }
+    init(data: any) { this.puzzle = data.puzzle; this.component = data.component; }
 
     preload() {
         this.load.image('wall', '/assets/MossyWall.png');
@@ -32,50 +33,103 @@ class GameScene extends Phaser.Scene {
         })
 
         this.puzzle.elves.forEach((elf, ndx) => {
-            this.elves.push(this.createCharacter(this, this.puzzle, elf, 'elf'));
+            this.elves.push(this.createCharacter(elf, 'elf'));
         })
         
         this.puzzle.goblins.forEach((goblin, ndx) => {
-            this.goblins.push(this.createCharacter(this, this.puzzle, goblin, 'goblin'));
+            this.goblins.push(this.createCharacter(goblin, 'goblin'));
         })
+    }
+
+    rotationFromTo(fromX: number, fromY: number, toX: number, toY: number): number {
+        if (toX < fromX) return 3*Math.PI/2;
+        if (toX > fromX) return Math.PI/2;
+        if (toY < fromY) return 0;
+        if (toY > fromY) return Math.PI
+    }
+
+    setRotation(graphicArray: Phaser.GameObjects.Image[], graphicObj: Phaser.GameObjects.Image, ndx: number, characterArr: Character[]) {
+        if (!graphicObj) return;
+        let c = characterArr[ndx];
+        if (c.hp <= 0) {
+            graphicObj.destroy();
+            graphicArray[ndx] === null;
+            if (this.component.selectedCharacter === c) {
+                this.highlightCharacter(c);
+                this.component.selectedCharacter = undefined;
+            }
+        } else {
+            let newX = c.pos.x*64 + 32;
+            let newY = c.pos.y*64 + 32;
+            if (graphicObj.x !== newX || graphicObj.y !== newY) {
+                // moving
+                graphicObj.rotation = this.rotationFromTo(graphicObj.x, graphicObj.y, newX, newY);
+                graphicObj.x = newX;
+                graphicObj.y = newY;
+                if (this.component.selectedCharacter === c) this.highlightCharacter(c);
+            } else if (c.attacking) {
+                // attacking
+                graphicObj.rotation = this.rotationFromTo(c.pos.x, c.pos.y, c.attacking.pos.x, c.attacking.pos.y);
+            }
+        }
+    }
+
+    highlightCharacter(c: Character) {
+        if (!this.highlightGraphics) this.highlightGraphics = this.add.graphics();
+        this.highlightGraphics.clear();
+        if (c.hp > 0) {
+            this.highlightGraphics.lineStyle(4, 0xFFFFFF, 1);
+            this.highlightGraphics.fillStyle(0xFFFFFF, 0.25);
+            this.highlightGraphics.fillRect(this.component.selectedCharacter.pos.x*64, this.component.selectedCharacter.pos.y*64, 64, 64);
+            this.highlightGraphics.stroke();
+
+            this.highlightGraphics.lineStyle(16, (c.toString().startsWith('E'))?0xDDDDFF:0x115511, 1.0);
+            this.highlightGraphics.beginPath();
+            this.highlightGraphics.moveTo(32+64*c.pos.x, 32+64*c.pos.y);
+            c.plannedMoves?.forEach(p => {
+                this.highlightGraphics.lineTo(32+64*p.x, 32+64*p.y);
+            })
+            this.highlightGraphics.strokePath();
+        }
     }
 
     update(time: number, delta: number) {
-        this.goblins.forEach((goblin, ndx) => {
-            if (this.puzzle.goblins[ndx].hp <= 0) goblin.destroy();
-            goblin.x = this.puzzle.goblins[ndx].pos.x*64 + 32;
-            goblin.y = this.puzzle.goblins[ndx].pos.y*64 + 32;
-        })
-        this.elves.forEach((elf, ndx) => {
-            if (this.puzzle.elves[ndx].hp <= 0) elf.destroy();
-            elf.x = this.puzzle.elves[ndx].pos.x*64 + 32;
-            elf.y = this.puzzle.elves[ndx].pos.y*64 + 32;
+        this.goblins.forEach((graphicObj, ndx, arr) => {
+            this.setRotation(arr, graphicObj, ndx, this.puzzle.goblins);
+        });
+        this.elves.forEach((graphicObj, ndx, arr) => {
+            this.setRotation(arr, graphicObj, ndx, this.puzzle.elves);
         })
     }
 
-    createCharacter(game: Phaser.Scene, puzzle: a201815, c: Character, imageName: string): Phaser.GameObjects.Image {
+    createCharacter(c: Character, imageName: string): Phaser.GameObjects.Image {
         let rotation = 0;
-        let rowHalfDistance = puzzle.gp.height/2 - c.pos.y;
-        let colHalfDistance = puzzle.gp.width/2 - c.pos.x;
+        let rowHalfDistance = this.puzzle.gp.height/2 - c.pos.y;
+        let colHalfDistance = this.puzzle.gp.width/2 - c.pos.x;
         if (Math.abs(rowHalfDistance) > Math.abs(colHalfDistance)) {
             rotation = (rowHalfDistance > 0)?Math.PI:0;
         } else {
             rotation = (colHalfDistance > 0)?Math.PI/2:3*Math.PI/2;
         }
 
-        let image = game.add.image(64*c.pos.x + 32, 64*c.pos.y + 32, imageName).setRotation(rotation).setInteractive({ useHandCursor: true });
-        this.graphics = game.add.graphics();
+        let image = this.add.image(64*c.pos.x + 32, 64*c.pos.y + 32, imageName).setRotation(rotation).setInteractive({ useHandCursor: true });
+        if (!this.pathGraphics) this.pathGraphics = this.add.graphics();
+
+        image.on('pointerdown', (pointer, gameObject) => {
+            this.component.selectedCharacter = c;
+            this.highlightCharacter(c);
+        })
         image.on('pointerover', (pointer, gameObject) => {
-            this.graphics.lineStyle(16, 0xFFFFFF, 1.0);
-            this.graphics.beginPath();
-            this.graphics.moveTo(image.x, image.y);
+            this.pathGraphics.lineStyle(16, (imageName==='elf')?0xDDDDFF:0x115511, 1.0);
+            this.pathGraphics.beginPath();
+            this.pathGraphics.moveTo(image.x, image.y);
             c.plannedMoves?.forEach(p => {
-                this.graphics.lineTo(32+64*p.x, 32+64*p.y);
+                this.pathGraphics.lineTo(32+64*p.x, 32+64*p.y);
             })
-            this.graphics.strokePath();
+            this.pathGraphics.strokePath();
         });
         image.on('pointerout', (pointer, gameObject) => {
-            this.graphics.clear();
+            this.pathGraphics.clear();
         });
         return image;
     }
@@ -91,6 +145,7 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
     output: string = '';
     game: Phaser.Game;
     puzzle: a201815;
+    selectedCharacter: Character;
 
     constructor(public router: Router, public navService: NavService) {
         super(navService);
@@ -103,6 +158,10 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
 
     ngAfterViewChecked(): void {
         this.scrollOutput.nativeElement.scrollTop = this.scrollOutput.nativeElement.scrollHeight;
+    }
+
+    selectedCharacterMoves() {
+        return this.selectedCharacter.plannedMoves.map(p => `${p.x},${p.y}`).join(' / ');
     }
 
     reset() {
@@ -121,7 +180,7 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
             scene: GameScene,
         };
         this.game = new Phaser.Game(config);
-        this.game.scene.start('puzzle', {puzzle: this.puzzle})
+        this.game.scene.start('puzzle', {puzzle: this.puzzle, component: this})
     }
 
     log(msg) {
