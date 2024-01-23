@@ -72,6 +72,7 @@ export class a201815 extends AoCPuzzle {
                 let tPos: Pair;
                 let foundCount = 0;
                 dij.compute(cPosKey, (node: string, distance: number) => {
+                    if (distance > bestDistance) return true
                     if (inRange.has(node)) {
                         let nPos = PairFromKey(node);
                         foundCount++;
@@ -85,10 +86,10 @@ export class a201815 extends AoCPuzzle {
                             tPos = {...nPos};
                         }
                     }
-                    return inRange.size === foundCount;;
+                    return inRange.size === foundCount;
                 });
                 if (targetSquare) {
-                    let paths = dij.pathTo(cPosKey, targetSquare, true);
+                    let paths = dij.pathTo(cPosKey, targetSquare);
                     let path = paths[0]
                     this.log(`${c.toString()} moving to ${targetSquare} paths are ${paths.map(p => p.join(' / ')).join(' -OR- ')}`);
                     let newPos = PairFromKey(path[1]);
@@ -135,7 +136,7 @@ export class a201815 extends AoCPuzzle {
          {x: pos.x-1, y: pos.y},
          {x: pos.x+1, y: pos.y},
          {x: pos.x, y: pos.y+1}].filter(pos => {
-            return this.gp.grid[pos.y][pos.x] === '.' && [...this.elves, ...this.goblins].findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
+            return this.gp.grid[pos.y][pos.x] === '.' && [...this.elves, ...this.goblins].filter(c => c.hp>0).findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
          }).forEach(p => result.set(PairToKey(p), 1));
 
         return result;
@@ -161,7 +162,7 @@ export class a201815 extends AoCPuzzle {
                     {x: e.pos.x, y: e.pos.y+1},
             ];
         }).filter(pos => {
-            return this.gp.grid[pos.y][pos.x] === '.' && [...this.elves, ...this.goblins].findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
+            return this.gp.grid[pos.y][pos.x] === '.' && [...this.elves, ...this.goblins].filter(c=>c.hp>0).findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
         }).map(PairToKey));
     }
 }
