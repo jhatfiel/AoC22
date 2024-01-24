@@ -1,49 +1,45 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { MatRadioModule } from '@angular/material/radio';
 
 import { AppComponent } from './app.component';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule  } from '@angular/material/button-toggle';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { NavService } from './nav.service';
 import { MainComponent } from './main.component';
 import { NavComponent } from './nav/nav.component';
 import { AppRoutingModule } from './app-routing.module';
-import { MenuListItemComponent } from './nav/menu-list-item.component';
 import { CommonModule } from '@angular/common';
 import { a201815Component } from './visualization/2018/15/a201815';
+import { GenericPuzzleComponent } from './visualization/GenericPuzzle.component';
+import { SidebarModule } from 'primeng/sidebar';
+import { ButtonModule } from 'primeng/button';
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { ToolbarModule } from 'primeng/toolbar';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DividerModule } from 'primeng/divider';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
-    MenuListItemComponent,
     NavComponent,
-    a201815Component
+    a201815Component,
+    GenericPuzzleComponent
   ],
   imports: [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatListModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatExpansionModule,
-    MatRadioModule,
-    MatIconModule,
-    MatCheckboxModule,
     AppRoutingModule,
+    SidebarModule,
+    ButtonModule,
+    PanelMenuModule,
+    SelectButtonModule,
+    ToolbarModule,
+    CheckboxModule,
+    DividerModule
   ],
   providers: [NavService],
   bootstrap: [AppComponent]

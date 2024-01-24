@@ -1,10 +1,12 @@
-<mat-sidenav-container>
-    <mat-sidenav #appDrawer mode="over" opened="false">
-        <mat-nav-list>
-            <app-menu-list-item *ngFor="let item of navItems" [item]="item"></app-menu-list-item>
-        </mat-nav-list>
-    </mat-sidenav>
+<p-sidebar #sidebar [(visible)]="sidebarVisible">
+    <ng-template pTemplate="header">Select day</ng-template>
+    <ng-template pTemplate="content">
+        <p-panelMenu [model]="navItems">
+        </p-panelMenu>
+    </ng-template>
+    <ng-template pTemplate="footer">Footer Content</ng-template>
+</p-sidebar>
+<div class="main">
     <app-nav></app-nav>
     <router-outlet></router-outlet>
-    <div></div>
-</mat-sidenav-container>
+</div>

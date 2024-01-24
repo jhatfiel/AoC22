@@ -1,32 +1,13 @@
+.p-panelmenu .p-panelmenu-header > a {
+    padding: 0.5rem;
+}
 .mat-sidenav {
     width: 360px;
 }
 
-.mat-sidenav-container {
-    background-color: white !important;
-    height: 100vh;
-}
-
-mat-sidenav-content.mat-sidenav-content {
+.main {
+    height: 100%;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-}
-
-.sidenav-toolbar {
-    height: 64px;
-    display: flex;
-    flex-direction: row;
-}
-
-.mat-mdc-list-item-unscoped-content {
-    display: flex;
-}
-
-.mdc-list-item__content {
-    padding-left: 16px;
-}
-
-hr {
-    width: 100%;
 }

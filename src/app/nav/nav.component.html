@@ -1,20 +1,16 @@
-<mat-toolbar color="primary" style="height: unset;">
-    top
-    <span class="currentPuzzle" (click)="navService.openNav()">{{this.navService.getPuzzleDescription()}}</span>
-    <span class="puzzleIndex">{{ this.navService.getPuzzleIndex() }}</span>
-    <button #stepBtn [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED" 
-        mat-icon-button
-        (click)="step()">
-        <mat-icon>skip_next</mat-icon>
-    </button>
-    <button #playBtn [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED"
-        mat-icon-button
-        (click)="playPause()">
-        <mat-icon>{{playIcon}}</mat-icon>
-    </button>
-    <mat-checkbox #autoPlayCB (change)="savePreferences($event)" [(ngModel)]='navService.auto'>Auto</mat-checkbox> &nbsp; 
-    <span>Input File: </span>
-    <mat-button-toggle-group [(ngModel)]="inputFile" name="inputFile" aria-label="Input File">
-        <mat-button-toggle class="inputButton" *ngFor="let file of navService.files" (click)="selectFile(file)" value="{{file}}">{{file}}</mat-button-toggle>
-    </mat-button-toggle-group>
-</mat-toolbar>
+<p-toolbar>
+    <div class="p-toolbar-group-start">
+        top
+        <span class="currentPuzzle" (click)="navService.openNav()">{{this.navService.getPuzzleDescription()}}</span> &nbsp; 
+        <span class="puzzleStepNumber">Step: {{ this.navService.getPuzzleStepNumber() }}</span>
+    </div>
+    <div class="p-toolbar-group-center">
+        <p-button icon="pi pi-step-forward" [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED" (click)="step()"></p-button>
+        <p-button icon="pi {{playIcon}}" [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED" (click)="playPause()"></p-button>
+        <p-checkbox label="Auto" [(ngModel)]="navService.auto" (onChange)="savePreferences()" [binary]="true"></p-checkbox> &nbsp; 
+    </div>
+    <div class="p-toolbar-group-end">
+        <span>Input File: </span>
+        <p-selectButton [options]="getFiles()" [(ngModel)]="inputFile" (click)="selectFile()"></p-selectButton>
+    </div>
+</p-toolbar>

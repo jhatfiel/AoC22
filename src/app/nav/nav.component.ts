@@ -7,7 +7,7 @@ import { NavService, PUZZLE_STATE } from "../nav.service";
     styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
-    playIcon = 'play_arrow';
+    playIcon = 'pi-play';
     inputFile: string;
 
     constructor(public navService: NavService) {
@@ -16,9 +16,9 @@ export class NavComponent implements OnInit {
             this.inputFile = inputFile;
         })
         this.navService.stateBehavior.subscribe(state => {
-            if (state === PUZZLE_STATE.PLAYING) this.playIcon = 'pause'; 
-            if (state === PUZZLE_STATE.PAUSED) this.playIcon = 'play_arrow'; 
-            if (state === PUZZLE_STATE.DONE) this.playIcon = 'replay';
+            if (state === PUZZLE_STATE.PLAYING) this.playIcon = 'pi-pause'; 
+            if (state === PUZZLE_STATE.PAUSED) this.playIcon = 'pi-play'; 
+            if (state === PUZZLE_STATE.DONE) this.playIcon = 'pi-replay';
         })
     }
 
@@ -26,13 +26,14 @@ export class NavComponent implements OnInit {
 
     ngOnInit(): void { }
 
-    savePreferences(event) {
-        localStorage.setItem('autoPlay', event.source.checked);
+    savePreferences() {
+        console.log(`savePreference ${this.navService.auto}`)
+        localStorage.setItem('autoPlay', this.navService.auto?"true":"false");
     }
 
     step() {
-        this.navService.init();
-        this.playIcon = 'play_arrow';
+        if (this.navService.init()) return;
+        this.playIcon = 'pi-play';
         this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
         this.navService.step();
     }
@@ -41,7 +42,7 @@ export class NavComponent implements OnInit {
         if (this.navService.stateBehavior.value === PUZZLE_STATE.PLAYING) {
             this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
         } else {
-            this.playIcon = 'pause';
+            this.playIcon = 'pi-pause';
             this.navService.init();
             this.navService.stateBehavior.next(PUZZLE_STATE.PLAYING);
             this.navService.play();
@@ -51,11 +52,14 @@ export class NavComponent implements OnInit {
     pause() {
         this.navService.init();
         this.navService.stateBehavior.next(PUZZLE_STATE.PAUSED);
-        this.playIcon = 'play';
+        this.playIcon = 'pi-play';
     }
 
-    selectFile(inputFile: string) {
-        this.inputFile = inputFile;
-        this.navService.selectFile(inputFile);
+    selectFile() {
+        this.navService.selectFile(this.inputFile);
+    }
+
+    getFiles() {
+        return this.navService.files;
     }
 }

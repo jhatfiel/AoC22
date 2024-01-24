@@ -14,7 +14,7 @@ export enum PUZZLE_STATE {
 
 @Injectable()
 export class NavService {
-    public appDrawer: any;
+    public appComponent: any;
     public currentUrl = new BehaviorSubject<string>(undefined);
     public stateBehavior = new BehaviorSubject<PUZZLE_STATE>(PUZZLE_STATE.DISABLED);
     public currentPuzzleComponent: PuzzleVisualizationComponent;
@@ -44,8 +44,8 @@ export class NavService {
                     this.part = arr[0];
                     const httpParams = new HttpParams({fromString: arr[1]});
                     this.classname = `${this.part}${this.year}${this.day}`;
-                    if (httpParams.get('files')) {
-                        this.files = httpParams.get('files').split(',');
+                    if (httpParams.getAll('files')) {
+                        this.files = httpParams.getAll('files');
                     } else {
                         this.files = ['sample', 'input'];
                     }
@@ -68,11 +68,11 @@ export class NavService {
     }
 
     public closeNav() {
-        this.appDrawer.close();
+        this.appComponent.sidebarVisible = false;
     }
 
     public openNav() {
-        this.appDrawer.open();
+        this.appComponent.sidebarVisible = true;
     }
 
     public getPuzzleDescription() {
@@ -80,7 +80,7 @@ export class NavService {
         else return 'Select Day';
     }
 
-    public getPuzzleIndex() {
+    public getPuzzleStepNumber() {
         if (this.puzzle) return `${this.puzzle.stepNumber}`;
         else return '';
     }
@@ -117,7 +117,9 @@ export class NavService {
             this.puzzle.loadData(this.lines);
             this.stateBehavior.next(PUZZLE_STATE.PAUSED);
             this.currentPuzzleComponent.reset();
+            return true;
         }
+        return false;
     }
 
     public step() {

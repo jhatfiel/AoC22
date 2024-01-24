@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import { NavItem } from './nav-item';
 import { NavService } from './nav.service';
+import { MenuItem } from 'primeng/api';
 
 @Component({
     selector: 'app-root',
@@ -9,30 +9,39 @@ import { NavService } from './nav.service';
     encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements AfterViewInit {
-    @ViewChild('appDrawer') appDrawer: ElementRef;
-    navItems: NavItem[] = [
-        {displayName: 'Home', route: '/'},
-        {displayName: '2015'},
-        {displayName: '2016'},
-        {displayName: '2017'},
-        {displayName: '2018', children: [
-            {displayName: '15: Beverage Bandits', route: '2018/15/a', files: ['a', 'sample', 'sample1', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6', 'input']},
+    @ViewChild('sidebar') sidebar: ElementRef;
+    sidebarVisible = false;
+    navItems: MenuItem[] = [
+        {label: 'Home', routerLink: '/'},
+        {label: '2015', items: []},
+        {label: '2016', items: []},
+        {label: '2017', items: []},
+        {label: '2018', items: [
+            {label: '15: Beverage Bandits', routerLink: '2018/15/a', queryParams: { files: ['a', 'sample', 'sample1', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6', 'input']}},
         ]},
-        {displayName: '2019'},
-        {displayName: '2020'},
-        {displayName: '2021'},
-        {displayName: '2022'},
-        {displayName: '2023', children: [
-            {displayName: '23: A Long Walk', route: '2023/23/a'},
-            {displayName: '23: A Long Walk (Part 2)', route: '2023/23/b'},
-            {displayName: '24: Never Tell Me The Odds', route: '2023/24/a'},
-            {displayName: '25: Snowverload', route: '2023/25/a', files: ['sample', 'sample2', 'input']}
+        {label: '2019', items: []},
+        {label: '2020', items: []},
+        {label: '2021', items: []},
+        {label: '2022', items: []},
+        {label: '2023', items: [
+            {label: '23: A Long Walk', routerLink: '2023/23/a'},
+            {label: '23: A Long Walk (Part 2)', routerLink: '2023/23/b'},
+            {label: '24: Never Tell Me The Odds', routerLink: '2023/24/a'},
+            {label: '25: Snowverload', routerLink: '2023/25/a', queryParams: { files: ['sample', 'sample2', 'input']}, queryParamsHandling: 'merge'}
         ]},
-    ]
+    ];
 
     constructor(private navService: NavService) { }
 
     ngAfterViewInit(): void {
-        this.navService.appDrawer = this.appDrawer;
+        this.navService.appComponent = this;
+        this.assignCommand(this.navItems);
+    }
+
+    assignCommand(items: MenuItem[]) {
+        items.forEach(mi => {
+            if (mi.items) this.assignCommand(mi.items);
+            if (mi.routerLink) mi.command = _ => this.sidebarVisible = false;
+        })
     }
 }
