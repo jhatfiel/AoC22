@@ -5,6 +5,8 @@ import { PuzzleVisualizationComponent } from "../../PuzzleVisualization.componen
 import * as Phaser from "phaser";
 import { Character, a201815 } from "../../../../2018/15/a201815";
 
+// https://rexrainbow.github.io/phaser3-rex-notes/docs/site/graphics/
+// great page for reference information about Phaser
 class GameScene extends Phaser.Scene {
     puzzle: a201815;
     elves: Phaser.GameObjects.Image[] = [];
@@ -22,6 +24,8 @@ class GameScene extends Phaser.Scene {
         this.load.image('floor', '/assets/Floor.png');
         this.load.image('goblin', '/assets/Goblin.png');
         this.load.image('elf', '/assets/Elf.png');
+        this.load.image('elfsprite', '/assets/ElfSprite.png');
+        this.load.atlas('a-elfsprite', '/assets/ElfSprite.json');
     }
 
     create() {
@@ -112,7 +116,12 @@ class GameScene extends Phaser.Scene {
             rotation = (colHalfDistance > 0)?Math.PI/2:3*Math.PI/2;
         }
 
-        let image = this.add.image(64*c.pos.x + 32, 64*c.pos.y + 32, imageName).setRotation(rotation).setInteractive({ useHandCursor: true });
+        let image: Phaser.GameObjects.Image;
+        if (imageName === 'elf') {
+            image = this.add.image(64*c.pos.x + 32, 64*c.pos.y + 32, imageName).setRotation(rotation).setInteractive({ useHandCursor: true });
+        } else {
+            image = this.add.image(64*c.pos.x + 32, 64*c.pos.y + 32, imageName).setRotation(rotation).setInteractive({ useHandCursor: true });
+        }
         if (!this.pathGraphics) this.pathGraphics = this.add.graphics();
 
         image.on('pointerdown', (pointer, gameObject) => {
