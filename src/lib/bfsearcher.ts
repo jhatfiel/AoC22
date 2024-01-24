@@ -1,3 +1,5 @@
+import { Deque } from "./deque";
+
 export class BFS_State<T=string> {
     constructor(public at: T) {}
     cost = 0;
@@ -24,10 +26,10 @@ export class BFS<T=string> {
 
     getPathsBetweenNodes(startNode: T, endNode: T, stopOnFirst=false): Array<BFS_State<T>> {
         let states = new Array<BFS_State<T>>(new BFS_State(startNode));
-        let toProcess = new Array<BFS_State<T>>(states[0]);
+        let toProcess = new Deque<BFS_State<T>>(states[0]);
 
         while (toProcess.length) {
-            let state = toProcess.pop();
+            let state = toProcess.removeFront();
             state.visited.add(state.at);
             if (state.at === endNode && stopOnFirst) {
                 return [state];
@@ -38,17 +40,12 @@ export class BFS<T=string> {
             let canVisit = Array.from(neighbors.keys()).filter(n => !state.visited.has(n));
 
             if (canVisit.length > 0) {
-                if (canVisit.length > 1) {
-                    canVisit.slice(1).forEach(n => {
-                        let newState = state.clone();
-                        newState.at = n;
-                        newState.cost += neighbors.get(n);
-                        toProcess.push(newState);
-                    })
-                }
-                state.at = canVisit[0];
-                state.cost += neighbors.get(state.at);
-                toProcess.push(state);
+                canVisit.forEach(n => {
+                    let newState = state.clone();
+                    newState.at = n;
+                    newState.cost += neighbors.get(n);
+                    toProcess.addBack(newState);
+                })
             } else {
                 // no new neighbors, see if we need to keep this one
                 if (this.keepFinalState(state)) {
@@ -61,12 +58,13 @@ export class BFS<T=string> {
         return states;
     }
 
-    getPathsFrom(startState: BFS_State<T>): Array<BFS_State<T>> {
-        let states = new Array<BFS_State<T>>(startState);
-        let toProcess = new Array<BFS_State<T>>(startState);
+    getPathsFrom(startNode: T, shouldStop: (state: BFS_State<T>) => boolean = _ => false): Array<BFS_State<T>> {
+        let states = new Array<BFS_State<T>>(new BFS_State(startNode));
+        let toProcess = new Deque<BFS_State<T>>(states[0]);
 
         while (toProcess.length) {
-            let state = toProcess.pop();
+            let state = toProcess.removeFront();
+            if (shouldStop(state)) break;
             state.visited.add(state.at);
 
             let neighbors = this.getNeighbors(state);
@@ -74,17 +72,12 @@ export class BFS<T=string> {
             let canVisit = Array.from(neighbors.keys()).filter(n => !state.visited.has(n));
 
             if (canVisit.length > 0) {
-                if (canVisit.length > 1) {
-                    canVisit.slice(1).forEach(n => {
-                        let newState = state.clone();
-                        newState.at = n;
-                        newState.cost += neighbors.get(n);
-                        toProcess.push(newState);
-                    })
-                }
-                state.at = canVisit[0];
-                state.cost += neighbors.get(state.at);
-                toProcess.push(state);
+                canVisit.forEach(n => {
+                    let newState = state.clone();
+                    newState.at = n;
+                    newState.cost += neighbors.get(n);
+                    toProcess.addBack(newState);
+                })
             } else {
                 // no new neighbors, see if we need to keep this one
                 if (this.keepFinalState(state)) {

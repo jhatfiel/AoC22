@@ -1,5 +1,5 @@
 import { AoCPuzzle } from "../../lib/AoCPuzzle";
-import { BFS, BFS_State } from "../../lib/bfsearcher";
+import { DFS, DFS_State } from "../../lib/dfsearcher";
 import { GridParser, PairFromKey } from "../../lib/gridParser";
 
 export class b202323 extends AoCPuzzle {
@@ -17,7 +17,7 @@ export class b202323 extends AoCPuzzle {
         let longest = 0;
         this.finalKey = this.toKey(this.gp.width-2,this.gp.height-1);
 
-        let bfsNodes = new BFS<number>(this.getNodeNeighbors.bind(this), state => {
+        let bfsNodes = new DFS<number>(this.getNodeNeighbors.bind(this), state => {
             if (state.at === this.finalKey && state.cost > longest) {
                 longest = state.cost;
                 this.log(`Found longer state: ${longest}`);
@@ -26,20 +26,24 @@ export class b202323 extends AoCPuzzle {
             }
             return false;
         });
-        bfsNodes.getPathsFrom(new BFS_State(this.toKey(1,0)));
+        bfsNodes.getPathsFrom(new DFS_State(this.toKey(1,0)), state => {
+            //let key = this.fromKey(state.at);
+            //this.log(`looking at ${key.x},${key.y} cost=${state.cost}`);
+            return false;
+        });
 
         this.log(`Longest path: ${longest}`);
         this.result = longest.toString();
         return false;
     }
 
-    getNodeNeighbors(state: BFS_State<number>): Map<number, number> {
+    getNodeNeighbors(state: DFS_State<number>): Map<number, number> {
         let result = this.branchToBranchDistance.get(state.at);
         if (result === undefined) {
             result = new Map<number, number>();
             this.branchToBranchDistance.set(state.at, result);
-            let bfs = new BFS<number>(this.getNeighbors.bind(this));
-            let states = bfs.getPathsFrom(new BFS_State<number>(state.at));
+            let bfs = new DFS<number>(this.getNeighbors.bind(this));
+            let states = bfs.getPathsFrom(new DFS_State<number>(state.at));
             // if this state can reach the final state, then it HAS to go to the final state (because it is the only one who can)
             if (states.some(p => p.at === this.finalKey)) {
                 states = states.filter(p => p.at === this.finalKey);
@@ -51,7 +55,7 @@ export class b202323 extends AoCPuzzle {
         return result;
     }
 
-    getNeighbors(state: BFS_State<number>): Map<number, number> {
+    getNeighbors(state: DFS_State<number>): Map<number, number> {
         let result = new Map<number, number>();
         let key = this.fromKey(state.at);
         let neighbors = Array.from(this.gp.getNeighbors(`${key.x},${key.y}`))

@@ -1,9 +1,17 @@
 import { AoCPuzzle } from "../../lib/AoCPuzzle";
-import { Dijkstra } from "../../lib/dijkstraBetter";
 import { GridParser, Pair, PairFromKey, PairToKey } from "../../lib/gridParser";
 
 const elfNames = ['Aymer', 'Beluar', 'Connak', 'Dyffros', 'Eldrin', 'Folen', 'Gaelin', 'Haladavar', 'Illitran', 'Jhaan', 'Khyrmin', 'Lhoris', 'Myriil', 'Nesterin', 'Omazeiros', 'Pirphal', 'Qican', 'Rydel', 'Saleh', 'Taeral', 'Urihorn', 'Vesryn', 'Wralen', 'Xeshest', 'Yhendorn', 'Zumdithas'];
 const goblinNames = ['Abbas', 'Bumbub', 'Crothu', 'Drikdarok', 'Egharod', 'Fodagog', 'Gholug', 'Hugmug', 'Igmut', 'Jughog', 'Khadba', 'Lob', 'Mabub', 'Nehrakgu', 'Oghuglat', 'Piggu', 'Quordud', 'Romarod', 'Sahgigoth', 'Tuggug', 'Ulam', 'Vukgilug', 'Wumkbanok', 'Xurek', 'Yashnarz', 'Zumhug'];
+
+function positionSort(a: Pair, b: Pair): number {
+    if (a.y !== b.y) return a.y - b.y;
+    return a.x - b.x;
+}
+
+function keySort(a: string, b: string): number {
+    return positionSort(PairFromKey(a), PairFromKey(b));
+}
 
 export abstract class Character {
     constructor(public name: string, public pos: Pair) {}
@@ -14,12 +22,7 @@ export abstract class Character {
     public abstract getEnemies(): Character[];
     public isAlive(): boolean { return this.hp > 0; }
     static sort(a: Character, b: Character): number {
-        if (a.pos.y !== b.pos.y) return a.pos.y - b.pos.y;
-        return a.pos.x - b.pos.x;
-    }
-    static sortByHealth(a: Character, b: Character): number {
-        if (a.hp === b.hp) return Character.sort(a, b);
-        return a.hp - b.hp;
+        return positionSort(a.pos, b.pos);
     }
 }
 
@@ -58,76 +61,91 @@ export class a201815 extends AoCPuzzle {
     _runStep(): boolean {
         //this.log(`Step: ${this.stepNumber}`);
         let moreToDo = true;
-        let stoppedEarly = false;
         this.livingCharacters().sort(Character.sort).forEach(c => {
             if (c.hp <= 0) return;
-            if (!moreToDo) { stoppedEarly = true; return }
+            if (c.getEnemies().length === 0) moreToDo = false;
+            if (!moreToDo) return;
             c.plannedMoves = [];
             c.attacking = null;
             // characters only move if there is no enemy adjacent
-            let t = this.getAttackTarget(c);
-            if (t) {
-                //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (target is ${t.toString()})`);
+            let attackTarget = this.getAttackTarget(c);
+            if (attackTarget) {
+                //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (target is ${attackTarget.toString()})`);
             } else {
                 // find target, if available, and start moving to it
                 // get all squares around all enemies
                 let inRange = this.getEnemySquares(c);
                 if (inRange.size) {
-                    //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (MOVING) (inRange = ${Array.from(inRange.keys()).join(' / ')})`);
-                    let dij = new Dijkstra(this.getNeighbors.bind(this));
+                    //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (SEARCHING) (inRange = ${Array.from(inRange.keys()).join(' / ')})`);
 
                     let cPosKey = PairToKey(c.pos);
-                    let targetSquare: string;
-                    dij.compute(cPosKey, (node: string, distance: number) => {
-                        if (inRange.has(node)) {
-                            //this.log(`${c.toString()} can get to ${node} in ${distance} steps`);
-                            targetSquare = node;
-                            return true;
+                    let path: string[];
+
+                    // find the closest set of inRange squares
+                    let parent = new Map<string, string>();
+                    parent.set(cPosKey, undefined);
+                    let frontier = new Array<string>(cPosKey);
+                    let found = new Array<string>();
+                    while (frontier.length && found.length === 0) {
+                        let newFrontier = new Array<string>();
+                        frontier.forEach(fn => {
+                            let neighbors = this.getNeighbors(fn);
+                            Array.from(neighbors.keys()).filter(n => !parent.has(n)).forEach(n => {
+                                parent.set(n, fn);
+                                newFrontier.push(n);
+                                if (inRange.has(n)) found.push(n);
+                            });
+                        })
+                        frontier = newFrontier;
+                    }
+
+                    // pick the best one we found and build the path to it
+                    if (found.length) {
+                        path = [];
+                        let target = found.sort(keySort)[0];
+                        while (target) { 
+                            path.push(target);
+                            target = parent.get(target);
                         }
-                        return false;
-                    });
-                    if (targetSquare) {
-                        let paths = dij.pathTo(cPosKey, targetSquare, false);
-                        let path = paths[0]
-                        //this.log(`${c.toString()} moving to ${targetSquare} paths are ${paths.map(p => p.join(' / ')).join(' -OR- ')}`);
-                        let newPos = PairFromKey(path[1]);
-                        c.pos.x = newPos.x;
-                        c.pos.y = newPos.y;
+                        path.reverse();
+                    }
+
+                    if (path) {
+                        //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (MOVING) ${targetSquare}`);
+                        c.pos = PairFromKey(path[1]);
                         c.plannedMoves = path.slice(1).map(PairFromKey);
                     }
 
                     // after moving, try to get the attack target
-                    t = this.getAttackTarget(c);
+                    attackTarget = this.getAttackTarget(c);
                 } else {
                     //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (NO ENEMY SQUARES)`);
                 }
             }
 
             // attack lowest health edjacent enemy (if any)
-            // attack t here
-            if (t) {
-                t.hp = Math.max(0, t.hp - c.ap);
-                c.attacking = t;
+            // attack attackTarget here
+            if (attackTarget) {
+                c.attacking = attackTarget;
+                attackTarget.hp = Math.max(0, attackTarget.hp - c.ap);
             }
-
-            // return true if we have eliminated one or the other side
-            moreToDo = this.numElves() > 0 && this.numGoblins() > 0;
         })
 
         if (!moreToDo) {
             // calculate result
             let totalHealth = this.livingCharacters().reduce((sum, c) => sum += c.hp, 0);
-            this.result = (totalHealth * (this.stepNumber-(stoppedEarly?1:0))).toString();
-            this.log(`Step: ${this.stepNumber} done (stoppedEarly=${stoppedEarly}), total = ${totalHealth}`);
+            this.result = (totalHealth * (this.stepNumber - 1)).toString();
+            this.log(`Step: ${this.stepNumber} done, total = ${totalHealth}`);
             this.livingCharacters().forEach(c => {
                 this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y}`);
             })
-            //this.debug();
+            // this.debug();
             // part b 
             // 60080 too low 40*1502
             // 60200 is incorrect (no hints) 40*1505
             // 61582 is wrong (41*1502)
             // 40*1499=59960 wrong
+            // 62958 41*1499
         }
         return moreToDo;
     }
@@ -172,13 +190,16 @@ export class a201815 extends AoCPuzzle {
 
     getAttackTarget(c: Character): Character {
         let t: Character;
-        c.getEnemies().sort(Character.sortByHealth).some(e => {
-            if ((e.pos.y === c.pos.y && (e.pos.x === c.pos.x-1 || e.pos.x === c.pos.x+1)) ||
-                (e.pos.x === c.pos.x && (e.pos.y === c.pos.y-1 || e.pos.y === c.pos.y+1))) {
-                t = e;
-                return true;
+        let enemies = c.getEnemies();
+        [{x: c.pos.x, y: c.pos.y-1},
+         {x: c.pos.x-1, y: c.pos.y},
+         {x: c.pos.x+1, y: c.pos.y},
+         {x: c.pos.x, y: c.pos.y+1}].filter(pos => {
+            let eIndex = enemies.findIndex(e => e.pos.x === pos.x && e.pos.y === pos.y);
+            if (eIndex !== -1 && (!t || t.hp > enemies[eIndex].hp)) {
+                t = enemies[eIndex];
             }
-        });
+         });
         return t;
     }
 
