@@ -82,7 +82,6 @@ export class a201816 extends AoCPuzzle {
             let line = this.lines[this.currentLine];
             if (line) {
                 this.runLine(line);
-                this.log(this.reg.join(', '));
             }
             this.currentLine++;
             moreToDo = this.currentLine < this.lines.length;
@@ -111,7 +110,7 @@ export class a201816 extends AoCPuzzle {
             }
         }
         for (let i=0; i<16; i++) {
-            this.log(`${i.toString().padStart(2, ' ')} is: ${this.imap.get(i).join(',')}`);
+            this.log(`${i.toString().padStart(2, ' ')} is: ${InstructionCode[this.imap.get(i).join(',')]}`);
         }
     }
 
