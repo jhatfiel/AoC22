@@ -9,6 +9,7 @@
       "program": "./dist/out-tsc/aoc.js",
       "runtimeArgs": [
         "--experimental-specifier-resolution=node",
+        "--enable-source-maps=node",
       ],
       "args": [
         "${fileBasenameNoExtension}",

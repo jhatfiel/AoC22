@@ -44,19 +44,20 @@ export class Instruction {
         return result;
     };
 }
+let InstructionCodeValues: InstructionCode[] = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 
 export class a201816 extends AoCPuzzle {
     currentLine = 0;
     numGT3 = 0;
-    imap = new Map<number, Array<InstructionCode>>();
+    imap = new Map<number, Set<InstructionCode>>();
     phase = 1;
     reg = [0, 0, 0, 0];
     sampleMode(): void { };
 
     _loadData(lines: string[]): void {
-        Object.keys(InstructionCode).filter(k => isNaN(+k)).forEach(k => {
-            this.imap.set(InstructionCode[k], Object.keys(InstructionCode).filter(v => isNaN(+v)).map(v => InstructionCode[v]));
-        });
+        for (let i=0; i<16; i++) {
+            this.imap.set(i, new Set(InstructionCodeValues));
+        };
     }
 
     _runStep(): boolean {
@@ -67,13 +68,22 @@ export class a201816 extends AoCPuzzle {
                 //this.log(this.lines[this.currentLine+2])
                 //this.log(this.lines[this.currentLine+1])
                 let matches = this.testOpcode(this.lines[this.currentLine], this.lines[this.currentLine+1], this.lines[this.currentLine+2]);
-                if (matches.length >= 3) this.numGT3++;
+                if (matches.size >= 3) this.numGT3++;
                 //this.log(`${this.lines[this.currentLine+1]} could match ${matches.map(k=>InstructionCode[k]).join(',')}`)
 
                 this.currentLine += 4;
+                // PART2: can optimize by skipping all the input once we know what each opcode is, but that invalidates part 1
+                /* PART2: 
+                if (Array.from(this.imap.values()).every(m => m.size === 1)) {
+                    while (this.currentLine < this.lines.length && this.lines[this.currentLine].startsWith('Before:')) this.currentLine += 4;
+                }
+                */
             } else {
-                this.log(`Part 1: ${this.numGT3}`)
-                this.identifyOpcodeMapping();
+                this.log(`Part 1: ${this.numGT3}`);
+                this.updateOpcodeMapping();
+                InstructionCodeValues.forEach(i => {
+                    this.log(`${i.toString().padStart(2, ' ')} is: ${Array.from(this.imap.get(i)).map(code => InstructionCode[code]).join(',')}`);
+                });
                 this.phase = 2;
             }
 
@@ -91,49 +101,48 @@ export class a201816 extends AoCPuzzle {
         return moreToDo;
     }
 
-    identifyOpcodeMapping() {
+    updateOpcodeMapping() {
         let madeChange = true;
-        while (madeChange && Array.from(this.imap.values()).some(a => a.length > 1)) {
+        while (madeChange && Array.from(this.imap.values()).some(a => a.size > 1)) {
             madeChange = false;
-            for (let i=0; i<16; i++) {
-                if (this.imap.get(i).length === 1) {
-                    let singleValue = this.imap.get(i)[0];
+            InstructionCodeValues.forEach(i => {
+                if (this.imap.get(i).size === 1) {
+                    let singleValue = Array.from(this.imap.get(i))[0];
                     // remove this choice from everybody else
-                    for (let j=0; j<16; j++) {
-                        if (j === i) continue;
-                        if (this.imap.get(j).indexOf(singleValue) !== -1) {
+                    InstructionCodeValues.filter(j => j !== i).forEach(j => {
+                        if (this.imap.get(j).has(singleValue)) {
                             madeChange = true;
-                            this.imap.set(j, this.imap.get(j).filter(k => k !== singleValue));
+                            this.imap.get(j).delete(singleValue);
                         }
-                    }
+                    });
                 }
-            }
-        }
-        for (let i=0; i<16; i++) {
-            this.log(`${i.toString().padStart(2, ' ')} is: ${InstructionCode[this.imap.get(i).join(',')]}`);
+            });
         }
     }
 
     runLine(line: string) {
         let command = line.split(' ').map(Number);
-        let i = this.imap.get(command[0])[0];
+        let i = Array.from(this.imap.get(command[0]))[0];
         this.reg = new Instruction(i, command[1], command[2], command[3]).execute(this.reg);
     }
 
-    testOpcode(start: string, line: string, end: string): InstructionCode[] {
+    testOpcode(start: string, line: string, end: string): Set<InstructionCode> {
         let beforeReg = start.substring(start.indexOf('[')+1, start.indexOf(']')).split(',').map(Number);
         let command = line.split(' ').map(Number);
         let afterReg = end.substring(start.indexOf('[')+1, start.indexOf(']')).split(',').map(Number);
-        let matches: InstructionCode[] = [];
-        Object.keys(InstructionCode).filter(k => isNaN(+k)).forEach(k => {
-            let iReg = new Instruction(InstructionCode[k], command[1], command[2], command[3]).execute(beforeReg);
-            let matched = false;
+        let matches = new Set<InstructionCode>();
+        // PART2: can optimize the evaluation by only testing the opcodes that this command could be, but that invalidates part 1
+        // PART2: this.imap.get(command[0]).forEach(k => {
+        InstructionCodeValues.forEach(k => {
+            let iReg = new Instruction(k, command[1], command[2], command[3]).execute(beforeReg);
             if (iReg[0] === afterReg[0] && iReg[1] === afterReg[1] && iReg[2] === afterReg[2] && iReg[3] === afterReg[3]) {
-                matched = true;
-                matches.push(InstructionCode[k]);
+                matches.add(k);
             }
         });
-        this.imap.set(command[0], this.imap.get(command[0]).filter(k => matches.indexOf(k) !== -1));
+        let imapping = this.imap.get(command[0]);
+        for (let i=0; i<16; i++) {
+            if (!matches.has(i)) imapping.delete(i);
+        }
         return matches;
     }
 
