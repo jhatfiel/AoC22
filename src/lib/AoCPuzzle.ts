@@ -6,14 +6,16 @@ export abstract class AoCPuzzle {
         }
     }
     inSampleMode = false;
+    lines: string[];
     result = '';
     stepNumber = 0;
 
     loadData(lines: Array<string>) {
         if (this.inSampleMode) this.sampleMode();
+        this.lines = lines;
         this._loadData(lines);
     }
-    abstract _loadData(lines: Array<string>);
+    _loadData(lines: Array<string>) { };
 
     /**
      * 

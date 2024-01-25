@@ -114,9 +114,9 @@ export class NavService {
             this.puzzle = new this.clazzModule[this.classname](this.inputFileBehavior.value, msg => {
                 if (this.currentPuzzleComponent) this.currentPuzzleComponent.log(msg);
             });
+            this.currentPuzzleComponent.reset();
             this.puzzle.loadData(this.lines);
             this.stateBehavior.next(PUZZLE_STATE.PAUSED);
-            this.currentPuzzleComponent.reset();
             return true;
         }
         return false;

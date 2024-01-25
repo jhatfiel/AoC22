@@ -27,7 +27,6 @@ export class NavComponent implements OnInit {
     ngOnInit(): void { }
 
     savePreferences() {
-        console.log(`savePreference ${this.navService.auto}`)
         localStorage.setItem('autoPlay', this.navService.auto?"true":"false");
     }
 
