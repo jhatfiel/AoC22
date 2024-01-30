@@ -86,7 +86,7 @@ export class NavService {
     }
 
     public selectFile(inputFile: string) {
-        this.inputFileBehavior.next(inputFile);
+        this.loadFile(inputFile);
         this.router.navigate([], {queryParams: { inputFile }, queryParamsHandling: 'merge'})
     }
 
@@ -102,7 +102,6 @@ export class NavService {
             this.init();
 
             if (this.auto) {
-                this.init();
                 this.stateBehavior.next(PUZZLE_STATE.PLAYING);
                 this.play();
             }
@@ -114,8 +113,8 @@ export class NavService {
             this.puzzle = new this.clazzModule[this.classname](this.inputFileBehavior.value, msg => {
                 if (this.currentPuzzleComponent) this.currentPuzzleComponent.log(msg);
             });
-            this.currentPuzzleComponent.reset();
             this.puzzle.loadData(this.lines);
+            this.currentPuzzleComponent.reset();
             this.stateBehavior.next(PUZZLE_STATE.PAUSED);
             return true;
         }

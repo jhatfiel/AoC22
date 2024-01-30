@@ -20,12 +20,14 @@ class GameScene extends Phaser.Scene {
     init(data: any) { this.puzzle = data.puzzle; this.component = data.component; }
 
     preload() {
+        this.goblins = [];
+        this.elves = [];
         this.load.image('wall', '/assets/MossyWall.png');
         this.load.image('floor', '/assets/Floor.png');
         this.load.image('goblin', '/assets/Goblin.png');
         this.load.image('elf', '/assets/Elf.png');
-        this.load.image('elfsprite', '/assets/ElfSprite.png');
-        this.load.atlas('a-elfsprite', '/assets/ElfSprite.json');
+        //this.load.image('elfsprite', '/assets/ElfSprite.png');
+        //this.load.atlas('a-elfsprite', '/assets/ElfSprite.json');
     }
 
     create() {
@@ -175,20 +177,21 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
 
     reset() {
         this.output = '';
-        if (this.game) {
-            this.game.destroy(true);
-        }
         this.puzzle = this.navService.puzzle as a201815;
-        let config: Phaser.Types.Core.GameConfig = {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH,
-            scale: {},
-            width: this.puzzle.gp.width*64,
-            height: this.puzzle.gp.height*64,
-            parent: 'viz',
-            scene: GameScene,
-        };
-        this.game = new Phaser.Game(config);
+        if (!this.game) {
+            let config: Phaser.Types.Core.GameConfig = {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                scale: {},
+                width: this.puzzle.gp.width*64,
+                height: this.puzzle.gp.height*64,
+                parent: 'viz',
+                scene: GameScene,
+            };
+            this.game = new Phaser.Game(config);
+        } else {
+            this.game.scale.setGameSize(this.puzzle.gp.width*64, this.puzzle.gp.height*64);
+        }
         this.game.scene.start('puzzle', {puzzle: this.puzzle, component: this})
     }
 
