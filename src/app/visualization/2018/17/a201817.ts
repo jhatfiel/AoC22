@@ -18,8 +18,8 @@ class GameScene extends Phaser.Scene {
         this.puzzle = data.puzzle;
         this.component = data.component;
         //this.cameras.main.setViewport(470, 1, 30, 60);
-        this.cameras.main.zoomTo(10, 2000, 'Power2');
-        this.cameras.main.pan(500, 0);
+        this.cameras.main.zoomTo(10, 0);
+        this.cameras.main.pan(500, 0, 0);
         //this.cameras.main.setSize(30, 60);
         this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
             let newZoom = this.cameras.main.zoom;
