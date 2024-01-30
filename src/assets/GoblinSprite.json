@@ -1,5 +1,5 @@
 { "frames": {
-   "Elf 0.ase": {
+   "Goblin 0.ase": {
     "frame": { "x": 0, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +7,7 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 500
    },
-   "Elf 1.ase": {
+   "Goblin 1.ase": {
     "frame": { "x": 64, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -15,7 +15,7 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 500
    },
-   "Elf 2.ase": {
+   "Goblin 2.ase": {
     "frame": { "x": 128, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -23,7 +23,7 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 500
    },
-   "Elf 3.ase": {
+   "Goblin 3.ase": {
     "frame": { "x": 192, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -31,7 +31,7 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 500
    },
-   "Elf 4.ase": {
+   "Goblin 4.ase": {
     "frame": { "x": 256, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +39,7 @@
     "sourceSize": { "w": 64, "h": 64 },
     "duration": 500
    },
-   "Elf 5.ase": {
+   "Goblin 5.ase": {
     "frame": { "x": 320, "y": 0, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
@@ -51,7 +51,7 @@
  "meta": {
   "app": "https://github.com/LibreSprite/LibreSprite/",
   "version": "1.2-973d0e3d-SDL",
-  "image": "C:\\dev\\personal\\AoC\\src\\assets\\ElfSprite.png",
+  "image": "C:\\dev\\personal\\AoC\\src\\assets\\GoblinSprite.png",
   "format": "RGBA8888",
   "size": { "w": 384, "h": 64 },
   "scale": "1",
@@ -60,10 +60,8 @@
    { "name": "attack", "from": 4, "to": 5, "direction": "forward" }
   ],
   "layers": [
-   { "name": "Layer", "opacity": 255, "blendMode": "normal" },
-   { "name": "feet", "opacity": 255, "blendMode": "normal" },
-   { "name": "sword", "opacity": 255, "blendMode": "normal" },
-   { "name": "ear", "opacity": 255, "blendMode": "normal" },
+   { "name": "base", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 2", "opacity": 255, "blendMode": "normal" },
    { "name": "shield", "opacity": 255, "blendMode": "normal" }
   ]
  }
