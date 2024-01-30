@@ -56,6 +56,11 @@ class GameScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         this.waterGraphics.clear();
+        this.puzzle.fallToCheck.forEach(line => {
+            let color = 0x00FF00;
+            this.waterGraphics.fillStyle(color);
+            this.waterGraphics.fillRect(line.x1, line.y1, (line.x2-line.x1+1), (line.y2-line.y1+1))
+        })
         this.puzzle.typeLines.filter(line => line.type === LineType.RESTING || line.type === LineType.FLOWING).forEach(line => {
             let color = 0xFF0000;
             if (line.type === LineType.RESTING) color = 0x8888FF;
