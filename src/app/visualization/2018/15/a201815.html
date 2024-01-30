@@ -2,7 +2,7 @@
 Result: {{ this.navService.puzzle?.result }}
 <hr>
 <div class="content">
-    <div id="viz" class="viz"></div>
+    <PhaserComponent #phaserComponent [scene]="sceneType" class="viz"></PhaserComponent>
     <div class="rightPanel">
         <div class="selectedCharacter">
             <span *ngIf="selectedCharacter !== undefined">

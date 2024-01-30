@@ -18,6 +18,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DividerModule } from 'primeng/divider';
+import { PhaserComponent } from './visualization/Phaser.component';
+import { AngularResizeEventModule } from 'angular-resize-event';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { DividerModule } from 'primeng/divider';
     MainComponent,
     NavComponent,
     a201815Component,
-    GenericPuzzleComponent
+    GenericPuzzleComponent,
+    PhaserComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +42,8 @@ import { DividerModule } from 'primeng/divider';
     SelectButtonModule,
     ToolbarModule,
     CheckboxModule,
-    DividerModule
+    DividerModule,
+    AngularResizeEventModule,
   ],
   providers: [NavService],
   bootstrap: [AppComponent]

@@ -4,6 +4,7 @@ import { NavService } from "../../../nav.service";
 import { PuzzleVisualizationComponent } from "../../PuzzleVisualization.component";
 import * as Phaser from "phaser";
 import { Character, a201815 } from "../../../../2018/15/a201815";
+import { PhaserComponent } from "../../Phaser.component";
 
 // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/graphics/
 // great page for reference information about Phaser
@@ -153,19 +154,19 @@ class GameScene extends Phaser.Scene {
 })
 export class a201815Component extends PuzzleVisualizationComponent implements OnInit, AfterViewChecked {
     @ViewChild('scrollOutput') private scrollOutput: ElementRef
+    @ViewChild('phaserComponent') private phaserComponent: PhaserComponent;
     output: string = '';
-    game: Phaser.Game;
     puzzle: a201815;
     selectedCharacter: Character;
+    sceneType: Phaser.Types.Scenes.SceneType;
 
     constructor(public router: Router, public navService: NavService) {
         super(navService);
         this.navService.currentUrl.subscribe(_ => { this.output = ''; })
+        this.sceneType = GameScene;
     }
 
-    ngOnInit() {
-        window.addEventListener('resize', event => { this.game.scale.setMaxZoom(); }, false);
-    }
+    ngOnInit() { }
 
     ngAfterViewChecked(): void {
         this.scrollOutput.nativeElement.scrollTop = this.scrollOutput.nativeElement.scrollHeight;
@@ -178,28 +179,13 @@ export class a201815Component extends PuzzleVisualizationComponent implements On
     reset() {
         this.output = '';
         this.puzzle = this.navService.puzzle as a201815;
-        if (!this.game) {
-            let config: Phaser.Types.Core.GameConfig = {
-                mode: Phaser.Scale.FIT,
-                autoCenter: Phaser.Scale.CENTER_BOTH,
-                scale: {},
-                width: this.puzzle.gp.width*64,
-                height: this.puzzle.gp.height*64,
-                parent: 'viz',
-                scene: GameScene,
-            };
-            this.game = new Phaser.Game(config);
-        } else {
-            this.game.scale.setGameSize(this.puzzle.gp.width*64, this.puzzle.gp.height*64);
-        }
-        this.game.scene.start('puzzle', {puzzle: this.puzzle, component: this})
+        this.phaserComponent.game.scene.start('puzzle', {puzzle: this.puzzle, component: this})
+        this.phaserComponent.game.scale.setGameSize(this.puzzle.gp.width*64, this.puzzle.gp.height*64);
     }
 
     log(msg) {
         this.output += msg + "\n";
     }
 
-    step() {
-
-    }
+    step() { }
 }
