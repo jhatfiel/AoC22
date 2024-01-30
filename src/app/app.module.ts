@@ -20,6 +20,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DividerModule } from 'primeng/divider';
 import { PhaserComponent } from './visualization/Phaser.component';
 import { AngularResizeEventModule } from 'angular-resize-event';
+import { a201817Component } from './visualization/2018/17/a201817';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { AngularResizeEventModule } from 'angular-resize-event';
     MainComponent,
     NavComponent,
     a201815Component,
+    a201817Component,
     GenericPuzzleComponent,
     PhaserComponent
   ],
