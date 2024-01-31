@@ -151,6 +151,18 @@ export class GridParser {
         return result;
     }
 
+    gridAdjacent(p: Pair): Array<Pair> {
+        return [
+         {x: p.x-1, y: p.y-1}, {x: p.x, y: p.y-1}, {x: p.x+1, y: p.y-1},
+         {x: p.x-1, y: p.y  },                     {x: p.x+1, y: p.y  },
+         {x: p.x-1, y: p.y+1}, {x: p.x, y: p.y+1}, {x: p.x+1, y: p.y+1},
+        ].filter(pot => pot.x >= 0 && pot.x < this.width && pot.y >= 0 && pot.y < this.height);
+    }
+
+    gridAdjacentCells(p: Pair): Array<[Pair, string]> {
+        return this.gridAdjacent(p).map(cell => [cell, this.grid[cell.y][cell.x]]);
+    }
+
     toKey(p: Pair): string { return `${p.x},${p.y}`; }
 
     getShortestPath(TL: Pair, BR: Pair) {
