@@ -19,3 +19,8 @@
 ::ng-deep .p-button {
     padding: 0.25rem;
 }
+
+::ng-deep .p-slider {
+    width: 300px;
+    margin: 0 15px;
+}

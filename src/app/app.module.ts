@@ -18,6 +18,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DividerModule } from 'primeng/divider';
+import { SliderModule } from 'primeng/slider';
 import { PhaserComponent } from './visualization/Phaser.component';
 import { AngularResizeEventModule } from 'angular-resize-event';
 import { a201817Component } from './visualization/2018/17/a201817';
@@ -46,6 +47,7 @@ import { a201817Component } from './visualization/2018/17/a201817';
     CheckboxModule,
     DividerModule,
     AngularResizeEventModule,
+    SliderModule,
   ],
   providers: [NavService],
   bootstrap: [AppComponent]

@@ -1,13 +1,15 @@
 <p-toolbar>
     <div class="p-toolbar-group-start">
-        top
+        <a [href]="navService.getPuzzleLink()" target="_blank" title="View puzzle on Advent of Code site">AoC</a>
         <span class="currentPuzzle" (click)="navService.openNav()">{{this.navService.getPuzzleDescription()}}</span> &nbsp; 
         <span class="puzzleStepNumber">Step: {{ this.navService.getPuzzleStepNumber() }}</span>
     </div>
     <div class="p-toolbar-group-center">
+        <span id="stepDelayLabel">Step Delay (ms)</span>
+        <p-slider ariaLabelledBy="stepDelayLabel" [(ngModel)]="navService.stepDelay" [step]="50" [max]="1000" (onChange)="updateStepDelay()"></p-slider>
         <p-button icon="pi pi-step-forward" [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED" (click)="step()"></p-button>
         <p-button icon="pi {{playIcon}}" [disabled]="navService.stateBehavior.getValue() === PUZZLE_STATE().DISABLED" (click)="playPause()"></p-button>
-        <p-checkbox label="Auto" [(ngModel)]="navService.auto" (onChange)="savePreferences()" [binary]="true"></p-checkbox> &nbsp; 
+        <p-checkbox label="Auto" [(ngModel)]="navService.auto" (onChange)="updateAuto()" [binary]="true"></p-checkbox>
     </div>
     <div class="p-toolbar-group-end">
         <span>Input File: </span>

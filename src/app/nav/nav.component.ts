@@ -26,8 +26,12 @@ export class NavComponent implements OnInit {
 
     ngOnInit(): void { }
 
-    savePreferences() {
+    updateAuto() {
         localStorage.setItem('autoPlay', this.navService.auto?"true":"false");
+    }
+
+    updateStepDelay() {
+        localStorage.setItem('stepDelay', this.navService.stepDelay.toString());
     }
 
     step() {

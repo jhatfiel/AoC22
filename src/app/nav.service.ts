@@ -20,6 +20,7 @@ export class NavService {
     public currentPuzzleComponent: PuzzleVisualizationComponent;
     public puzzle: AoCPuzzle;
     public auto = localStorage.getItem('autoPlay') === 'true';
+    public stepDelay = Number(localStorage.getItem('stepDelay') ?? '0');
     public inputFileBehavior = new BehaviorSubject<string>('');
     public lines: string[];
     public classname: string;
@@ -65,6 +66,12 @@ export class NavService {
                 }
             }
         });
+    }
+
+    public getPuzzleLink() {
+        let link = 'https://adventofcode.com/';
+        if (this.year && this.day) link += `${this.year}/day/${this.day}`;
+        return link;
     }
 
     public closeNav() {
@@ -130,12 +137,13 @@ export class NavService {
     }
 
     public play() {
+        console.log(`delay: ${this.stepDelay}`);
         setTimeout(_ => {
             if (!this.puzzle || this.stateBehavior.value === PUZZLE_STATE.DONE) return;
             let hasMore = this.puzzle.runStep();
             this.currentPuzzleComponent.step();
             if (!hasMore) this.stateBehavior.next(PUZZLE_STATE.DONE);
             else if (this.stateBehavior.value !== PUZZLE_STATE.PAUSED) this.play();
-        }, 0);
+        }, this.stepDelay);
     }
 }
