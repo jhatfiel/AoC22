@@ -22,3 +22,8 @@
 [ip-172-31-43-116.eu-] / 2024-01-30T14:26:23.641Z: [     15.14ms] Ran a201817 with ./data/2018/17/sample.txt resulting in 19
 [ip-172-31-43-116.eu-] / 2024-01-30T14:28:13.932Z: [     28.77ms] Ran a201817 with ./data/2018/17/sample.txt resulting in 49
 [ip-172-31-43-116.eu-] / 2024-01-30T14:52:50.778Z: [     13.48ms] Ran a201817 with ./data/2018/17/sample.txt resulting in 49
+[ip-172-31-43-116.eu-] / 2024-01-31T10:29:52.315Z: [ 277235.70ms] Ran a201817 with ./data/2018/17/input.txt resulting in 33242
+[ip-172-31-43-116.eu-] / 2024-01-31T10:33:20.969Z: [   9332.31ms] Ran a201817 with ./data/2018/17/input.txt resulting in 33242
+[ip-172-31-43-116.eu-] / 2024-01-31T10:34:36.389Z: [   9201.05ms] Ran a201817 with ./data/2018/17/input.txt resulting in 27256
+[ip-172-31-43-116.eu-] / 2024-01-31T10:34:52.391Z: [     10.90ms] Ran a201817 with ./data/2018/17/sample.txt resulting in 29
+[ip-172-31-43-116.eu-] / 2024-01-31T10:42:00.921Z: [   8966.20ms] Ran a201817 with ./data/2018/17/input.txt resulting in 27256

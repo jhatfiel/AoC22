@@ -19,7 +19,7 @@ class GameScene extends Phaser.Scene {
         this.component = data.component;
         //this.cameras.main.setViewport(470, 1, 30, 60);
         this.cameras.main.zoomTo(10, 0);
-        this.cameras.main.pan(500, 0, 0);
+        this.cameras.main.pan(500, 35, 0);
         //this.cameras.main.setSize(30, 60);
         this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
             let newZoom = this.cameras.main.zoom;
@@ -56,19 +56,21 @@ class GameScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         this.waterGraphics.clear();
-        this.puzzle.fallToCheck.forEach(line => {
-            let color = 0x00FF00;
-            this.waterGraphics.fillStyle(color);
+        this.puzzle.typeLines.filter(line => line.type === LineType.RESTING).forEach(line => {
+            this.waterGraphics.fillStyle(0x8888FF);
             this.waterGraphics.fillRect(line.x1, line.y1, (line.x2-line.x1+1), (line.y2-line.y1+1))
+
         })
-        this.puzzle.typeLines.filter(line => line.type === LineType.RESTING || line.type === LineType.FLOWING).forEach(line => {
-            let color = 0xFF0000;
-            if (line.type === LineType.RESTING) color = 0x8888FF;
-            this.waterGraphics.fillStyle(color);
+        this.puzzle.typeLines.filter(line => line.type === LineType.FLOWING).forEach(line => {
+            this.waterGraphics.fillStyle(0xFF0000);
             this.waterGraphics.fillRect(line.x1, line.y1, (line.x2-line.x1+1), (line.y2-line.y1+1))
             //this.waterGraphics.lineStyle(1, color, 1);
             //this.waterGraphics.lineBetween(line.x1, line.y1, line.x2, line.y2);
 
+        })
+        this.puzzle.fallToCheck.forEach(line => {
+            this.waterGraphics.fillStyle(0x00FF00);
+            this.waterGraphics.fillRect(line.x1, line.y1, (line.x2-line.x1+1), (line.y2-line.y1+1))
         })
     }
 }

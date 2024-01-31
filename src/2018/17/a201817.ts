@@ -1,4 +1,3 @@
-import { Pair } from './../../lib/gridParser';
 import { AoCPuzzle } from '../../lib/AoCPuzzle';
 
 export enum LineType {
@@ -52,27 +51,35 @@ export class a201817 extends AoCPuzzle {
     sortLines(a: Line, b: Line): number { return (a.y1 === b.y1) ? a.x1-b.x1 : a.y1 - b.y1; }
 
     _runStep(): boolean {
+        this.log(`Step: ${this.stepNumber} - ${this.fallToCheck.length} falling streams to process, ${this.typeLines.filter(line => line.type !== LineType.CLAY).length} lines of interest`);
         let moreToDo = false;
         let newFallToCheck: Line[] = [];
 
         this.fallToCheck.forEach(fall => {
-            this.log(`Checking fall at (${fall.x1}, ${fall.y2})`);
+            if (fall.y2 < fall.y1) return;
+            //this.log(`Checking fall at (${fall.x1}, ${fall.y1} down to ${fall.y2})`);
             let hit = this.typeLines.filter(l => l.y1 >= fall.y1).find(l => l.x1 <= fall.x1 && fall.x1 <= l.x2);
 
-            this.log(`hit?.y1 = ${hit?.y1}`);
+            //this.log(`hit?.y1 = ${hit?.y1}`);
             if (hit === undefined) {
+                // this falling water doesn't hit anything, so cap it at the end and get rid of it, it never needs to be considered again
                 fall.y2 = this.yMax;
                 this.typeLines.push(fall);
                 return;
             }
             
             if (hit.type === LineType.CLAY || hit.type === LineType.RESTING) {
-                this.log(`Found ${LineType[hit.type]}: ${JSON.stringify(hit)}`);
+                // if we hit clay or resting water, we have more to process
+                moreToDo = true;
+                newFallToCheck.push(fall);
+
+                //this.log(`Found ${LineType[hit.type]}: ${JSON.stringify(hit)}`);
                 // update this fall line to end 2 above this barrier
                 fall.y2 = hit.y1-2;
                 // spread out right & left (y2 = NaN means it's a drop)
                 let left = this.findClayRestingOrDrop(fall.x1, hit.y1-1, -1);
                 let right = this.findClayRestingOrDrop(fall.x1, hit.y1-1, 1);
+                /*
                 if (left.type === LineType.CLAY) {
                     this.log(`Found left wall at ${JSON.stringify(left)}`);
                 } else {
@@ -83,42 +90,141 @@ export class a201817 extends AoCPuzzle {
                 } else {
                     this.log(`Found right drop at ${JSON.stringify(right)}`);
                 }
+                */
 
                 if (left.type === LineType.CLAY && right.type === LineType.CLAY) {
                     // - if 2 walls, create new rLine above the hLine, update fall line to stop above the sLine
-                    this.typeLines.push({type: LineType.RESTING, x1: left.x1+1, x2: right.x2-1, y1: hit.y1-1, y2: hit.y1-1});
+                    // remove flowing lines that this resting line covers
+                    let newLine = {type: LineType.RESTING, x1: left.x2+1, x2: right.x1-1, y1: hit.y1-1, y2: hit.y1-1};
+                    this.typeLines = this.typeLines.filter(line => !(line.type === LineType.FLOWING && line.y1 === line.y2 && line.y1 === newLine.y1 && line.x1 <= newLine.x2 && line.x2 >= newLine.x1));
+                    //this.log(`Adding flat resting line: ${JSON.stringify(newLine)}`);
+                    [...this.fallToCheck, ...newFallToCheck].filter(line => line.y1 <= newLine.y1 && newLine.y1 <= line.y2 && newLine.x1 <= line.x1 && line.x1 <= newLine.x2).forEach(line => {
+                        line.y2 = newLine.y1-1;
+                        //this.log(`Trimming back ${JSON.stringify(line)}`);
+                    })
+                    this.typeLines.push(newLine);
                     this.typeLines.sort(this.sortLines);
-                    newFallToCheck.push(fall);
                 } else {
-                    // - if 1 or no walls, this fall is DONE.  Find first and last x with support, create uLine to represent.  Create 1 or 2 new fall lines.
-                    let x1 = left.x1+1;
-                    let x2 = right.x2-1;
+                    // - if 1 or no walls, this fall is done for now.  Create resting line from first to last x with support. Create 1 or 2 new fall lines.
+                    let x1 = left.x2+1;
+                    let x2 = right.x1-1;
 
-                    this.typeLines.push(fall);
-                    this.typeLines.sort(this.sortLines);
-                    if (Number.isNaN(left.y2)) {
-                        newFallToCheck.push({type: LineType.FLOWING, x1: left.x1, x2: left.x1, y1: hit.y1-1, y2: hit.y1-1});
+                    if (left.type === undefined) {
+                        // make sure the top of this new flow line isn't contained in an existing one
+                        let newLine = {type: LineType.FLOWING, x1: left.x1, x2: left.x1, y1: hit.y1-1, y2: hit.y1-1}
+                        if (![...this.fallToCheck, ...newFallToCheck].some(line => line.x1 === newLine.x1 && line.y1 <= newLine.y1 && newLine.y1 <= line.y2)) {
+                            //this.log(`Adding new LEFT fall line: ${JSON.stringify(newLine)}`)
+                            newFallToCheck.push(newLine);
+                        }
                     }
-                    if (Number.isNaN(right.y2)) {
-                        newFallToCheck.push({type:LineType.FLOWING, x1: right.x1, x2: right.x1, y1: hit.y1-1, y2: hit.y1-1});
+                    if (right.type === undefined) {
+                        let newLine = {type:LineType.FLOWING, x1: right.x1, x2: right.x1, y1: hit.y1-1, y2: hit.y1-1};
+                        if (![...this.fallToCheck, ...newFallToCheck].some(line => line.x1 === newLine.x1 && line.y1 <= newLine.y1 && newLine.y1 <= line.y2)) {
+                            //this.log(`Adding new RIGHT fall line: ${JSON.stringify(newLine)}`)
+                            newFallToCheck.push(newLine);
+                        }
                     }
-                    this.typeLines.push({type: LineType.FLOWING, x1, x2, y1: hit.y1-1, y2: hit.y1-1});
+                    let newLine = {type: LineType.FLOWING, x1, x2, y1: hit.y1-1, y2: hit.y1-1};
+                    this.typeLines = this.typeLines.filter(line => !(line.type === LineType.FLOWING && line.y1 === line.y2 && line.y1 === newLine.y1 && line.x1 <= newLine.x2 && line.x2 >= newLine.x1));
+                    //this.log(`Adding flat flowing line: ${JSON.stringify(newLine)}`);
+                    [...this.fallToCheck, ...newFallToCheck].filter(line => line.y1 <= newLine.y1 && newLine.y1 <= line.y2 && newLine.x1 <= line.x1 && line.x1 <= newLine.x2).forEach(line => {
+                        line.y2 = newLine.y1-1;
+                        //this.log(`Trimming back ${JSON.stringify(line)}`);
+                    })
+                    this.typeLines.push(newLine);
                     this.typeLines.sort(this.sortLines);
                 }
+            } else if (hit.type === LineType.FLOWING) {
+                // this might hit solid water in the future, keep it around
+                fall.y2 = hit.y2-1;
+                newFallToCheck.push(fall);
             }
         });
 
-        this.fallToCheck = newFallToCheck;
-        moreToDo = this.fallToCheck.length > 0;
-        this.result = this.typeLines.filter(line => line.type === LineType.FLOWING || line.type === LineType.RESTING).reduce((acc, line) => {
-            this.log(`Counting line: ${JSON.stringify(line)}`)
-            let x1 = line.x1;
-            let x2 = line.x2;
-            let y1 = Math.max(this.yMin, line.y1);
-            let y2 = Math.max(this.yMin, line.y2);
+        // remove any newFallToCheck lines that may have been missed (their top is in a resting water line)
+        this.fallToCheck = []
+        newFallToCheck.forEach(line => {
+            //this.log(`Checking for falid newFallToCheck ${JSON.stringify(line)}`);
+            let lineAtEnd = this.getLine(line.x1, line.y2);
+            while (lineAtEnd && lineAtEnd.type === LineType.RESTING && line.y1 <= line.y2) {
+                line.y2--;
+                lineAtEnd = this.getLine(line.x1, line.y2);
+            }
+            if (line.y1 <= line.y2) this.fallToCheck.push(line); // this.log(`Keeping ${JSON.stringify(line)}`); }
+        });
 
-            return acc + (x2-x1+1)*(y2-y1+1);
-        }, 0).toString();
+        // check for conflicts
+        /*
+        this.fallToCheck.forEach((line, ind) => {
+            [...this.fallToCheck.slice(0, ind), ...this.fallToCheck.slice(ind+1)].forEach(conflict => {
+                for (let x=line.x1; x<=line.x2; x++) {
+                    for (let y=line.y1; y<=line.y2; y++) {
+                        if (conflict.x1 <= x && x <= conflict.x2 && conflict.y1 <= y && y <= conflict.y2) {
+                            // uh-oh!!!
+                            this.log(`line: ${JSON.stringify(line)}, conflict: ${JSON.stringify(conflict)}`);
+                            throw new Error(`Found conflict!`);
+                        }
+                    }
+                }
+            })
+            this.typeLines.forEach(conflict => {
+                for (let x=line.x1; x<=line.x2; x++) {
+                    for (let y=line.y1; y<=line.y2; y++) {
+                        if (conflict.x1 <= x && x <= conflict.x2 && conflict.y1 <= y && y <= conflict.y2) {
+                            // uh-oh!!!
+                            this.log(`line: ${JSON.stringify(line)}, typeLine conflict: ${JSON.stringify(conflict)}`);
+                            throw new Error(`Found conflict!`);
+                        }
+                    }
+                }
+            })
+        })
+
+        this.typeLines.forEach((line, ind) => {
+            if (line.type === LineType.CLAY) return;
+            [...this.typeLines.slice(0, ind), ...this.typeLines.slice(ind+1)].forEach(conflict => {
+                for (let x=line.x1; x<=line.x2; x++) {
+                    for (let y=line.y1; y<=line.y2; y++) {
+                        if (conflict.x1 <= x && x <= conflict.x2 && conflict.y1 <= y && y <= conflict.y2) {
+                            // uh-oh!!!
+                            this.log(`typeLine: ${JSON.stringify(line)}, conflict typeLine: ${JSON.stringify(conflict)}`);
+                            throw new Error(`Found conflict!`);
+                        }
+                    }
+                }
+            })
+        })
+        */
+
+        //moreToDo = this.fallToCheck.length > 0;
+        if (!moreToDo) {
+            // part 1
+            this.result = [...this.fallToCheck, ...this.typeLines.filter(line => line.type === LineType.FLOWING || line.type === LineType.RESTING)].reduce((acc, line) => {
+                let x1 = line.x1;
+                let x2 = line.x2;
+                let y1 = Math.max(this.yMin, line.y1);
+                let y2 = line.y2;
+                //this.log(`Counting line: ${JSON.stringify(line)} = (${x1},${y1})-(${x2},${y2}) = ${(x2-x1+1)*(y2-y1+1)}`)
+
+                return acc + (x2-x1+1)*(y2-y1+1);
+            }, 0).toString();
+            this.log(`Part 1: ${this.result}`);
+            // part 2
+            this.result = this.typeLines.filter(line => line.type === LineType.RESTING).reduce((acc, line) => {
+                let x1 = line.x1;
+                let x2 = line.x2;
+                let y1 = Math.max(this.yMin, line.y1);
+                let y2 = line.y2;
+                //this.log(`Counting line: ${JSON.stringify(line)} = (${x1},${y1})-(${x2},${y2}) = ${(x2-x1+1)*(y2-y1+1)}`)
+
+                return acc + (x2-x1+1)*(y2-y1+1);
+            }, 0).toString();
+        }
+        // 33437 too high (833 steps)
+        // 33326 too high (838 steps)
+        // 33242 (842 steps)
+        // PART 2
+        // 27256
         return moreToDo;
     }
 
