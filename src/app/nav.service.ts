@@ -129,21 +129,18 @@ export class NavService {
     }
 
     public step() {
-        setTimeout(_ => {
-            let hasMore = this.puzzle.runStep();
-            this.currentPuzzleComponent.step();
-            if (!hasMore) this.stateBehavior.next(PUZZLE_STATE.DONE);
-        }, 0);
+        let hasMore = this.puzzle.runStep();
+        this.currentPuzzleComponent.step();
+        if (!hasMore) this.stateBehavior.next(PUZZLE_STATE.DONE);
     }
 
     public play() {
-        console.log(`delay: ${this.stepDelay}`);
-        setTimeout(_ => {
-            if (!this.puzzle || this.stateBehavior.value === PUZZLE_STATE.DONE) return;
-            let hasMore = this.puzzle.runStep();
-            this.currentPuzzleComponent.step();
-            if (!hasMore) this.stateBehavior.next(PUZZLE_STATE.DONE);
-            else if (this.stateBehavior.value !== PUZZLE_STATE.PAUSED) this.play();
-        }, this.stepDelay);
+        if (!this.puzzle || this.stateBehavior.value === PUZZLE_STATE.DONE) return;
+        let hasMore = this.puzzle.runStep();
+        this.currentPuzzleComponent.step();
+        if (!hasMore) this.stateBehavior.next(PUZZLE_STATE.DONE);
+        else if (this.stateBehavior.value !== PUZZLE_STATE.PAUSED) {
+            setTimeout(this.play.bind(this), this.stepDelay);
+        }
     }
 }

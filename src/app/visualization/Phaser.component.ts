@@ -12,6 +12,7 @@ class Blank extends Phaser.Scene { }
 export class PhaserComponent implements OnInit {
     @Input() scene: Phaser.Types.Scenes.SceneType = undefined;
     @Input() scale = '';
+    @Input() physics = false;
     constructor() { }
 
     game: Phaser.Game;
@@ -21,11 +22,12 @@ export class PhaserComponent implements OnInit {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
             scale: {},
-            //width: this.puzzle.gp.width*64,
-            //height: this.puzzle.gp.height*64,
             parent: 'phaser-div',
             scene: [Blank, this.scene]
         };
+        if (this.physics) {
+            config.physics = { default: 'arcade' };
+        }
         /*
         if (this.scale === 'NONE') {
             config.mode = Phaser.Scale.NONE;
