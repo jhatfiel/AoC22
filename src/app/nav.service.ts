@@ -93,7 +93,6 @@ export class NavService {
     }
 
     public selectFile(inputFile: string) {
-        this.loadFile(inputFile);
         this.router.navigate([], {queryParams: { inputFile }, queryParamsHandling: 'merge'})
     }
 
