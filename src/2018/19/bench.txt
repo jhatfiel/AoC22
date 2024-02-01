@@ -1,4 +1,1 @@
-[ip-172-31-43-116.eu-] / 2024-01-31T15:33:32.183Z: [      2.10ms] Ran a201819 with ./data/2018/19/sample.txt resulting in 0
-[ip-172-31-43-116.eu-] / 2024-01-31T15:34:37.536Z: [      5.75ms] Ran a201819 with ./data/2018/19/sample.txt resulting in 0
-[ip-172-31-43-116.eu-] / 2024-01-31T15:35:09.170Z: [      2.84ms] Ran a201819 with ./data/2018/19/sample.txt resulting in 6
-[ip-172-31-43-116.eu-] / 2024-01-31T15:37:43.448Z: [   1253.35ms] Ran a201819 with ./data/2018/19/input.txt resulting in 2304
+[ip-172-31-43-116.eu-] / 2024-02-01T09:29:50.411Z: [      4.33ms] Ran a201819 with ./data/2018/19/input.txt resulting in 28137600

@@ -28,7 +28,7 @@ export class Instruction {
         return result;
     };
 
-    toString() { return `${this.i} ${this.a} ${this.b} ${this.c}`; }
+    toString() { return `${this.i} ${this.a.toString().padStart(3, ' ')} ${this.b.toString().padStart(3, ' ')} ${this.c.toString().padStart(3, ' ')}`; }
 }
 
 export class a201819 extends AoCPuzzle {
@@ -49,18 +49,40 @@ export class a201819 extends AoCPuzzle {
 
     _runStep(): boolean {
         let moreToDo = false;
+        /*
         if (this.ip >= 0 && this.ip < this.instructions.length) {
+            if (this.ip === 7) this.log(`Adding ${this.reg[5]} to R0`);
             moreToDo = true;
             let instr = this.instructions[this.ip];
             this.reg[this.IP_REG] = this.ip;
             let newReg = instr.execute(this.reg);
-            //this.log(`ip=${this.ip} [${this.reg.join(', ')}] ${instr.toString()} [${newReg.join(', ')}] (IP_REG=${this.IP_REG})`);
+            let jmp = '';
+            if (newReg[this.IP_REG] !== this.ip) jmp = 'JUMP';
+            //this.log(`ip=${this.ip.toString().padStart(2, ' ')} [${this.reg.map(r => r.toString().padStart(4, ' ')).join(', ')}] ${instr.toString()} [${newReg.map(r => r.toString().padStart(4, ' ')).join(', ')}] ${jmp}`);
             this.reg = newReg;
             this.ip = this.reg[this.IP_REG];
 
             this.ip++;
         }
         this.result = this.reg[0].toString();
+        */
+
+        let p1Num = 930;
+        let p2Num = 10551330;
+        this.log(`Part 1: ${this.sum(this.factors(p1Num))}`);
+        this.result = this.sum(this.factors(p2Num)).toString();
+        this.log(`Part 2: ${this.result}`);
+
         return moreToDo;
+    }
+
+    factors(n: number): number[] {
+        let result = new Set<number>();
+        Array.from({length: Math.floor(Math.sqrt(n))}, (_, i) => i).filter(i => n%i===0).forEach(i => { result.add(i); result.add(n/i); });
+        return Array.from(result.keys()).sort((a,b) => a-b);
+    }
+
+    sum(arr: number[]): number {
+        return arr.reduce((acc, n) => acc+=n, 0);
     }
 }
