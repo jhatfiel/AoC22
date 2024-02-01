@@ -22,6 +22,8 @@ export class AppComponent implements AfterViewInit {
             {label: '17: Reservoir Research', routerLink: '2018/17/a', queryParams: { files: ['sample1', 'sample', 'input']}},
             {label: '18: Settlers of The North Pole', routerLink: '2018/18/a'},
             {label: '19: Go With The Flow', routerLink: '2018/19/a'},
+            {label: '20: A Regular Map', routerLink: '2018/20/a'},
+            {label: '20: A Regular Map (Part 2)', routerLink: '2018/20/b'},
         ]},
         {label: '2019', items: []},
         {label: '2020', items: []},
