@@ -42,3 +42,32 @@
 [ip-172-31-43-116.eu-] / 2024-02-01T13:02:21.372Z: [      5.07ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 0
 [ip-172-31-43-116.eu-] / 2024-02-01T13:03:43.560Z: [     29.39ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 0
 [ip-172-31-43-116.eu-] / 2024-02-01T13:03:58.153Z: [      5.36ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-02-01T13:06:10.204Z: [  48373.96ms] Ran b201820 with ./data/2018/20/input.txt resulting in 8743
+[ip-172-31-43-116.eu-] / 2024-02-02T07:49:37.360Z: [      2.04ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T07:49:46.965Z: [     35.79ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T07:50:55.286Z: [     11.59ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T08:00:01.438Z: [     47.79ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T08:01:08.648Z: [     16.60ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T08:01:32.201Z: [     17.45ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T08:02:54.520Z: [     12.61ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T08:04:16.330Z: [     14.33ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 
+[ip-172-31-43-116.eu-] / 2024-02-02T08:05:35.334Z: [     10.81ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 31
+[ip-172-31-43-116.eu-] / 2024-02-02T08:06:27.736Z: [   4027.89ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3876
+[ip-172-31-43-116.eu-] / 2024-02-02T08:07:22.201Z: [    458.19ms] Ran a201820 with ./data/2018/20/input.txt resulting in 3872
+[ip-172-31-43-116.eu-] / 2024-02-02T08:09:52.430Z: [    238.26ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3876
+[ip-172-31-43-116.eu-] / 2024-02-02T08:11:34.585Z: [    240.45ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3876
+[ip-172-31-43-116.eu-] / 2024-02-02T08:14:07.714Z: [    266.63ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3876
+[ip-172-31-43-116.eu-] / 2024-02-02T08:14:18.761Z: [    254.68ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3876
+[ip-172-31-43-116.eu-] / 2024-02-02T08:14:35.943Z: [    690.81ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3872
+[ip-172-31-43-116.eu-] / 2024-02-02T08:15:42.565Z: [    848.27ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3872
+[ip-172-31-43-116.eu-] / 2024-02-02T08:16:41.413Z: [    726.40ms] Ran b201820 with ./data/2018/20/input.txt resulting in 3872
+[ip-172-31-43-116.eu-] / 2024-02-02T08:17:39.474Z: [    702.64ms] Ran b201820 with ./data/2018/20/input.txt resulting in 8599
+[ip-172-31-43-116.eu-] / 2024-02-02T08:18:09.641Z: [    823.47ms] Ran b201820 with ./data/2018/20/input.txt resulting in 8600
+[ip-172-31-43-116.eu-] / 2024-02-02T08:18:51.059Z: [      3.14ms] Ran b201820 with ./data/2018/20/sample.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-02-02T08:19:52.561Z: [    722.79ms] Ran b201820 with ./data/2018/20/input.txt resulting in 8600
+[ip-172-31-43-116.eu-] / 2024-02-02T08:21:07.651Z: [      5.96ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-02-02T08:21:55.487Z: [      2.32ms] Ran b201820 with ./data/2018/20/sample5.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-02-02T08:22:09.754Z: [    696.67ms] Ran b201820 with ./data/2018/20/input.txt resulting in 8600
+[ip-172-31-43-116.eu-] / 2024-02-02T08:28:55.947Z: [    526.40ms] Ran b201820 with ./data/2018/20/input.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-02-02T08:29:22.547Z: [    874.66ms] Ran b201820 with ./data/2018/20/input.txt resulting in 9999
+[ip-172-31-43-116.eu-] / 2024-02-02T08:29:54.605Z: [   2303.77ms] Ran b201820 with ./data/2018/20/input.txt resulting in 8600

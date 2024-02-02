@@ -1,34 +1,66 @@
 import { AoCPuzzle } from '../../lib/AoCPuzzle';
 
 export class a201820 extends AoCPuzzle {
-    line = '';
-    innerRE = /\(([^()]*)\)/;
-    sampleMode(): void { };
+    line: string;
+    pieces: string[] = [];
+    roomPaths = new Set<string>();
+    path = '';
+    minLength = 1000;
+    reverseDirections = ['NS', 'SN', 'EW', 'WE'];
+
+    sampleMode(): void {
+        this.minLength = 10;
+    };
 
     _loadData(lines: string[]) {
-        this.line = lines[0].substring(1, lines[0].length-1);
-        this.log(`${this.stepNumber.toString().padStart(4, ' ')}: ${this.line}`);
+        this.line = this.lines[0];
     }
 
     _runStep(): boolean {
-        let moreToDo = false;
-        moreToDo = this.simplify();
-        this.log(`${this.stepNumber.toString().padStart(4, ' ')}: ${this.line}`);
-        this.result = this.line.length.toString();
+        let moreToDo = this.stepNumber !== this.line.length;
+        let c = this.line.charAt(this.stepNumber);
+        switch (c) {
+            case '^': // ignore
+                break;
+            case '|': // clear off the current choices
+                this.path = '';
+                break;
+            case '$': // end of string... special processing?
+                break;
+            case '(':
+                this.pieces.push(this.path);
+                this.path = '';
+                break;
+            case ')':
+                this.path = this.pieces.pop();
+                break;
+            default:
+                // add character to current piece
+                // if we have reversed direction (NS/SN/EW/WE) just undo the previous character because it's the same square we've been to before
+                this.path = this.removeReverses(this.path+c);
+                break;
+        }
+        let path = this.removeReverses(this.buildPath());
+        this.roomPaths.add(path);
+        //this.log(`${this.stepNumber.toString().padStart(5, ' ')}: [${c}] ${path} ${this.roomPaths.size} (pieces=${this.pieces.join(' / ')})`);
+        if (!moreToDo) {
+            let longestPathLength = Array.from(this.roomPaths.keys()).map(p => p.length).reduce((acc, l) => acc = Math.max(acc, l), 0).toString();
+            let longestPath = '';
+            this.roomPaths.forEach(p => {
+                if (p.length > longestPath.length) longestPath = p;
+            })
+            this.log(`Part 1: ${longestPathLength}`);
+        }
+        this.result = Array.from(this.roomPaths.keys()).filter(p => p.length>=this.minLength).length.toString();
         return moreToDo;
     }
 
-    simplify(): boolean {
-        let reArr = this.innerRE.exec(this.line);
-        if (reArr) {
-            let replace = ''; // if any match choice is blank we need to skip this one
-            let arr = reArr[1].split('|');
-            if (arr.every(e => e.length > 0)) {
-                replace = arr.reduce((acc, s) => acc = (acc.length>s.length)?acc:s, '');
-            }
-            this.line = this.line.substring(0, reArr.index) + replace + this.line.substring(reArr.index+reArr[0].length);
-        }
+    removeReverses(path: string): string {
+        while (this.reverseDirections.some(p => path.indexOf(p) !== -1)) this.reverseDirections.forEach(r => path = path.replace(r, ''));
+        return path;
+    }
 
-        return reArr !== null;
+    buildPath(): string {
+        return this.pieces.join('') + this.path;
     }
 }
