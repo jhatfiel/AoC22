@@ -10,6 +10,8 @@ import { NavComponent } from './nav/nav.component';
 import { AppRoutingModule } from './app-routing.module';
 import { CommonModule } from '@angular/common';
 import { a201815Component } from './visualization/2018/15/a201815';
+import { a201817Component } from './visualization/2018/17/a201817';
+import { a201820Component } from './visualization/2018/20/a201820';
 import { GenericPuzzleComponent } from './visualization/GenericPuzzle.component';
 import { SidebarModule } from 'primeng/sidebar';
 import { ButtonModule } from 'primeng/button';
@@ -21,7 +23,6 @@ import { DividerModule } from 'primeng/divider';
 import { SliderModule } from 'primeng/slider';
 import { PhaserComponent } from './visualization/Phaser.component';
 import { AngularResizeEventModule } from 'angular-resize-event';
-import { a201817Component } from './visualization/2018/17/a201817';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { a201817Component } from './visualization/2018/17/a201817';
     NavComponent,
     a201815Component,
     a201817Component,
+    a201820Component,
     GenericPuzzleComponent,
     PhaserComponent
   ],

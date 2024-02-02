@@ -1,0 +1,13 @@
+<div class="container">
+    Result: {{ this.navService.puzzle?.result }}
+    <hr>
+    <div class="content">
+        <PhaserComponent #phaserComponent [scene]="sceneType" class="viz"></PhaserComponent>
+        <div class="rightPanel">
+            <div #scrollOutput class="scrollOutput">
+                Scroll Output is here
+                <pre>{{ this.output }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
