@@ -14,6 +14,7 @@ export enum PUZZLE_STATE {
 
 @Injectable()
 export class NavService {
+    private static DEFAULT_MAX_STEPS=1;
     public appComponent: any;
     public currentUrl = new BehaviorSubject<string>(undefined);
     public stateBehavior = new BehaviorSubject<PUZZLE_STATE>(PUZZLE_STATE.DISABLED);
@@ -29,6 +30,10 @@ export class NavService {
     public part: string;
     public clazzModule: any;
     public files = ['sample', 'input'];
+    public maxSteps: number;
+    public maxTimeMS: number;
+    public lastTimeout: number;
+    public lastStep: number;
 
     constructor(private router: Router) {
         this.router.events.subscribe((event: Event) => {
@@ -41,6 +46,10 @@ export class NavService {
                 if (arr.length > 2) {
                     this.year = Number(arr[1]);
                     this.day = Number(arr[2]);
+                    this.maxSteps = NavService.DEFAULT_MAX_STEPS;
+                    this.maxTimeMS = undefined;
+                    this.lastTimeout = performance.now();
+                    this.lastTimeout = 0;
                     arr = arr[3].split('?');
                     this.part = arr[0];
                     const httpParams = new HttpParams({fromString: arr[1]});
@@ -139,7 +148,15 @@ export class NavService {
         this.currentPuzzleComponent.step();
         if (!hasMore) this.stateBehavior.next(PUZZLE_STATE.DONE);
         else if (this.stateBehavior.value !== PUZZLE_STATE.PAUSED) {
-            setTimeout(this.play.bind(this), this.stepDelay);
+            if (this.stepDelay) {
+                setTimeout(this.play.bind(this), this.stepDelay);
+            } else if (this.lastTimeout === undefined || (this.maxTimeMS && performance.now()-this.lastTimeout > this.maxTimeMS) || (this.maxSteps && this.puzzle.stepNumber - this.lastStep > this.maxSteps)) {
+                this.lastTimeout = performance.now();
+                this.lastStep = this.puzzle.stepNumber;
+                setTimeout(this.play.bind(this));
+            } else {
+                queueMicrotask(() => this.play())
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ class GameScene extends Phaser.Scene {
         this.puzzle = data.puzzle;
         this.component = data.component;
         //this.cameras.main.setViewport(470, 1, 30, 60);
-        this.cameras.main.zoomTo(5, 0);
+        this.cameras.main.zoomTo(0.6, 0);
         this.cameras.main.pan(0, 0, 0);
         //this.cameras.main.setSize(30, 60);
         this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
@@ -41,7 +41,7 @@ class GameScene extends Phaser.Scene {
             this.cameras.main.zoom = newZoom;
             //console.log(`zoom=${newZoom}`)
             //this.cameras.main.centerOn(pointer.worldX, pointer.worldY);
-            this.cameras.main.pan(pointer.worldX, pointer.worldY, 2000, 'Power2');
+            this.cameras.main.pan(pointer.worldX, pointer.worldY, 500, 'Power2');
         })
 
         this.input.on('pointermove', pointer => {
@@ -52,16 +52,18 @@ class GameScene extends Phaser.Scene {
                 if (this.pathGraphics.getData('key') !== key) {
                     this.pathGraphics.setData('key', key);
                     this.pathGraphics.clear(); // only clear if we're on a new x/y tile
-                    this.pathGraphics.lineStyle(1, 0xFFFFFF);
+                    this.pathGraphics.lineStyle(3, 0xFF0000);
                     let prev = {x,y};
+                    this.pathGraphics.moveTo(prev.x*this.gridSize+this.gridSize/2, prev.y*this.gridSize+this.gridSize/2);
                     while (this.parent.has(key)) {
                         let parentPos = this.parent.get(key);
                         let parentKey = `${parentPos.x},${parentPos.y}`;
-                        this.pathGraphics.lineBetween(prev.x*this.gridSize+this.gridSize/2, prev.y*this.gridSize+this.gridSize/2, parentPos.x*this.gridSize+this.gridSize/2, parentPos.y*this.gridSize+this.gridSize/2);
+                        this.pathGraphics.lineTo(parentPos.x*this.gridSize+this.gridSize/2, parentPos.y*this.gridSize+this.gridSize/2);
                         prev.x = parentPos.x;
                         prev.y = parentPos.y;
                         key = parentKey;
                     }
+                    this.pathGraphics.strokePath();
                 }
             } else {
                 this.pathGraphics.clear(); // only clear if we're on a new x/y tile
@@ -173,6 +175,8 @@ export class a201820Component extends PuzzleVisualizationComponent implements On
     }
 
     reset() {
+        this.navService.maxSteps = undefined;
+        this.navService.maxTimeMS = 25;
         this.output = '';
         this.puzzle = this.navService.puzzle as a201820;
         this.phaserComponent.game.scene.start('puzzle', {puzzle: this.puzzle, component: this})

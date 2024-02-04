@@ -79,7 +79,7 @@
             "keyRemember": "filename",
             "transform": {
               "text": "${file}",
-              "find": ".*/",
+              "find": ".*[\\\\/]",
               "replace": ""
             }
           }

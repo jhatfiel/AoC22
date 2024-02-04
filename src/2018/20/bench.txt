@@ -125,3 +125,7 @@
 [ip-172-31-43-116.eu-] / 2024-02-02T11:43:02.723Z: [   2560.05ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
 [ip-172-31-43-116.eu-] / 2024-02-02T11:45:16.435Z: [    633.40ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
 [ip-172-31-43-116.eu-] / 2024-02-02T13:55:56.004Z: [    602.38ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
+[                  HP] / 2024-02-02T16:30:20.524Z: [    544.69ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
+[                  HP] / 2024-02-02T16:30:24.481Z: [    501.85ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
+[                  HP] / 2024-02-02T16:38:58.648Z: [    470.03ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
+[                  HP] / 2024-02-02T16:39:09.402Z: [    476.51ms] Ran a201820 with ./data/2018/20/input.txt resulting in 8600
