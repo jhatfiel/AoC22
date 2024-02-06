@@ -46,6 +46,7 @@ export class a201822 extends AoCPuzzle {
         */
         let totalRisk = 0;
 
+        /*
         for (let y=0; y<=15; y++) {
             let line = '';
             for (let x=0; x<=15; x++) {
@@ -54,6 +55,7 @@ export class a201822 extends AoCPuzzle {
             }
             this.log(line);
         }
+        */
         for (let y=0; y<=this.target.y; y++) {
             for (let x=0; x<=this.target.x; x++) {
                 let el = this.getEL({x,y})%3;
@@ -67,11 +69,14 @@ export class a201822 extends AoCPuzzle {
         // neither (can go to WET(2) or NARROW(0))
         // string will represent x,y,e where e=equipped (T,C,N)
         let start = '0,0,T';
+        let to = `${this.target.x},${this.target.y},T`;
         // target is this.target, and we don't care what's equipped
 
         let dij = new Dijkstra(this.getNeighbors.bind(this));
-        dij.compute(start, (node: string, distance: number) => node.startsWith(`${this.target.x},${this.target.y}`));
-        let res = dij.distanceAny(start, (node: string) => node.startsWith(`${this.target.x},${this.target.y}`));
+        dij.compute(start, (node: string, distance: number) => node === to);
+        //let res = dij.distanceAny(start, (node: string) => node === to);
+        let res = dij.distance(start, to);
+        /*
         let to = '';
         res.forEach((v, k) => {
             this.log(`${k}=${v}`);
@@ -81,8 +86,9 @@ export class a201822 extends AoCPuzzle {
         paths.forEach(path => {
             this.log(path.join(' / '));
         })
+        */
 
-        this.result = 'Result'
+        this.result = res.toString();
         return moreToDo;
     }
 
