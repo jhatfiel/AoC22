@@ -45,9 +45,19 @@ export class a201822 extends AoCPuzzle {
         })
         */
         let totalRisk = 0;
-        for (let x=0; x<=this.target.x; x++) {
-            for (let y=0; y<=this.target.y; y++) {
-                totalRisk += this.getEL({x,y})%3;
+
+        for (let y=0; y<=15; y++) {
+            let line = '';
+            for (let x=0; x<=15; x++) {
+                let el = this.getEL({x,y})%3;
+                line += ".=|".charAt(el);
+            }
+            this.log(line);
+        }
+        for (let y=0; y<=this.target.y; y++) {
+            for (let x=0; x<=this.target.x; x++) {
+                let el = this.getEL({x,y})%3;
+                totalRisk += el;
             }
         }
         this.log(`Total Risk (Part 1): ${totalRisk.toString()}`);
@@ -62,14 +72,15 @@ export class a201822 extends AoCPuzzle {
         let dij = new Dijkstra(this.getNeighbors.bind(this));
         dij.compute(start, (node: string, distance: number) => node.startsWith(`${this.target.x},${this.target.y}`));
         let res = dij.distanceAny(start, (node: string) => node.startsWith(`${this.target.x},${this.target.y}`));
-        this.log(`${res.get(`${this.target.x},${this.target.y},T`)}`);
-        this.log(`${res.get(`${this.target.x},${this.target.y},C`)}`);
-        this.log(`${res.get(`${this.target.x},${this.target.y},N`)}`);
-        /*
+        let to = '';
         res.forEach((v, k) => {
             this.log(`${k}=${v}`);
+            to = k;
         })
-        */
+        let paths = dij.pathTo(start, to);
+        paths.forEach(path => {
+            this.log(path.join(' / '));
+        })
 
         this.result = 'Result'
         return moreToDo;
