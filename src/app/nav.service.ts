@@ -49,7 +49,7 @@ export class NavService {
                     this.maxSteps = NavService.DEFAULT_MAX_STEPS;
                     this.maxTimeMS = undefined;
                     this.lastTimeout = performance.now();
-                    this.lastTimeout = 0;
+                    this.lastStep = 0;
                     arr = arr[3].split('?');
                     this.part = arr[0];
                     const httpParams = new HttpParams({fromString: arr[1]});
@@ -124,6 +124,7 @@ export class NavService {
     }
 
     public init() {
+        console.log(`Viz parameters: maxTimeMS=${this.maxTimeMS}, maxSteps=${this.maxSteps}`)
         if (!this.puzzle || this.stateBehavior.value === PUZZLE_STATE.DONE) {
             this.puzzle = new this.clazzModule[this.classname](this.inputFileBehavior.value, msg => {
                 if (this.currentPuzzleComponent) this.currentPuzzleComponent.log(msg);

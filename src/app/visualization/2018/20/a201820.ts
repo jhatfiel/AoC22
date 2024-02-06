@@ -1,3 +1,4 @@
+import { Rectangle } from './../../../../2023/18/rectagonToRectangles';
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { NavService } from "../../../nav.service";
@@ -13,20 +14,16 @@ class GameScene extends Phaser.Scene {
     pathGraphics: Phaser.GameObjects.Graphics;
     gridSize = 12;
     lineWidth = 1;
-    boxWidth = this.gridSize-this.lineWidth;
+    boxWidth = this.gridSize-2*this.lineWidth+1;
     position: {x:number, y:number};
     furthestRoom: Phaser.GameObjects.Rectangle;
     furthestPosition: {x:number, y:number};
     furthestDistance = 0;
     parent: Map<string, {x:number, y:number}>;
-    rooms = new Map<string, Phaser.GameObjects.Rectangle>();
-    roomDoors = new Map<string, Set<string>>();
-    roomDirMask = new Map<string, Phaser.Display.Masks.GeometryMask>(); 
 
     constructor() { super('puzzle'); }
 
     init(data: any) { 
-        this.rooms = new Map();
         this.parent = new Map<string, {x:number, y:number}>();
         this.position = {x:0, y:0};
         this.furthestPosition = {x:0, y:0};
@@ -34,9 +31,10 @@ class GameScene extends Phaser.Scene {
         this.puzzle = data.puzzle;
         this.component = data.component;
         //this.cameras.main.setViewport(470, 1, 30, 60);
-        //this.cameras.main.zoomTo(0.6, 0);
         //this.cameras.main.setViewport(0, 0, 5);
         //this.cameras.main.zoomTo(10, 0);
+        //this.cameras.main.zoomTo(6, 0);
+        this.cameras.main.zoomTo(0.6, 0);
         this.cameras.main.pan(0, 0, 0);
         //this.cameras.main.setSize(30, 60);
         this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
@@ -46,7 +44,7 @@ class GameScene extends Phaser.Scene {
             this.cameras.main.zoom = newZoom;
             //console.log(`zoom=${newZoom}`)
             //this.cameras.main.centerOn(pointer.worldX, pointer.worldY);
-            this.cameras.main.pan(pointer.worldX, pointer.worldY, 500, 'Power2');
+            this.cameras.main.pan(pointer.worldX, pointer.worldY, 250, 'Power2');
         })
 
         this.input.on('pointermove', pointer => {
@@ -72,7 +70,7 @@ class GameScene extends Phaser.Scene {
                     this.pathGraphics.strokePath();
                 }
             } else {
-                this.pathGraphics.clear(); // only clear if we're on a new x/y tile
+                this.pathGraphics.clear();
                 this.pathGraphics.setData('key', '');
             }
             //console.log(pointer.worldX, pointer.worldY);
@@ -83,118 +81,69 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.graphics = this.add.graphics();
         this.pathGraphics = this.add.graphics();
-        this.pathGraphics.lineStyle(1, 0xFFFFFF);
-        //this.graphics.lineStyle(this.lineWidth, 0xFFFFFF);
-        //this.graphics.strokeRect(0, 0, this.boxWidth, this.boxWidth);
-        //this.graphics.generateTexture('room', this.boxWidth, this.boxWidth);
-        //this.graphics.clear();
-        // save the rooms tile as a sprite to be reused
-        // also we should save off the "door" block as a sprite to be reused to "open" pathways to previous rooms
     }
 
     create() {
-        //this.add.image(0, 0, 'room').setOrigin(0);
-        let room = this.add.rectangle(0, 0, this.boxWidth, this.boxWidth).setStrokeStyle(this.lineWidth, 0xFFFFFF).setOrigin(0);
-        this.rooms.set('0,0', room);
+        this.add.rectangle(0, 0, this.boxWidth, this.boxWidth).setStrokeStyle(this.lineWidth, 0xFFFFFF).setOrigin(0);
         this.furthestRoom = this.add.rectangle(this.lineWidth, this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth).setFillStyle(0xFF0000).setOrigin(0);
-
-        for (let i=0; i<16; i++) {
-            this.drawDoorDir(i&0x1, i&0x2, i&0x4, i&0x8);
-        }
-
-        //room.setMask(this.roomDirMask.get('ES'));
-    }
-
-    drawDoorDir(e, n, s, w) {
-        let key = '';
-        let graphics = this.make.graphics();
-        graphics.lineStyle(this.boxWidth/2, 0xFFFFFF);
-        if (e) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, this.boxWidth+1, this.boxWidth/2); key += 'E'; }
-        if (n) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, this.boxWidth/2, -1); key += 'N'; }
-        if (s) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, this.boxWidth/2, this.boxWidth+1); key += 'S'; }
-        if (w) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, -1, this.boxWidth/2); key += 'W'; }
-        //console.log(`Creating ${e}, ${n}, ${s}, ${w}, ${key}`)
-        this.roomDirMask.set(key, new Phaser.Display.Masks.GeometryMask(this, graphics).setInvertAlpha(true));
-        //graphics.destroy();
+        this.furthestRoom.setDepth(9999999999);
+        // we could do the following line every time the furthest room moves, but I figured setting the depth higher would be easier.
+        //this.children.bringToTop(this.furthestRoom);
     }
 
     update(time: number, delta: number) {}
 
     step() {
-        let pos = this.puzzle.position;
-        let key = `${pos.x},${pos.y}`;
-        if (!this.rooms.has(key)) {
-            this.rooms.set(key, this.add.rectangle(pos.x*this.gridSize, pos.y*this.gridSize, this.boxWidth, this.boxWidth).setStrokeStyle(this.lineWidth, 0x0000FF).setOrigin(0));
-            this.roomDoors.set(key, new Set());
-            //this.graphics.lineStyle(this.lineWidth, 0x0000FF);
-            //this.graphics.strokeRect(pos.x*this.gridSize, pos.y*this.gridSize, this.boxWidth, this.boxWidth);
-            let pathLen = this.puzzle.getPathLength();
-            if (pathLen >= this.puzzle.minLength) {
-                //this.graphics.fillStyle(0x00FF00);
-                //this.graphics.fillRect(pos.x*this.gridSize+this.lineWidth, pos.y*this.gridSize+this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth);
-                this.add.rectangle(pos.x*this.gridSize+this.lineWidth, pos.y*this.gridSize+this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth).setFillStyle(0x00FF00).setOrigin(0);
-            }
-            if (pathLen > this.furthestDistance) {
-                // clear old spot
-                /*
-                if (this.furthestDistance >= this.puzzle.minLength) {
-                    this.graphics.fillStyle(0x00FF00);
-                } else {
-                    this.graphics.fillStyle(0x000000);
-                }
-                this.graphics.fillRect(this.furthestPosition.x*this.gridSize+this.lineWidth, this.furthestPosition.y*this.gridSize+this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth);
-                // highlight this spot
-                this.graphics.fillStyle(0xFF0000);
-                this.graphics.fillRect(this.furthestPosition.x*this.gridSize+this.lineWidth, this.furthestPosition.y*this.gridSize+this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth);
-                */
-                this.furthestPosition = {...pos};
-                this.furthestDistance = pathLen;
-                this.furthestRoom.setPosition(this.furthestPosition.x*this.gridSize+this.lineWidth, this.furthestPosition.y*this.gridSize+this.lineWidth)
-                this.children.bringToTop(this.furthestRoom);
-            }
-        }
+        // open a door to where we just came from
         let c = this.puzzle.line.charAt(this.puzzle.stepNumber);
         if ("ENSW".indexOf(c) !== -1) {
-            //this.graphics.fillStyle(0x000000);
+            let pos = this.puzzle.position;
+            let key = `${pos.x},${pos.y}`;
+            if (!this.parent.has(key)) {
+                this.add.rectangle(pos.x*this.gridSize, pos.y*this.gridSize, this.boxWidth, this.boxWidth).setStrokeStyle(this.lineWidth, 0x0000FF).setOrigin(0);
+                let pathLen = this.puzzle.getPathLength();
+                if (pathLen >= this.puzzle.minLength) {
+                    this.add.rectangle(pos.x*this.gridSize+this.lineWidth, pos.y*this.gridSize+this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth).setFillStyle(0x00FF00).setOrigin(0);
+                }
+                if (pathLen > this.furthestDistance) {
+                    this.furthestPosition = {...pos};
+                    this.furthestDistance = pathLen;
+                    this.furthestRoom.setPosition(this.furthestPosition.x*this.gridSize+this.lineWidth, this.furthestPosition.y*this.gridSize+this.lineWidth)
+                }
+            }
             let x = pos.x*this.gridSize;
             let y = pos.y*this.gridSize;
-            // calculate where the door to the previous room would have been
-            //let room = this.rooms.get(key);
-            //let mask = Array.from(this.roomDoors.get(key).add(c).keys()).sort().join('');
-            //console.log(`getting mask=${mask} for room: ${key}`)
-            //room.setMask(this.roomDirMask.get(mask));
-            // the problem with this mask is that it's a global position, it's not relative to the sprite itself
-            // also need to set the door mask for the room we came from...
-
             switch (c) {
                 case 'N': 
                     if (!this.parent.has(key)) this.parent.set(key, {x: pos.x, y: pos.y+1});
-                    x += (this.boxWidth-2*this.lineWidth)/2;
-                    y += this.gridSize-this.lineWidth-1;
+                    x += this.lineWidth*2;
+                    y += this.boxWidth + this.lineWidth;
+                    this.add.rectangle(x, y, this.boxWidth-4*this.lineWidth, 0).setStrokeStyle(this.lineWidth).setOrigin(0);
+                    this.add.rectangle(x, y-this.lineWidth, this.boxWidth-4*this.lineWidth, 0).setStrokeStyle(this.lineWidth).setOrigin(0);
                     break;
                 case 'S': 
                     if (!this.parent.has(key)) this.parent.set(key, {x: pos.x, y: pos.y-1});
-                    x += (this.boxWidth-2*this.lineWidth)/2;
-                    y -= this.lineWidth+1;
+                    x += this.lineWidth*2;
+                    this.add.rectangle(x, y, this.boxWidth-4*this.lineWidth, 0).setStrokeStyle(this.lineWidth).setOrigin(0);
+                    this.add.rectangle(x, y-this.lineWidth, this.boxWidth-4*this.lineWidth, 0).setStrokeStyle(this.lineWidth).setOrigin(0);
                     break;
                 case 'E': 
                     if (!this.parent.has(key)) this.parent.set(key, {x: pos.x-1, y: pos.y});
-                    x -= this.lineWidth+1;
-                    y += (this.boxWidth-2*this.lineWidth)/2;
+                    y += this.lineWidth*2;
+                    this.add.rectangle(x, y, 0, this.boxWidth-4*this.lineWidth).setStrokeStyle(this.lineWidth).setOrigin(0);
+                    this.add.rectangle(x-this.lineWidth, y, 0, this.boxWidth-4*this.lineWidth).setStrokeStyle(this.lineWidth).setOrigin(0);
                     break;
                 case 'W': 
                     if (!this.parent.has(key)) this.parent.set(key, {x: pos.x+1, y: pos.y});
-                    x += this.gridSize-this.lineWidth-1;
-                    y += (this.boxWidth-2*this.lineWidth)/2;
+                    x += this.boxWidth + this.lineWidth;
+                    y += this.lineWidth*2;
+                    this.add.rectangle(x, y, 0, this.boxWidth-4*this.lineWidth).setStrokeStyle(this.lineWidth).setOrigin(0);
+                    this.add.rectangle(x-this.lineWidth, y, 0, this.boxWidth-4*this.lineWidth).setStrokeStyle(this.lineWidth).setOrigin(0);
                     break;
                 default:
                     break;
             }
-            // clear out space for the door
-            //this.graphics.fillRect(x, y, this.lineWidth*2+1, this.lineWidth*2+1);
-            this.add.rectangle(x, y, this.lineWidth*2+1, this.lineWidth*2+1).setFillStyle(0x000000).setOrigin(0);
         }
     }
 }
@@ -224,7 +173,7 @@ export class a201820Component extends PuzzleVisualizationComponent implements On
 
     reset() {
         this.navService.maxSteps = undefined;
-        this.navService.maxTimeMS = 25;
+        this.navService.maxTimeMS = 100;
         this.output = '';
         this.puzzle = this.navService.puzzle as a201820;
         this.phaserComponent.game.scene.start('puzzle', {puzzle: this.puzzle, component: this})
