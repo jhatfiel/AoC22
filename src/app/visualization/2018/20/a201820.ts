@@ -99,25 +99,6 @@ class GameScene extends Phaser.Scene {
         let room = this.add.rectangle(0, 0, this.boxWidth, this.boxWidth).setStrokeStyle(this.lineWidth, 0xFFFFFF).setOrigin(0);
         this.rooms.set('0,0', room);
         this.furthestRoom = this.add.rectangle(this.lineWidth, this.lineWidth, this.boxWidth-2*this.lineWidth, this.boxWidth-2*this.lineWidth).setFillStyle(0xFF0000).setOrigin(0);
-
-        for (let i=0; i<16; i++) {
-            this.drawDoorDir(i&0x1, i&0x2, i&0x4, i&0x8);
-        }
-
-        //room.setMask(this.roomDirMask.get('ES'));
-    }
-
-    drawDoorDir(e, n, s, w) {
-        let key = '';
-        let graphics = this.make.graphics();
-        graphics.lineStyle(this.boxWidth/2, 0xFFFFFF);
-        if (e) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, this.boxWidth+1, this.boxWidth/2); key += 'E'; }
-        if (n) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, this.boxWidth/2, -1); key += 'N'; }
-        if (s) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, this.boxWidth/2, this.boxWidth+1); key += 'S'; }
-        if (w) { graphics.lineBetween(this.boxWidth/2, this.boxWidth/2, -1, this.boxWidth/2); key += 'W'; }
-        //console.log(`Creating ${e}, ${n}, ${s}, ${w}, ${key}`)
-        this.roomDirMask.set(key, new Phaser.Display.Masks.GeometryMask(this, graphics).setInvertAlpha(true));
-        //graphics.destroy();
     }
 
     update(time: number, delta: number) {}
@@ -161,13 +142,15 @@ class GameScene extends Phaser.Scene {
             let x = pos.x*this.gridSize;
             let y = pos.y*this.gridSize;
             // calculate where the door to the previous room would have been
-            //let room = this.rooms.get(key);
+            let room = this.rooms.get(key);
             //let mask = Array.from(this.roomDoors.get(key).add(c).keys()).sort().join('');
+            this.drawDoorDir(this.roomDoors.get(key).add(c), room);
             //console.log(`getting mask=${mask} for room: ${key}`)
             //room.setMask(this.roomDirMask.get(mask));
             // the problem with this mask is that it's a global position, it's not relative to the sprite itself
             // also need to set the door mask for the room we came from...
 
+            /*
             switch (c) {
                 case 'N': 
                     if (!this.parent.has(key)) this.parent.set(key, {x: pos.x, y: pos.y+1});
@@ -192,11 +175,24 @@ class GameScene extends Phaser.Scene {
                 default:
                     break;
             }
+            */
             // clear out space for the door
             //this.graphics.fillRect(x, y, this.lineWidth*2+1, this.lineWidth*2+1);
-            this.add.rectangle(x, y, this.lineWidth*2+1, this.lineWidth*2+1).setFillStyle(0x000000).setOrigin(0);
+            //this.add.rectangle(x, y, this.lineWidth*2+1, this.lineWidth*2+1).setFillStyle(0x000000).setOrigin(0);
+
         }
     }
+
+    drawDoorDir(doors: Set<string>, rect: Phaser.GameObjects.Rectangle) {
+        let graphics = this.make.graphics();
+        graphics.lineStyle(this.boxWidth/2, 0xFFFFFF);
+        if (doors.has('W')) graphics.lineBetween(rect.x+this.boxWidth/2, rect.y+this.boxWidth/2, rect.x+this.boxWidth+1, rect.y+this.boxWidth/2);
+        if (doors.has('S')) graphics.lineBetween(rect.x+this.boxWidth/2, rect.y+this.boxWidth/2, rect.x+this.boxWidth/2, rect.y-1);
+        if (doors.has('N')) graphics.lineBetween(rect.x+this.boxWidth/2, rect.y+this.boxWidth/2, rect.x+this.boxWidth/2, rect.y+this.boxWidth+1);
+        if (doors.has('E')) graphics.lineBetween(rect.x+this.boxWidth/2, rect.y+this.boxWidth/2, rect.x-1, rect.y+this.boxWidth/2);
+        rect.setMask(rect.createGeometryMask(graphics).setInvertAlpha(true));
+    }
+
 }
 
 @Component({
