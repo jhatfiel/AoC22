@@ -100,3 +100,23 @@
 [ip-172-31-43-116.eu-] / 2024-02-07T13:32:41.281Z: [      2.52ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
 [ip-172-31-43-116.eu-] / 2024-02-07T13:33:54.021Z: [      2.61ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
 [ip-172-31-43-116.eu-] / 2024-02-07T16:04:55.219Z: [      2.13ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:36:58.127Z: [      1.90ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:37:53.215Z: [     31.86ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:38:33.357Z: [      4.43ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:38:42.905Z: [     83.44ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:40:00.875Z: [     16.48ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:40:34.987Z: [      9.99ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:40:42.989Z: [     24.87ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:40:55.136Z: [     25.48ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:41:12.424Z: [      5.39ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:41:25.686Z: [      4.28ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:41:33.531Z: [     15.49ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:41:41.134Z: [     10.61ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:42:06.350Z: [      5.82ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:44:05.204Z: [     11.93ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:46:31.980Z: [      9.27ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:47:51.214Z: [     78.48ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:48:21.395Z: [     60.86ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:48:31.585Z: [     20.95ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:50:30.959Z: [     14.14ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[                  HP] / 2024-02-07T19:50:52.994Z: [     19.27ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result

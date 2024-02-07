@@ -14,8 +14,8 @@ class Rectangle {
             y: 2*center.x - center.z,
             z: 2*center.y + center.z
         }
-        return new Rectangle({ x: center_.x - range, y: center_.y - range, z: center_.z - range },
-                             { x: center_.x - range, y: center_.y - range, z: center_.z - range });
+        return new Rectangle({ x: center_.x - range, y: center_.y - 2*range, z: center_.z - 2*range },
+                             { x: center_.x + range, y: center_.y + 2*range, z: center_.z + 2*range });
     }
 
     constructor(public minPos: Coord, public maxPos) {}
@@ -34,18 +34,18 @@ class Rectangle {
 
     originalPoints(): Coord[] {
         let result: Coord[] = [];
-        for (let x=this.minPos.x; x<=this.maxPos.x; x++) {
-            for (let y=this.minPos.y; y<=this.maxPos.y; y++) {
-                for (let z=this.minPos.z; z<=this.maxPos.z; z++) {
+        for (let x=this.minPos.x+2; x<=this.maxPos.x; x+=2) {
+            for (let y=this.minPos.y; y<=this.maxPos.y; y+=4) {
+                for (let z=this.minPos.z; z<=this.maxPos.z; z+=4) {
                     result.push({x,y,z}); // converted coordinates
                 }
             }
         }
         return result.map(c => {
             return {
-                x:(((c.z+c.y)/2)+((c.x+((c.z-c.y)/2))/2))/2,
-                y:(((c.z+c.y)/2)-((c.x+((c.z-c.y)/2))/2))/2,
-                z:(c.x-((c.z-c.y)/2))/2,
+                x:(((c.y+c.z)/2)+((c.x+((c.y-c.z)/2))/2))/2,
+                y:(((c.y+c.z)/2)-((c.x+((c.y-c.z)/2))/2))/2,
+                z:(c.x-((c.y-c.z)/2))/2
             };
         });
     }
@@ -60,6 +60,13 @@ export class b201823 extends AoCPuzzle {
         let moreToDo = false;
 
         let r = Rectangle.create({x: 4, y: 5, z: 6}, 2);
+        this.log(`Rectangle: ${r.toString()}`);
+        this.log(`Rectangle: 2,5,6 = ${Rectangle.create({x: 2, y: 5, z: 6}, 0).toString()}`);
+        this.log(`Rectangle: 6,5,6 = ${Rectangle.create({x: 6, y: 5, z: 6}, 0).toString()}`);
+        this.log(`Rectangle: 4,3,6 = ${Rectangle.create({x: 4, y: 3, z: 6}, 0).toString()}`);
+        this.log(`Rectangle: 4,7,6 = ${Rectangle.create({x: 4, y: 7, z: 6}, 0).toString()}`);
+        this.log(`Rectangle: 4,5,4 = ${Rectangle.create({x: 4, y: 5, z: 4}, 0).toString()}`);
+        this.log(`Rectangle: 4,5,8 = ${Rectangle.create({x: 4, y: 5, z: 8}, 0).toString()}`);
         r.originalPoints().forEach(p => {
             this.log(`${JSON.stringify(p)}`)
         })
