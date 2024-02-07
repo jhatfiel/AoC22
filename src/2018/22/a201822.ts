@@ -73,7 +73,7 @@ export class a201822 extends AoCPuzzle {
         // target is this.target, and we don't care what's equipped
 
         let dij = new Dijkstra(this.getNeighbors.bind(this));
-        dij.compute(start, (node: string, distance: number) => node === to);
+        //dij.compute(start, (node: string, distance: number) => node === to);
         //let res = dij.distanceAny(start, (node: string) => node === to);
         let res = dij.distance(start, to);
         /*
