@@ -34,7 +34,7 @@ class Point {
 export class a201823 extends AoCPuzzle {
     points: Point[];
     workingPoints: Point[];
-    bestOverlappingPoints: Point[] = [];
+    mustOverlapPoints: Point[] = [];
     sampleMode(): void { };
 
     _loadData(lines: string[]) {
@@ -64,9 +64,7 @@ export class a201823 extends AoCPuzzle {
 
         moreToDo = newPoints.length !== 0 && (newPoints.length+1)/this.workingPoints.length > .5;
         if (moreToDo) {
-            this.bestOverlappingPoints.push(maxRP);
-        } else {
-            this.bestOverlappingPoints.push(...this.workingPoints);
+            this.mustOverlapPoints.push(maxRP);
         }
 
         this.log(`Refine step: ${this.stepNumber} = ${this.workingPoints.length} => ${newPoints.length} max was ${maxRP.toString()}`);
@@ -75,38 +73,31 @@ export class a201823 extends AoCPuzzle {
         // Part 2, we need to consider x +/- 1million, y +/- 1m, z +/- 1m.... that doesn't seem feasible.
         // because of local minimums, we can't just start moving to best coverage, right?
         // Do we need to consider the entire sample space?
-        /*
-        let boundMin = {x: Infinity, y: Infinity, z: Infinity};
-        let boundMax = {x: -Infinity, y: -Infinity, z: -Infinity};
-        this.points.forEach(p => {
-            boundMin.x = Math.min(boundMin.x, p.x);
-            boundMin.y = Math.min(boundMin.y, p.y);
-            boundMin.z = Math.min(boundMin.z, p.z);
-            boundMax.x = Math.max(boundMax.x, p.x);
-            boundMax.y = Math.max(boundMax.y, p.y);
-            boundMax.z = Math.max(boundMax.z, p.z);
-        })
-        this.log(`Min bound: ${JSON.stringify(boundMin)}`);
-        this.log(`Max bound: ${JSON.stringify(boundMax)}`);
-        */
         // Min bound: {"x":-132,801,852,"y":-107,405,829,"z":-64,320,623}
         // Max bound: {"x":251,036,687,"y":108,818,836,"z":193,733,559}
         // maybe we can bound?  From part 1, we know the point with the highest range has 613 other points in range.
         // So we know the best point will be in range of over half of the points.
+        // no, that's not true - we know that half of the points are in range of the best point, but that doesn't mean they are all in range.
+        // degenerate case, best point has radius 50, 10 other points have radius 0 and are in that region,
+        // but then outside that radius 50 region, there are 3 points that all overlap.
+        // DOH.
+
+        // however, maybe we just need to figure out something about the input data that is special...
+        // if a region is overlapped-by >1/2 of the data, that region MUST contain our answer
 
         if (!moreToDo) {
-            //this.log(`bestOverlappingPoints = ${this.bestOverlappingPoints.length}`);
-            // the answer has to (?) be in range of all of the bestOverlappingPoints.
+            //this.log(`mustOverlapPoints = ${this.mustOverlapPoints.length}`);
+            // the answer has to (?) be in range of all of the mustOverlapPoints.
             // So, starting from the smallest (?), find what's in range of everything
             let bestCount = 0;
             let bestPoints: Triple[] = [];
             let lowestDistance = Infinity;
-            this.bestOverlappingPoints = this.bestOverlappingPoints.sort((a, b) => a.r - b.r);
-            this.log(`Num bestOverlappingPoints: ${this.bestOverlappingPoints.length}`);
-            this.bestOverlappingPoints.forEach(p => {
+            this.mustOverlapPoints = this.mustOverlapPoints.sort((a, b) => a.r - b.r);
+            this.log(`Num mustOverlapPoints: ${this.mustOverlapPoints.length}`);
+            this.mustOverlapPoints.forEach(p => {
                 this.log(`${p.toString()}`);
             })
-            let bop = this.bestOverlappingPoints[0];
+            let bop = this.mustOverlapPoints[0];
 
             // cut down bounds?
             // 012345678901234567890
@@ -116,7 +107,7 @@ export class a201823 extends AoCPuzzle {
             // ...<--->...... x=3..7
             let boundMin = {x: -Infinity, y: -Infinity, z: -Infinity};
             let boundMax = {x: Infinity, y: Infinity, z: Infinity};
-            this.bestOverlappingPoints.forEach(p => {
+            this.mustOverlapPoints.forEach(p => {
                 boundMin.x = Math.max(boundMin.x, p.pos.x-p.r);
                 boundMin.y = Math.max(boundMin.y, p.pos.y-p.r);
                 boundMin.z = Math.max(boundMin.z, p.pos.z-p.r);
@@ -126,7 +117,7 @@ export class a201823 extends AoCPuzzle {
             })
             this.log(`Min bound: ${JSON.stringify(boundMin)}`);
             this.log(`Max bound: ${JSON.stringify(boundMax)}`);
-            this.bestOverlappingPoints.forEach(p => {
+            this.mustOverlapPoints.forEach(p => {
                 if (boundMin.x > p.pos.x+p.r && boundMax.x < p.pos.x-p.r) {
                     this.log(`x outside bounds: ${p.toString()}`);
                 }
@@ -137,55 +128,7 @@ export class a201823 extends AoCPuzzle {
                     this.log(`z outside bounds: ${p.toString()}`);
                 }
             })
-            // try overlapping all of the bestOverlappingPoints together - because we know we need to make them all work.
-            // how to overlap points with ranges?
-            // 1-d:
-            // case 1 coord parity different, radius parity different
-            // 012345678901234567890
-            // ...<---#--->.. x=7, r=4 (valid=7-4 up to 7+4 or 3..11)
-            // .<--#-->...... x=4, r=3 (valid=4-3 up to 4+3 or 1..7)
-            // ...<-#->...... x=5, r=2 (valid=5-2 up to 5+2 or 3..7)
-            // case 2 coord parity same, radius parity same
-            // 012345678901234567890
-            // ...<---#--->.. x=7, r=4 (valid=7-4 up to 7+4 or 3..11)
-            // .<-#->........ x=3, r=2 (valid=4-2 up to 4+2 or 2..6)
-            // ...<#>........ x=4, r=1 (valid=4-2 up to 4+2 or 3..6)
-            // case 3 coord parity different, radius parity same (um...)
-            // 012345678901234567890
-            // ...<---#--->.. x=7, r=4 (valid=7-4 up to 7+4 or 3..11)
-            // ..<-#->....... x=4, r=2 (valid=4-2 up to 4+2 or 2..6)
-            // ...<##>....... x=4.5?, r=1.5? (valid=4.5-1.5 up to 4.5+1.5 or 4..6??)
-            // case 4 coord parity same, radius parity different (um....)
-            // 012345678901234567890
-            // ...<---#--->.. x=7, r=4 (valid=7-4 up to 7+4 or 3..11)
-            // . <--#-->..... x=5, r=3 (valid=5-3 up to 5+3 or 2..8)
-            // ...<-##->......x=5.5? r=2.5? (valid=5.5-2.5 up to 5.5+2.5 or 3..8??)
-            // 
-            // this would allow us to collapse any 2 arbitrary points down to a 3rd point that represents the intersection of those 2 points
-
-            // try 6 points at the extremes?
-            // works for sample2 but not for input
-            /*
-            [
-                {x: bop.pos.x-bop.r, y: bop.pos.y, z: bop.pos.z},
-                {x: bop.pos.x+bop.r, y: bop.pos.y, z: bop.pos.z},
-                {x: bop.pos.x, y: bop.pos.y-bop.r, z: bop.pos.z},
-                {x: bop.pos.x, y: bop.pos.y+bop.r, z: bop.pos.z},
-                {x: bop.pos.x, y: bop.pos.y, z: bop.pos.z-bop.r},
-                {x: bop.pos.x, y: bop.pos.y, z: bop.pos.z+bop.r},
-            ].forEach(b => {
-                let thisCount = this.points.filter(p => p.inRange(b)).length;
-                if (thisCount > bestCount) {
-                    bestCount = thisCount;
-                    bestPoints = [];
-                }
-
-                if (thisCount === bestCount) {
-                    bestPoints.push(b);
-                    this.log(`Found valid point (for now): ${thisCount} ${JSON.stringify(b)}`)
-                }
-            });
-            */
+            // try overlapping all of the mustOverlapPoints together - because we know we need to make them all work.
 
             for (let xd=0; false && xd<=bop.r; xd++) {
                 //this.log(`xd=${xd}`)
@@ -195,8 +138,8 @@ export class a201823 extends AoCPuzzle {
                         //this.log(`zd=${xd}`)
                         let p1 = {x: bop.pos.x + xd, y: bop.pos.y + yd, z: bop.pos.z + zd};
                         let p2 = {x: bop.pos.x - xd, y: bop.pos.y - yd, z: bop.pos.z - zd};
-                        let p1Valid = this.bestOverlappingPoints.every(p => p.inRange(p1));
-                        let p2Valid = this.bestOverlappingPoints.every(p => p.inRange(p2));
+                        let p1Valid = this.mustOverlapPoints.every(p => p.inRange(p1));
+                        let p2Valid = this.mustOverlapPoints.every(p => p.inRange(p2));
                         //this.log(`p1=${JSON.stringify(p1)}=${p1Valid}`);
                         //this.log(`p2=${JSON.stringify(p2)}=${p2Valid}`);
                         let check: Triple[] = [];

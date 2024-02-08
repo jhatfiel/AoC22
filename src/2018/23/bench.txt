@@ -120,3 +120,6 @@
 [                  HP] / 2024-02-07T19:48:31.585Z: [     20.95ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
 [                  HP] / 2024-02-07T19:50:30.959Z: [     14.14ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
 [                  HP] / 2024-02-07T19:50:52.994Z: [     19.27ms] Ran b201823 with ./data/2018/23/input.txt resulting in Result
+[ip-172-31-43-116.eu-] / 2024-02-08T14:33:59.939Z: [     13.14ms] Ran a201823 with ./data/2018/23/sample.txt resulting in Infinity
+[ip-172-31-43-116.eu-] / 2024-02-08T14:34:09.597Z: [      8.39ms] Ran a201823 with ./data/2018/23/sample2.txt resulting in Infinity
+[ip-172-31-43-116.eu-] / 2024-02-08T14:38:51.792Z: [      5.64ms] Ran a201823 with ./data/2018/23/sample2.txt resulting in Infinity
