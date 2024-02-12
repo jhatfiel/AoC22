@@ -1,0 +1,9 @@
+[ip-172-31-43-116.eu-] / 2024-02-12T11:17:05.037Z: [      2.37ms] Ran a201825 with ./data/2018/25/sample.txt resulting in Result
+[ip-172-31-43-116.eu-] / 2024-02-12T11:17:13.039Z: [      2.32ms] Ran a201825 with ./data/2018/25/sample.txt resulting in Result
+[ip-172-31-43-116.eu-] / 2024-02-12T11:20:12.567Z: [      4.40ms] Ran a201825 with ./data/2018/25/sample.txt resulting in Result
+[ip-172-31-43-116.eu-] / 2024-02-12T11:20:28.897Z: [      5.24ms] Ran a201825 with ./data/2018/25/sample.txt resulting in 2
+[ip-172-31-43-116.eu-] / 2024-02-12T11:20:40.487Z: [      5.80ms] Ran a201825 with ./data/2018/25/sample2.txt resulting in 4
+[ip-172-31-43-116.eu-] / 2024-02-12T11:20:49.163Z: [      4.80ms] Ran a201825 with ./data/2018/25/sample3.txt resulting in 3
+[ip-172-31-43-116.eu-] / 2024-02-12T11:21:08.493Z: [      2.22ms] Ran a201825 with ./data/2018/25/sample4.txt resulting in 8
+[ip-172-31-43-116.eu-] / 2024-02-12T11:21:13.451Z: [      2.66ms] Ran a201825 with ./data/2018/25/sample3.txt resulting in 3
+[ip-172-31-43-116.eu-] / 2024-02-12T11:21:27.423Z: [   6046.12ms] Ran a201825 with ./data/2018/25/input.txt resulting in 346

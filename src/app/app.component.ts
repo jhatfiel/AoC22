@@ -27,6 +27,7 @@ export class AppComponent implements AfterViewInit {
             {label: '22: Mode Maze', routerLink: '2018/22/a'},
             {label: '23: Experimental Emergency Teleportation', routerLink: '2018/23/a'},
             {label: '24: Immune System Simulator 20XX', routerLink: '2018/24/a'},
+            {label: '25: Four-Dimensional Adventure', routerLink: '2018/25/a', queryParams: { files: ['sample', 'sample2', 'sample3', 'sample4', 'input']}},
         ]},
         {label: '2019', items: []},
         {label: '2020', items: []},
