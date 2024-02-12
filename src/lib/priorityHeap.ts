@@ -5,13 +5,19 @@ export class PriorityHeap<T=number> {
 
     size(): number { return this.nextIdx; }
 
-    enqueue(e: T) {
-        this.values[this.nextIdx] = e;
-        this.nextIdx++;
-        this.bubbleUp();
+    truncate(at: number) {
+        if (this.nextIdx >= at) {
+            this.nextIdx = at;
+        }
     }
 
-    bubbleUp(idx = this.nextIdx-1) {
+    enqueue(e: T): number {
+        this.values[this.nextIdx] = e;
+        this.nextIdx++;
+        return this.bubbleUp();
+    }
+
+    bubbleUp(idx = this.nextIdx-1): number {
         const e = this.values[idx];
         while (idx > 0) {
             let parentIdx = Math.floor((idx-1)/2);
