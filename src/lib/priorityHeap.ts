@@ -1,5 +1,5 @@
 export class PriorityHeap<T=number> {
-    constructor(private isLessThanEqualTo: (a: T, b: T) => boolean = (a: T, b: T) => a <= b ) { }
+    constructor(private shouldPrecede: (a: T, b: T) => boolean = (a: T, b: T) => a <= b ) { }
     values = new Array<T>(10000); // decent sized heap to reduce memory thrash
     nextIdx = 0;
 
@@ -16,7 +16,7 @@ export class PriorityHeap<T=number> {
         while (idx > 0) {
             let parentIdx = Math.floor((idx-1)/2);
             let parent = this.values[parentIdx];
-            if (this.isLessThanEqualTo(e, parent)) break;
+            if (this.shouldPrecede(e, parent)) break;
             this.values[parentIdx] = e;
             this.values[idx] = parent;
             idx = parentIdx;
@@ -27,8 +27,9 @@ export class PriorityHeap<T=number> {
     dequeue(): T {
         const max = this.values[0];
         const end = this.values[this.nextIdx-1];
-        this.nextIdx--;
-        if (this.nextIdx > 0) {
+        this.nextIdx = Math.max(0, this.nextIdx-1);
+        
+        if (this.nextIdx >= 0) {
             this.values[0] = end;
             this.sinkDown();
         }
@@ -46,12 +47,12 @@ export class PriorityHeap<T=number> {
 
             if (leftChildIdx < length) {
                 leftChild = this.values[leftChildIdx];
-                if (this.isLessThanEqualTo(e, leftChild)) swap = leftChildIdx;
+                if (this.shouldPrecede(e, leftChild)) swap = leftChildIdx;
             }
             if (rightChildIdx < length) {
                 rightChild = this.values[rightChildIdx];
-                if ((swap === null && this.isLessThanEqualTo(e, rightChild)) ||
-                    (swap !== null && this.isLessThanEqualTo(leftChild, rightChild))) swap = rightChildIdx;
+                if ((swap === null && this.shouldPrecede(e, rightChild)) ||
+                    (swap !== null && this.shouldPrecede(leftChild, rightChild))) swap = rightChildIdx;
             }
 
             if (swap === null) break;

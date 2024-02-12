@@ -1,10 +1,42 @@
 import { AoCPuzzle } from '../../lib/AoCPuzzle';
+import { PriorityHeap } from '../../lib/priorityHeap';
 
 type Triple = { 
     x: number;
     y: number;
     z: number;
 };
+
+class Cube {
+    // s is the size of the cube, and its coordinates go from
+    // pos.x/y/z-s to pos.x/y/z+s so s=0 is a point
+    constructor(public pos: Triple, public pow3: number) {
+        this.s = (Math.pow(3, pow3)-1)/2;
+    }
+
+    intersect: Point[] = [];
+    s: number;
+
+    // cut the cube up into 27 pieces
+    divide(): Cube[] {
+        let offset = Math.pow(3, this.pow3-1);
+        let result = [-offset, 0, offset]
+            .flatMap(xd => [-offset, 0, offset]
+                .flatMap(yd => [-offset, 0, offset]
+                    .flatMap(zd => {
+                        let c = new Cube({x: this.pos.x+xd, y: this.pos.y+yd, z: this.pos.z+zd}, this.pow3-1);
+                        // add any points that intersect this new cube into c's list
+                        return c;
+                    })
+                )
+            );
+        return result;
+    }
+
+    toString(): string {
+        return `(${this.pos.x},${this.pos.y},${this.pos.z}) P${this.pow3},S${this.s}`;
+    }
+}
 
 class Point {
     static parse(line: string): Point {
@@ -33,42 +65,74 @@ class Point {
 
 export class a201823 extends AoCPuzzle {
     points: Point[];
-    workingPoints: Point[];
-    mustOverlapPoints: Point[] = [];
+    priorityQube = new PriorityHeap<Cube>((a,b) => {
+        if (a.intersect.length !== b.intersect.length) return a.intersect.length >= b.intersect.length;
+        if (a.s !== b.s) return b.s <= a.s;
+        return Math.abs(b.pos.x)+Math.abs(b.pos.y)+Math.abs(b.pos.z) <= 
+               Math.abs(a.pos.x)+Math.abs(a.pos.y)+Math.abs(a.pos.z);
+    })
+
     sampleMode(): void { };
 
     _loadData(lines: string[]) {
         this.points = lines.map(line => Point.parse(line));
-        this.workingPoints = this.points;
-        this.points.forEach(p => this.log(p.toString()));
-    }
-
-    _runStep(): boolean {
-        let moreToDo = false;
+        //this.points.forEach(p => this.log(p.toString()));
 
         let maxRP: Point;
         let maxR = 0;
-
-        //this.log(`_runStep(): arr size = ${this.workingPoints.length}`);
-        this.workingPoints.forEach(p => {
-            //this.log(`    ${p.toString()} ${this.workingPoints.filter(t => p.inRange(t)).length}`);
+        this.points.forEach(p => {
             if (p.r > maxR) {
                 maxR = p.r;
                 maxRP = p;
             }
         })
-        let newPoints = this.workingPoints.filter(t => maxRP.inRange(t) && maxRP !== t);
-        if (this.workingPoints.length === this.points.length) {
-            this.log(`Part 1: pCount for ${maxRP.toString()} = ${newPoints.length+1}`);
-        }
+        this.log(`Part 1: pCount for ${maxRP.toString()} = ${this.points.filter(t => maxRP.inRange(t)).length}`);
 
-        moreToDo = newPoints.length !== 0 && (newPoints.length+1)/this.workingPoints.length > .5;
-        if (moreToDo) {
-            this.mustOverlapPoints.push(maxRP);
-        }
+        let boundMin = {x: Infinity, y: Infinity, z: Infinity};
+        let boundMax = {x: -Infinity, y: -Infinity, z: -Infinity};
+        this.points.forEach(p => {
+            boundMin.x = Math.min(boundMin.x, p.pos.x-p.r);
+            boundMin.y = Math.min(boundMin.y, p.pos.y-p.r);
+            boundMin.z = Math.min(boundMin.z, p.pos.z-p.r);
+            boundMax.x = Math.max(boundMax.x, p.pos.x+p.r);
+            boundMax.y = Math.max(boundMax.y, p.pos.y+p.r);
+            boundMax.z = Math.max(boundMax.z, p.pos.z+p.r);
+        })
+        this.log(`Min bound: ${JSON.stringify(boundMin)}`);
+        this.log(`Max bound: ${JSON.stringify(boundMax)}`);
+        let maxWidth = Math.max(boundMax.x-boundMin.x, Math.max(boundMax.y-boundMin.y, boundMax.z-boundMin.z));
+        let pow3 = Math.ceil(Math.log(maxWidth)/Math.log(3));
+        this.log(`Nearest power 3 width: ${maxWidth} = 3^${pow3} = ${Math.pow(3,pow3)}`);
 
-        this.log(`Refine step: ${this.stepNumber} = ${this.workingPoints.length} => ${newPoints.length} max was ${maxRP.toString()}`);
-        this.workingPoints = newPoints;
+        let cube = new Cube({x: boundMin.x+Math.floor((boundMax.x-boundMin.x)/2), y: boundMin.y+Math.floor((boundMax.y-boundMin.y)/2), z: boundMin.z+Math.floor((boundMax.z-boundMin.z)/2)}, pow3)
+        this.log(`Bounding cube: ${cube.toString()}`);
+        this.log(`Divided center: ${cube.divide()[13].toString()}`);
+        this.priorityQube.enqueue(cube);
+
+        /*
+        cube = new Cube({x: 0, y: 0, z: 0}, 1);
+        this.log(`Bounding cube: ${cube.toString()}`);
+        this.log(`Divided TL: ${cube.divide()[0].toString()}`);
+        this.log(`Divided center: ${cube.divide()[13].toString()}`);
+        */
+
+        //cube.divide().forEach(c => this.log(`  - ${c.toString()}`))
+    }
+
+    _runStep(): boolean {
+
+        //this.log(`_runStep(): arr size = ${this.workingPoints.length}`);
+            //this.log(`    ${p.toString()} ${this.workingPoints.filter(t => p.inRange(t)).length}`);
+
+        let cube = this.priorityQube.dequeue();
+        this.log(`Refine step: ${this.stepNumber}, priorityQube.size=${this.priorityQube.size()}, cube=${cube.toString()}`);
+        let moreToDo = this.stepNumber <= 100 && cube.s > 0;
+        if (cube.s >= 1) {
+            cube.divide().forEach(c => {
+                //this.log(`Divided: ${c}`);
+                this.priorityQube.enqueue(c)
+            });
+        }
 
         // Part 2, we need to consider x +/- 1million, y +/- 1m, z +/- 1m.... that doesn't seem feasible.
         // because of local minimums, we can't just start moving to best coverage, right?
@@ -86,93 +150,13 @@ export class a201823 extends AoCPuzzle {
         // if a region is overlapped-by >1/2 of the data, that region MUST contain our answer
 
         if (!moreToDo) {
-            //this.log(`mustOverlapPoints = ${this.mustOverlapPoints.length}`);
-            // the answer has to (?) be in range of all of the mustOverlapPoints.
-            // So, starting from the smallest (?), find what's in range of everything
-            let bestCount = 0;
-            let bestPoints: Triple[] = [];
-            let lowestDistance = Infinity;
-            this.mustOverlapPoints = this.mustOverlapPoints.sort((a, b) => a.r - b.r);
-            this.log(`Num mustOverlapPoints: ${this.mustOverlapPoints.length}`);
-            this.mustOverlapPoints.forEach(p => {
-                this.log(`${p.toString()}`);
-            })
-            let bop = this.mustOverlapPoints[0];
-
-            // cut down bounds?
-            // 012345678901234567890
-            // ...<---#--->.. x=7, r=4 (valid=7-4 up to 7+4 or 3..11)
-            // .<--#-->...... x=4, r=3 (valid=4-3 up to 4+3 or 1..7)
-            // means final solution has to be:
-            // ...<--->...... x=3..7
-            let boundMin = {x: -Infinity, y: -Infinity, z: -Infinity};
-            let boundMax = {x: Infinity, y: Infinity, z: Infinity};
-            this.mustOverlapPoints.forEach(p => {
-                boundMin.x = Math.max(boundMin.x, p.pos.x-p.r);
-                boundMin.y = Math.max(boundMin.y, p.pos.y-p.r);
-                boundMin.z = Math.max(boundMin.z, p.pos.z-p.r);
-                boundMax.x = Math.min(boundMax.x, p.pos.x+p.r);
-                boundMax.y = Math.min(boundMax.y, p.pos.y+p.r);
-                boundMax.z = Math.min(boundMax.z, p.pos.z+p.r);
-            })
-            this.log(`Min bound: ${JSON.stringify(boundMin)}`);
-            this.log(`Max bound: ${JSON.stringify(boundMax)}`);
-            this.mustOverlapPoints.forEach(p => {
-                if (boundMin.x > p.pos.x+p.r && boundMax.x < p.pos.x-p.r) {
-                    this.log(`x outside bounds: ${p.toString()}`);
-                }
-                if (boundMin.y > p.pos.y+p.r && boundMax.y < p.pos.y-p.r) {
-                    this.log(`y outside bounds: ${p.toString()}`);
-                }
-                if (boundMin.z > p.pos.z+p.r && boundMax.z < p.pos.z-p.r) {
-                    this.log(`z outside bounds: ${p.toString()}`);
-                }
-            })
-            // try overlapping all of the mustOverlapPoints together - because we know we need to make them all work.
-
-            for (let xd=0; false && xd<=bop.r; xd++) {
-                //this.log(`xd=${xd}`)
-                for (let yd=0; yd<=(bop.r-Math.abs(xd)); yd++) {
-                    //this.log(`yd=${xd}`)
-                    for (let zd=0; zd<=(bop.r-Math.abs(xd)-Math.abs(yd)); zd++) {
-                        //this.log(`zd=${xd}`)
-                        let p1 = {x: bop.pos.x + xd, y: bop.pos.y + yd, z: bop.pos.z + zd};
-                        let p2 = {x: bop.pos.x - xd, y: bop.pos.y - yd, z: bop.pos.z - zd};
-                        let p1Valid = this.mustOverlapPoints.every(p => p.inRange(p1));
-                        let p2Valid = this.mustOverlapPoints.every(p => p.inRange(p2));
-                        //this.log(`p1=${JSON.stringify(p1)}=${p1Valid}`);
-                        //this.log(`p2=${JSON.stringify(p2)}=${p2Valid}`);
-                        let check: Triple[] = [];
-                        if (p1Valid) check.push(p1);
-                        if (p2Valid) check.push(p2);
-                        check.forEach(point => {
-                            let thisCount = this.points.filter(p => p.inRange(point)).length;
-                            if (thisCount > bestCount) {
-                                bestCount = thisCount;
-                                lowestDistance = Infinity;
-                            }
-
-                            if (thisCount === bestCount) {
-                                let distance = Math.abs(point.x)+Math.abs(point.y)+Math.abs(point.z)
-                                if (distance < lowestDistance) {
-                                    lowestDistance = distance;
-                                    this.log(`Found best point (for now ${xd}/${bop.r}): ${thisCount} ${JSON.stringify(point)} = ${distance}`);
-                                }
-                            }
-                        })
-                    }
-                }
-            }
-
             //                                                79618206 too low
             // 671 {"x":87062187,"y":6033095,"z":38202643} = 131297925 too high
             // 673 {"x":87062187,"y":6033095,"z":39899997} = 132995279 (also too high) but bestCount could still be 673...
             // 686 {"x":87062187,"y":6033095,"z":52391450} = 145486732
-            this.result = lowestDistance.toString();
-        } else {
-            this.result = newPoints.length.toString();
         }
 
+        this.result = 'Working....';
         return moreToDo;
     }
 }
