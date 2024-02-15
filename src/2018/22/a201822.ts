@@ -75,7 +75,16 @@ export class a201822 extends AoCPuzzle {
         let dij = new Dijkstra(this.getNeighbors.bind(this));
         //dij.compute(start, (node: string, distance: number) => node === to);
         //let res = dij.distanceAny(start, (node: string) => node === to);
-        let res = dij.distance(start, to);
+
+        //let res = dij.distance(start, to);
+        let res: number;
+        for (let found of dij.generateDistances(start)) {
+            if (found.node === to) {
+                res = found.distance;
+                break;
+            }
+        }
+
         /*
         let to = '';
         res.forEach((v, k) => {

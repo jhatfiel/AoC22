@@ -12,6 +12,101 @@ export class Dijkstra {
     paths = new Map<string, Map<string, Array<Array<string>>>>();
 
     distanceTo = new Map<string, Map<string, number>>();
+    getPaths(from: string, node: string, keepAllPaths = true) {
+        //console.log(`Getting paths for ${node}`);
+        let nearestUnvisitedPaths = [[node]];
+        let parent = this.parent.get(from);
+        let parentSearch = nearestUnvisitedPaths.map(p => parent.get(p[p.length-1])); // get the parents of the latest step on each path
+
+        while (parentSearch?.some(parentToExpand => parentToExpand !== undefined)) {
+            parentSearch.forEach((parentToExpand, ind) => {
+                if (parentToExpand?.size) {
+                    if (keepAllPaths) {
+                        Array.from(parentToExpand).slice(1).forEach(parent => {
+                            let newPath = [...nearestUnvisitedPaths[ind], parent];
+                            nearestUnvisitedPaths.push(newPath);
+                        })
+                    }
+                    nearestUnvisitedPaths[ind].push(Array.from(parentToExpand)[0]);
+                }
+            })
+            parentSearch = nearestUnvisitedPaths.map(p => parent.get(p[p.length-1])); // get the parents of the latest step on each path
+        }
+        return nearestUnvisitedPaths.map(p => p.reverse());
+    }
+
+    *generatePaths(from: string, keepAllPaths = true): Generator<{node: string, distance: number}, void, unknown> {
+        let parent = new Map<string, Set<string>>();
+        this.parent.set(from, parent);
+        let distanceTo = new Map<string, number>();
+        this.distanceTo.set(from, distanceTo);
+
+        let unvisited = new PriorityHeap<{node: string, distance: number, counter: number}>((a, b) => b.distance === a.distance?b.counter<a.counter:b.distance < a.distance);
+        let counter = 0;
+
+        distanceTo.set(from, 0);
+        unvisited.enqueue({node: from, distance: 0, counter: counter++});
+        while (unvisited.size()) {
+            // get the closest unvisited node
+            let {node, distance} = unvisited.dequeue();
+
+            // generate the parent paths
+            yield {node, distance};
+
+            // set the distance for all its neighbors
+            this.getNeighbors(node).forEach((d, n) => {
+                let currentDistance = distanceTo.get(n);
+                let newDistance = distance + d;
+                if (currentDistance === undefined) {
+                    distanceTo.set(n, newDistance);
+                    unvisited.enqueue({node: n, distance: newDistance, counter: counter++});
+                    parent.set(n, new Set([node]));
+                } else if (newDistance < currentDistance) {
+                    distanceTo.set(n, newDistance);
+                    unvisited.reorder(obj => {
+                        if (obj.node === n) { obj.distance = newDistance; return true; }
+                        return false;
+                    });
+                    parent.set(n, new Set([node]));
+                } else if (keepAllPaths && newDistance === currentDistance) {
+                    parent.get(n).add(node);
+                }
+            });
+        }
+    }
+
+    *generateDistances(from: string): Generator<{node: string, distance: number}, void, unknown> {
+        let distanceTo = new Map<string, number>();
+        this.distanceTo.set(from, distanceTo);
+
+        let unvisited = new PriorityHeap<{node: string, distance: number, counter: number}>((a, b) => b.distance === a.distance?b.counter<a.counter:b.distance < a.distance);
+        let counter = 0;
+
+        distanceTo.set(from, 0);
+        unvisited.enqueue({node: from, distance: 0, counter: counter++});
+
+        while (unvisited.size()) {
+            // get the closest unvisited node
+            let {node, distance} = unvisited.dequeue();
+            yield {node, distance};
+
+            // set the distance for all its neighbors
+            this.getNeighbors(node).forEach((d, n) => {
+                let currentDistance = distanceTo.get(n);
+                let newDistance = distance + d;
+                if (currentDistance === undefined) {
+                    distanceTo.set(n, newDistance);
+                    unvisited.enqueue({node: n, distance: newDistance, counter: counter++});
+                } else if (newDistance < currentDistance) {
+                    distanceTo.set(n, newDistance);
+                    unvisited.reorder(obj => {
+                        if (obj.node === n) { obj.distance = newDistance; return true; }
+                        return false;
+                    });
+                }
+            })
+        }
+    }
 
     compute(from: string, shouldStop: (node: string, distance: number) => boolean = _ => false): Dijkstra {
         let parent = new Map<string, Set<string>>();
