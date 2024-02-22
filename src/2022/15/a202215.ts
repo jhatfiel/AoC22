@@ -1,5 +1,6 @@
 import { createReadStream } from "fs";
 import { createInterface } from "readline";
+import { AoCPuzzle } from "../../lib/AoCPuzzle";
 
 type P = { x: number, y: number };
 
@@ -107,16 +108,20 @@ class C {
     }
 }
 
-let c = new C();
+export class a202215 extends AoCPuzzle {
+    sampleMode(): void {
+    }
 
-let fn = process.argv[2];
-c.setLOI(Number(process.argv[3]));
-const rl = createInterface({ input: createReadStream(fn), crlfDelay: Infinity, terminal: false});
+    _runStep(): boolean {
+        let c = new C();
+        if (this.inSampleMode) {
+            c.setLOI(10);
+        } else {
+            c.setLOI(2000000);
+        }
+        this.lines.forEach(line => c.process(line));
 
-rl.on('line', (line) => {
-    c.process(line);
-})
-
-rl.on('close', () => {
-    console.log(`Result: ${c.getResult()}`);
-});
+        this.result = c.getResult().toString();
+        return false;
+    }
+}
