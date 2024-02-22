@@ -1,127 +1,95 @@
-import { createReadStream } from "fs";
-import { createInterface } from "readline";
+import DRange from "drange";
 import { AoCPuzzle } from "../../lib/AoCPuzzle";
+import { LineEquation } from "../../lib/geometry";
 
-type P = { x: number, y: number };
+type Sensor = {
+    x: number;
+    y: number;
+    size: number;
+}
 
-class C {
-    constructor() { }
+export class a202215 extends AoCPuzzle {
+    loi=2000000;
+    part2Bounds=4000000;
+    drangeSize = 10000000;
+    drange = new DRange(-this.drangeSize, this.drangeSize);
+    sensors: Sensor[] = [];
 
-    setLOI(lineNum: number) { this.loi = lineNum; };
+    sampleMode(): void {
+        this.loi = 10;
+        this.part2Bounds = 20;
+    }
 
-    loi=0;
-    emptyRegions = new Array<Array<number>>();
-    beacons = new Array<number>();
+    _runStep(): boolean {
+        let moreToDo = this.stepNumber < this.lines.length-1;
+        let line = this.lines[this.stepNumber];
+        if (line) {
+            this.process(this.lines[this.stepNumber]);
+        }
+
+        if (!moreToDo) {
+            let numNoBeaconLocations = 2*this.drangeSize - this.drange.length;
+            this.log(`Part 1: ${numNoBeaconLocations}`);
+            this.result = numNoBeaconLocations.toString();
+            let c = new a202215(this.fn, this.log);
+
+            // find part 2
+            let lineEq: LineEquation;
+            let b1: number = undefined;
+            let b2: number = undefined;
+            for (let i=0; i<this.sensors.length; i++) {
+                let s = this.sensors[i];
+                // see if the two sensors come right to each others edges
+                let match = this.sensors.filter(s2 => Math.abs(s2.x-s.x)+Math.abs(s2.y-s.y) === s2.size+s.size);
+                if (match.length > 0) {
+                    let s2 = match[0];
+                    // s intersects with s2, so we have a line defined
+                    let xd = s2.x-s.x;
+                    let yd = s2.y-s.y;
+                    // line is from top or bottom of diamond to right or left of diamond, based on which direction the sensors are from each other
+                    let line = LineEquation.FromPoints({x: s.x, y: s.y + s.size*Math.sign(yd)}, {x: s.x + s.size*Math.sign(xd), y: s.y});
+                    if (lineEq === undefined) lineEq = line;
+                    if (lineEq.m !== line.m) {
+                        // intersect
+                        this.log(`Line1: ${lineEq.toString()}`);
+                        this.log(`Line2: ${line.toString()}`);
+                        let point = lineEq.intersection(line);
+                        this.log(`Intersect: ${JSON.stringify(point)}`);
+                        this.result = (point.x*4000000 + point.y).toString();
+                        break;
+                    }
+                }
+            };
+            /*
+            x=2895970
+            y=2601918
+            11583882601918
+            SLOW
+            for (let i=0; i<this.part2Bounds; i++) {
+                c.drange = new DRange(-this.drangeSize, this.drangeSize);
+                c.loi = i;
+                this.lines.forEach(line => c.process(line));
+                let len = c.drange.intersect(0, this.part2Bounds).length;
+                if (len > 0) {
+                    this.result = (c.drange.numbers()[0]*4000000 + i).toString();
+                    break;
+                }
+            }
+            */
+        }
+        return moreToDo;
+    }
 
     process(line: string) {
         const arr = line.split(/[ :,=]/);
         const [sx, sy, bx, by] = [arr[3], arr[6], arr[13], arr[16]].map(Number);
         const distance = Math.abs(sx-bx) + Math.abs(sy-by);
         let width = distance - Math.abs(sy-this.loi);
+        this.sensors.push({x: sx, y: sy, size: distance+1});
 
-        console.log(`${line} has distance to beacon of ${distance} (${width})`);
-        if (by === this.loi) { console.log(`Beacon in ${this.loi}, position=${bx}`); this.beacons.push(bx); }
-
-        if (width == 0) {
-            console.log(`Distance barely touches ${this.loi}, position=${sx}`); this.emptyRegions.push([sx, sx]);
-        } else if (width > 0) {
-            console.log(`${this.loi} has no beacons between (${sx-width} and ${sx+width})`);
-            this.emptyRegions.push([sx-width, sx+width]);
+        if (by === this.loi) this.drange.subtract(bx);
+        if (width >= 0) {
+            this.drange.subtract(sx-width, sx+width);
         }
-    }
-
-    joinOverlaps(arr: Array<Array<number>>) {
-        console.log('BEFORE JOIN');
-        this.debug();
-        // join overlapping regions
-        let madeMerge = false;
-        do {
-            madeMerge = false;
-            let joinedRegions = new Array<Array<number>>();
-            arr.forEach((r) => {
-                console.log(`TRYING    r=${r[0]} TO ${r[1]}`);
-                let needToAdd = true;
-                joinedRegions.some((j) => {
-                    console.log(`COMPARING r=${r[0]} TO ${r[1]} j=${j[0]} TO ${j[1]}`);
-                         if (j[0] <= r[0] && r[0] <= j[1]) { j[1] = Math.max(j[1], r[1]); needToAdd = false; } // current start is contained in joined range
-                    else if (j[0] <= r[1] && r[1] <= j[1]) { j[0] = Math.min(j[0], r[0]); needToAdd = false; } // current end is contained in joined range
-                    else if (r[0] <= j[0] && j[0] <= r[1]) { j[0] = Math.min(j[0], r[0]); j[1] = Math.max(j[1], r[1]); needToAdd = false; } // joined start is contained in current range
-                    else if (r[0] <= j[1] && j[1] <= r[1]) { j[0] = Math.min(j[0], r[0]); j[1] = Math.max(j[1], r[1]); needToAdd = false; } // joined end is contained in current range
-                    if (!needToAdd) { console.log(`     JOIN r=${j[0]} TO ${j[1]}`); return true; }
-                    return false;
-                });
-                if (needToAdd) {
-                    console.log(`      NEW r=${r[0]} TO ${r[1]}`);
-                    joinedRegions.push([r[0], r[1]]);
-                } else {
-                    madeMerge = true;
-                }
-            });
-            arr = joinedRegions
-            console.log('AFTER JOIN');
-            this.debug(arr);
-        } while (madeMerge);
-
-        return arr;
-    }
-
-    cutRegions(arr: Array<Array<number>>, cuts: Array<number>) {
-        console.log('BEFORE CUT');
-        // cut regions if there is a beacon in them
-        let results = new Array<Array<number>>();
-        arr.forEach((r) => {
-            for (const b of cuts) {
-                     if (b == r[0] && b == r[1]) { break; } // skip this region, it was actually just 1 wide and it's a beacon
-                else if (b == r[0]) { results.push([b+1, r[1]]); break; }
-                else if (b == r[1]) { results.push([r[0], b-1]); break; }
-                else if (r[0] < b && b < r[1]) { results.push([r[0], b-1]); results.push([b+1, r[1]]); break; }
-            }
-        });
-
-        if (results.length == 0) results = arr;
-
-        console.log('AFTER CUT');
-
-        return results;
-    }
-
-    getResult() {
-        console.log('BEACONS');
-        this.debugBeacons();
-        this.emptyRegions = this.joinOverlaps(this.emptyRegions);
-        this.emptyRegions = this.cutRegions(this.emptyRegions, this.beacons);
-        this.debug();
-        let size=0;
-        this.emptyRegions.forEach((r) => {
-            console.log(`Counting region from ${r[0]} - ${r[1]}, size = ${1+r[1]-r[0]}`);
-            size += 1+r[1]-r[0]
-        });
-        return size;
-    }
-
-    debug(er=this.emptyRegions) {
-        er.forEach((r) => { console.log(`EMPTY: ${r[0]} - ${r[1]}`); });
-    }
-
-    debugBeacons() {
-        console.log(this.beacons.join(' '));
-    }
-}
-
-export class a202215 extends AoCPuzzle {
-    sampleMode(): void {
-    }
-
-    _runStep(): boolean {
-        let c = new C();
-        if (this.inSampleMode) {
-            c.setLOI(10);
-        } else {
-            c.setLOI(2000000);
-        }
-        this.lines.forEach(line => c.process(line));
-
-        this.result = c.getResult().toString();
-        return false;
     }
 }
