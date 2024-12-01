@@ -1,0 +1,17 @@
+[                  HP] / 2024-12-01T20:54:50.659Z: [     33.31ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T20:55:05.583Z: [     10.15ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T20:55:32.321Z: [     26.48ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T20:55:38.826Z: [     69.56ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T20:55:55.424Z: [     10.64ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T20:56:29.139Z: [     55.21ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T20:57:09.230Z: [     32.68ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T21:01:00.144Z: [     77.74ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T21:01:44.672Z: [     75.39ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T21:01:48.976Z: [    108.97ms] Ran a202401 with ./data/2024/01/sample.txt resulting in Result
+[                  HP] / 2024-12-01T21:03:28.671Z: [    187.87ms] Ran a202401 with ./data/2024/01/sample.txt resulting in NaN
+[                  HP] / 2024-12-01T21:03:54.487Z: [     17.16ms] Ran a202401 with ./data/2024/01/sample.txt resulting in 11
+[                  HP] / 2024-12-01T21:04:04.422Z: [     24.31ms] Ran a202401 with ./data/2024/01/input.txt resulting in 2367773
+[                  HP] / 2024-12-01T21:05:16.541Z: [     21.72ms] Ran a202401 with ./data/2024/01/input.txt resulting in 2367773
+[                  HP] / 2024-12-01T21:08:33.425Z: [     42.12ms] Ran b202401 with ./data/2024/01/sample.txt resulting in 0
+[                  HP] / 2024-12-01T21:08:55.237Z: [     61.06ms] Ran b202401 with ./data/2024/01/sample.txt resulting in 31
+[                  HP] / 2024-12-01T21:09:35.169Z: [     33.04ms] Ran b202401 with ./data/2024/01/input.txt resulting in 21271939
