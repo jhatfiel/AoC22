@@ -17,7 +17,7 @@ export class AppComponent implements AfterViewInit {
         {label: '2016', items: []},
         {label: '2017', items: []},
         {label: '2018', items: [
-            {label: '15: Beverage Bandits', routerLink: '2018/15/a', queryParams: { files: ['a', 'sample', 'sample1', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6', 'input']}},
+            {label: '15: Beverage Bandits', routerLink: '2018/15/a', queryParams: { files: ['Cedric1', 'a', 'sample', 'sample1', 'sample2', 'sample3', 'sample4', 'sample5', 'sample6', 'input']}},
             {label: '16: Chronal Classification', routerLink: '2018/16/a'},
             {label: '17: Reservoir Research', routerLink: '2018/17/a', queryParams: { files: ['sample1', 'sample', 'input']}},
             {label: '18: Settlers of The North Pole', routerLink: '2018/18/a'},

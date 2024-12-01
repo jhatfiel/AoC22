@@ -27,7 +27,7 @@ export abstract class Character {
 }
 
 class Elf extends Character {
-    ap = 34;
+    //ap = 34;
     static enemies: Character[];
     public getEnemies(): Character[] { return Elf.enemies.filter(c => c.isAlive()); }
     public toString() { return `Elf ${this.name}[${this.hp}]`; }
@@ -62,6 +62,7 @@ export class a201815 extends AoCPuzzle {
         //this.log(`Step: ${this.stepNumber}`);
         let moreToDo = true;
         this.livingCharacters().sort(Character.sort).forEach(c => {
+            //this.log(`processing ${c.name}`);
             if (c.hp <= 0) return;
             if (c.getEnemies().length === 0) moreToDo = false;
             if (!moreToDo) return;
@@ -76,7 +77,6 @@ export class a201815 extends AoCPuzzle {
                 // get all squares around all enemies
                 let inRange = this.getEnemySquares(c);
                 if (inRange.size) {
-                    //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (SEARCHING) (inRange = ${Array.from(inRange.keys()).join(' / ')})`);
 
                     let cPosKey = PairToKey(c.pos);
                     let path: string[];
@@ -111,7 +111,7 @@ export class a201815 extends AoCPuzzle {
                     }
 
                     if (path) {
-                        //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (MOVING) ${targetSquare}`);
+                        //this.log(`${c.toString()} is at ${c.pos.x},${c.pos.y} (MOVING) ${path}`);
                         c.pos = PairFromKey(path[1]);
                         c.plannedMoves = path.slice(1).map(PairFromKey);
                     }
@@ -130,6 +130,7 @@ export class a201815 extends AoCPuzzle {
                 attackTarget.hp = Math.max(0, attackTarget.hp - c.ap);
             }
         })
+        this.log(`Step: ${this.stepNumber} done`);
 
         if (!moreToDo) {
             // calculate result
@@ -182,7 +183,7 @@ export class a201815 extends AoCPuzzle {
          {x: pos.x-1, y: pos.y},
          {x: pos.x+1, y: pos.y},
          {x: pos.x, y: pos.y+1}].filter(pos => {
-            return this.gp.grid[pos.y][pos.x] === '.' && this.livingCharacters().findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
+            return this.gp.grid[pos.y][pos.x] !== '#' && this.livingCharacters().findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
          }).forEach(p => result.set(PairToKey(p), 1));
 
         return result;
@@ -211,7 +212,7 @@ export class a201815 extends AoCPuzzle {
                     {x: e.pos.x, y: e.pos.y+1},
             ];
         }).filter(pos => {
-            return this.gp.grid[pos.y][pos.x] === '.' && this.livingCharacters().findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
+            return this.gp.grid[pos.y][pos.x] !== '#' && this.livingCharacters().findIndex(c => c.pos.x === pos.x && c.pos.y === pos.y) === -1;
         }).map(PairToKey));
     }
 }

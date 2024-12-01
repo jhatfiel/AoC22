@@ -127,6 +127,12 @@ class GameScene extends Phaser.Scene {
             graphicObj.setData('attacked', false);
             graphicObj.setData('moved', false);
         })
+        this.goblins.forEach((graphicObj, ndx, arr) => {
+            this.updateCharacter(arr, graphicObj, ndx, this.puzzle.goblins);
+        });
+        this.elves.forEach((graphicObj, ndx, arr) => {
+            this.updateCharacter(arr, graphicObj, ndx, this.puzzle.elves);
+        })
 
     }
 
@@ -150,12 +156,6 @@ class GameScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
-        this.goblins.forEach((graphicObj, ndx, arr) => {
-            this.updateCharacter(arr, graphicObj, ndx, this.puzzle.goblins);
-        });
-        this.elves.forEach((graphicObj, ndx, arr) => {
-            this.updateCharacter(arr, graphicObj, ndx, this.puzzle.elves);
-        })
     }
 
     createCharacter(c: Character, imageName: string): Phaser.GameObjects.Sprite {

@@ -197,3 +197,4 @@
 [ip-172-31-43-116.eu-] / 2024-01-24T12:12:05.356Z: [    555.38ms] Ran a201815 with ./data/2018/15/input.txt resulting in 62958
 [ip-172-31-43-116.eu-] / 2024-01-24T12:13:51.248Z: [    473.89ms] Ran a201815 with ./data/2018/15/input.txt resulting in 62958
 [ip-172-31-43-116.eu-] / 2024-01-24T12:17:54.464Z: [    452.65ms] Ran a201815 with ./data/2018/15/input.txt resulting in 62958
+[                  HP] / 2024-02-15T20:10:52.956Z: [  32536.42ms] Ran a201815 with ./data/2018/15/Cedric1.txt resulting in 393285
