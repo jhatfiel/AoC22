@@ -1,1 +1,3 @@
 [                  HP] / 2024-12-04T05:06:54.135Z: [     52.46ms] Ran a202404 with ./data/2024/04/input.txt resulting in 2358
+[                  HP] / 2024-12-04T06:02:36.743Z: [     12.37ms] Ran b202404 with ./data/2024/04/input.txt resulting in 0
+[                  HP] / 2024-12-04T06:02:55.044Z: [     11.31ms] Ran b202404 with ./data/2024/04/input.txt resulting in 1737
