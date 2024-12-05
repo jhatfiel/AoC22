@@ -35,12 +35,15 @@ export class b202405 extends AoCPuzzle {
                 this.precede[a].push(b);
             } else {
                 let arr = line.split(',').map(Number);
-                this.log(line);
+                //this.log(line);
                 let ok = this.isOrdered(arr);
                 if (!ok) {
                     // MAKE IT OK!!
-                    // magic
-                    this.log(`NEED TO FIX: ${arr.join(',')}`);
+                    // duh, use built-in sort
+                    arr.sort((a,b) => this.precede[a].indexOf(b)>-1?-1:this.precede[b].indexOf(a)>-1?1:0);
+                    //this.log(`SORT!!!!!!!: ${arr.join(',')}`);
+                    //this.log(`NEED TO FIX: ${arr.join(',')}`);
+                    /*
                     let index = arr.length-1;
                     while (index > 0) {
                         let moved = false;
@@ -60,6 +63,7 @@ export class b202405 extends AoCPuzzle {
                         }
                     }
                     this.log(`FIXED!!!!!!: ${arr.join(',')}`);
+                    */
                     this.sum += arr[(arr.length-1)/2];
                 }
             }
