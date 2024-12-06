@@ -2,7 +2,7 @@
  * Parses an array of lines and finds where the tokens (represented by the typesArr) are located
  */
 
-import { Dijkstra } from "./dijkstra";
+import { Dijkstra } from "./dijkstra.js";
 
 export enum Direction { RIGHT, UP, LEFT, DOWN };
 
