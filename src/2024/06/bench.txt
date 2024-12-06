@@ -15,3 +15,43 @@
 [                  HP] / 2024-12-06T06:51:39.343Z: [     18.38ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
 [                  HP] / 2024-12-06T06:51:44.907Z: [   1310.69ms] Ran b202406 with ./data/2024/06/input.txt resulting in 540
 [                  HP] / 2024-12-06T06:53:20.251Z: [   1267.37ms] Ran b202406 with ./data/2024/06/input.txt resulting in 540
+[ip-172-31-43-116.eu-] / 2024-12-06T12:42:23.235Z: [     10.49ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T12:42:30.609Z: [   2744.63ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1525
+[ip-172-31-43-116.eu-] / 2024-12-06T12:44:40.937Z: [      6.23ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-12-06T12:44:55.576Z: [      8.21ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T12:45:03.103Z: [   3241.60ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1553
+[ip-172-31-43-116.eu-] / 2024-12-06T12:46:07.562Z: [     13.02ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 42
+[ip-172-31-43-116.eu-] / 2024-12-06T12:48:02.086Z: [     16.95ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 42
+[ip-172-31-43-116.eu-] / 2024-12-06T12:49:35.899Z: [     19.62ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 41
+[ip-172-31-43-116.eu-] / 2024-12-06T12:50:24.467Z: [     18.89ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 41
+[ip-172-31-43-116.eu-] / 2024-12-06T12:51:47.639Z: [     13.11ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 41
+[ip-172-31-43-116.eu-] / 2024-12-06T12:53:53.125Z: [     25.25ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 41
+[ip-172-31-43-116.eu-] / 2024-12-06T12:56:01.093Z: [     26.10ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 41
+[ip-172-31-43-116.eu-] / 2024-12-06T12:56:09.382Z: [     28.63ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 41
+[ip-172-31-43-116.eu-] / 2024-12-06T12:56:35.404Z: [     70.73ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 16
+[ip-172-31-43-116.eu-] / 2024-12-06T12:57:39.973Z: [     57.17ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 16
+[ip-172-31-43-116.eu-] / 2024-12-06T12:57:49.218Z: [     13.99ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 16
+[ip-172-31-43-116.eu-] / 2024-12-06T12:58:48.669Z: [     14.55ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T12:59:09.192Z: [  13938.50ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1983
+[ip-172-31-43-116.eu-] / 2024-12-06T12:59:25.233Z: [  11262.31ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1983
+[ip-172-31-43-116.eu-] / 2024-12-06T13:01:15.125Z: [  10542.55ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1982
+[ip-172-31-43-116.eu-] / 2024-12-06T13:09:42.054Z: [  11364.13ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1982
+[ip-172-31-43-116.eu-] / 2024-12-06T13:13:26.051Z: [  11562.29ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:25:53.497Z: [      8.81ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 16
+[ip-172-31-43-116.eu-] / 2024-12-06T13:25:58.182Z: [      5.67ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T13:26:22.239Z: [      9.71ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 40
+[ip-172-31-43-116.eu-] / 2024-12-06T13:26:33.052Z: [      6.87ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T13:35:21.605Z: [      5.19ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T13:35:39.486Z: [      6.01ms] Ran b202406 with ./data/2024/06/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-06T13:35:54.339Z: [  11052.26ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:37:34.135Z: [   9962.27ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:38:19.514Z: [  10397.76ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:42:58.175Z: [  10519.26ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:43:39.173Z: [   1136.42ms] Ran b202406 with ./data/2024/06/input.txt resulting in 4940
+[ip-172-31-43-116.eu-] / 2024-12-06T13:46:39.916Z: [  15249.24ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:47:17.899Z: [  19238.98ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:47:49.403Z: [  14621.37ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:48:52.972Z: [  16286.79ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:49:41.374Z: [  14483.54ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T13:52:57.320Z: [  13496.44ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
+[ip-172-31-43-116.eu-] / 2024-12-06T14:03:54.783Z: [  13215.82ms] Ran b202406 with ./data/2024/06/input.txt resulting in 1831
