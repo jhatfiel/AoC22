@@ -19,14 +19,17 @@ export class a202407 extends AoCPuzzle {
         let terms = [...eq.terms];
         let part2 = false;
 
-        // DFS through ops that could be between terms
-        function trial(total: number, terms: number[]): boolean {
-            if (terms.length === 1) return total === terms[0];
-            let remainingTerms = [...terms];
-            let nextTerm = remainingTerms.pop();
-            return trial(total-nextTerm, remainingTerms) || 
-                        (total % nextTerm === 0 && trial(total/nextTerm, remainingTerms)) ||
-                        (part2 && total.toString().endsWith(nextTerm.toString()) && trial(Number(total.toString().slice(0,total.toString().length-nextTerm.toString().length)), remainingTerms));
+        function trial(total: number, terms: number[], numTerms: number = terms.length): boolean {
+            if (numTerms === 1) return total === terms[0];
+            numTerms--;
+            let nextTerm = terms[numTerms];
+            let nextTermLog = Math.floor(Math.log10(nextTerm))+1;
+            //let nextTermString = nextTerm.toString();
+            //let totalString = total.toString();
+            return trial(total-nextTerm, terms, numTerms) || 
+                        (total % nextTerm === 0 && trial(total/nextTerm, terms, numTerms)) ||
+                        (part2 && total % (10**nextTermLog) === nextTerm && trial((total-nextTerm)/10**nextTermLog, terms, numTerms));
+                        //(part2 && totalString.endsWith(nextTermString) && trial(Number(totalString.slice(0,totalString.length-nextTermString.length)), terms, numTerms));
         }
 
         let matched = trial(eq.total, terms);
