@@ -1,0 +1,13 @@
+[                  HP] / 2024-12-08T07:15:10.491Z: [     36.57ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:15:18.238Z: [    254.81ms] Ran a202408 with ./data/2024/08/input.txt resulting in Result
+[                  HP] / 2024-12-08T07:15:25.622Z: [     22.72ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:19:22.961Z: [     10.59ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:19:40.042Z: [      4.14ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:19:49.036Z: [     12.82ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:26:26.317Z: [     24.99ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:37:26.898Z: [     16.25ms] Ran a202408 with ./data/2024/08/sample.txt resulting in Result
+[                  HP] / 2024-12-08T07:40:02.482Z: [     15.62ms] Ran a202408 with ./data/2024/08/sample.txt resulting in 14
+[                  HP] / 2024-12-08T07:40:13.567Z: [     63.43ms] Ran a202408 with ./data/2024/08/input.txt resulting in 244
+[                  HP] / 2024-12-08T07:48:24.822Z: [     51.37ms] Ran a202408 with ./data/2024/08/input.txt resulting in 244
+[                  HP] / 2024-12-08T07:48:36.399Z: [     64.56ms] Ran a202408 with ./data/2024/08/sample.txt resulting in 14
+[                  HP] / 2024-12-08T07:49:35.731Z: [     62.85ms] Ran a202408 with ./data/2024/08/input.txt resulting in 244
