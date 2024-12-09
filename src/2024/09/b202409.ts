@@ -59,12 +59,12 @@ export class b202409 extends AoCPuzzle {
         let currentBlock = this.blockArr.pop();
         //this.debug(this.toDisk(this.blockHead));
         while (currentBlock) {
-            //this.log(`Trying to move ${currentBlock.id} len=${currentBlock.len}`);
+            this.log(`Trying to move ${currentBlock.id} len=${currentBlock.len}`);
             let insertAfterBlock = this.blockHead;
             while (insertAfterBlock !== undefined && insertAfterBlock !== currentBlock) {
                 //this.log(`  Trying to move in after ${insertAfterBlock.id} who has freespace of ${insertAfterBlock.freespaceAfter}`);
                 if (insertAfterBlock.freespaceAfter >= currentBlock.len) {
-                    //this.log(`Can move ${currentBlock.id} after ${insertAfterBlock.id}`);
+                    this.log(`Can move ${currentBlock.id} after ${insertAfterBlock.id}`);
                     let currentBlockNEXT = currentBlock.nextBlock;
                     let currentBlockPREV = currentBlock.prevBlock;
                     let insertAfterBlockNEXT = insertAfterBlock.nextBlock;
@@ -83,11 +83,11 @@ export class b202409 extends AoCPuzzle {
                     currentBlockPREV.nextBlock = currentBlockNEXT;
                     if (currentBlockNEXT) currentBlockNEXT.prevBlock = currentBlockPREV;
                     currentBlockPREV.freespaceAfter += currentBlock.len + currentBlockFSA;
+                    this.debug(this.toDisk(this.blockHead));
                 }
                 insertAfterBlock = insertAfterBlock.nextBlock;
             }
 
-            //this.debug(this.toDisk(this.blockHead));
             currentBlock = this.blockArr.pop();
         }
     }
