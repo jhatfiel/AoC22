@@ -36,9 +36,10 @@ export class a202408 extends AoCPuzzle {
         let arr = this.antenna.get(freq);
         this.log(`[${this.stepNumber}]: freq=${freq}, arr=${arr.map(p=>PairToKey(p)).join('/')}`);
         // for each i,j pair of the frequencies, find positions that are on the line between them
-        for (let i=0; i<arr.length-1; i++) {
+        for (let i=0; i<arr.length; i++) {
             let a=arr[i];
-            for (let j=i+1; j<arr.length; j++) {
+            for (let j=0; j<arr.length; j++) {
+                if (i===j) continue;
                 let b=arr[j];
                 this.antinodes[1].add(PairToKey(a));
                 this.antinodes[1].add(PairToKey(b));
@@ -49,12 +50,6 @@ export class a202408 extends AoCPuzzle {
                 let valid = this.addIfValid(antinode);
                 while (valid) {
                     antinode = {x: antinode.x + delta.x, y: antinode.y + delta.y};
-                    valid = this.addIfValid(antinode, true);
-                }
-                antinode = {x: b.x-delta.x, y: b.y-delta.y};
-                valid = this.addIfValid(antinode);
-                while (valid) {
-                    antinode = {x: antinode.x - delta.x, y: antinode.y - delta.y};
                     valid = this.addIfValid(antinode, true);
                 }
                 //this.log(`  ANTINODE: ${maybe.x},${maybe.y}`);
