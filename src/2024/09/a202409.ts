@@ -19,11 +19,11 @@ export class a202409 extends AoCPuzzle {
             }
             id++;
         }
-        //this.debug(this.disk);
+        this.debug(this.disk);
     }
 
     debug(disk: number[]) {
-        this.log(`Disk: ${disk.map(n=>n===undefined?'.':n.toString()).join('')}`);
+        this.log(`Disk: ${disk.map(n=>n===undefined?' . ':n.toString().padStart(3)).join('')}`);
     }
 
     defrag(disk: number[]) {
@@ -37,6 +37,7 @@ export class a202409 extends AoCPuzzle {
             disk[end] = undefined;
             end--;
             start++;
+            this.debug(disk);
         }
     }
 

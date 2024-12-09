@@ -52,7 +52,7 @@ export class b202409 extends AoCPuzzle {
     }
 
     debug(disk: number[]) {
-        this.log(`Disk: ${disk.map(n=>n===undefined?'.':n.toString()).join('/').substring(0, 175)}`);
+        this.log(`Disk: ${disk.map(n=>n===undefined?' . ':n.toString().padStart(3)).join('')}`);
     }
 
     defrag() {
@@ -116,6 +116,7 @@ export class b202409 extends AoCPuzzle {
         //this.debug(this.toDisk(this.blockHead));
         let disk = this.toDisk(this.blockHead);
         //console.log(disk.join('/'));
+        this.debug(disk);
         let checksum = this.checksum(disk);
 
         if (!moreToDo) {

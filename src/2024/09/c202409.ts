@@ -29,7 +29,7 @@ export class c202409 extends AoCPuzzle {
             id++;
         }
         //this.debug(this.disk.slice(95070));
-        //this.debug(this.disk);
+        this.debug(this.disk);
     }
 
     debug(disk: number[]) {
@@ -64,7 +64,7 @@ export class c202409 extends AoCPuzzle {
                     this.disk[insertPos+i] = block.id;
                     this.disk[block.position+i] = undefined;
                 }
-                //this.debug(this.disk);
+                this.debug(this.disk);
             }
         }
     }
