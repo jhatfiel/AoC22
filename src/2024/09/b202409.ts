@@ -52,38 +52,46 @@ export class b202409 extends AoCPuzzle {
     }
 
     debug(disk: number[]) {
-        this.log(`Disk: ${disk.map(n=>n===undefined?'.':n.toString()).join('/')}`);
+        this.log(`Disk: ${disk.map(n=>n===undefined?'.':n.toString()).join('/').substring(0, 175)}`);
     }
 
     defrag() {
         let currentBlock = this.blockArr.pop();
         //this.debug(this.toDisk(this.blockHead));
         while (currentBlock) {
-            this.log(`Trying to move ${currentBlock.id} len=${currentBlock.len}`);
+            //this.log(`Trying to move ${currentBlock.id} len=${currentBlock.len}`);
             let insertAfterBlock = this.blockHead;
             while (insertAfterBlock !== undefined && insertAfterBlock !== currentBlock) {
                 //this.log(`  Trying to move in after ${insertAfterBlock.id} who has freespace of ${insertAfterBlock.freespaceAfter}`);
                 if (insertAfterBlock.freespaceAfter >= currentBlock.len) {
-                    this.log(`Can move ${currentBlock.id} after ${insertAfterBlock.id}`);
-                    let currentBlockNEXT = currentBlock.nextBlock;
-                    let currentBlockPREV = currentBlock.prevBlock;
-                    let insertAfterBlockNEXT = insertAfterBlock.nextBlock;
-                    let currentBlockFSA = currentBlock.freespaceAfter;
+                    if (currentBlock.prevBlock === insertAfterBlock) {
+                        // there's a bug with this when we are just trying to move the current block back into the free space right before it.
+                        //just rearrange the freespace to be after currentBlock
+                        currentBlock.freespaceAfter += insertAfterBlock.freespaceAfter
+                        insertAfterBlock.freespaceAfter = 0;
+                    } else {
+                        //this.log(`Can move ${currentBlock.id} after ${insertAfterBlock.id}`);
+                        //this.log(`relocate ${currentBlock.id} to after ${insertAfterBlock.id}`);
+                        let currentBlockNEXT = currentBlock.nextBlock;
+                        let currentBlockPREV = currentBlock.prevBlock;
+                        let insertAfterBlockNEXT = insertAfterBlock.nextBlock;
+                        let currentBlockFSA = currentBlock.freespaceAfter;
 
-                    currentBlock.freespaceAfter = insertAfterBlock.freespaceAfter - currentBlock.len;
-                    insertAfterBlock.freespaceAfter = 0;
+                        currentBlock.freespaceAfter = insertAfterBlock.freespaceAfter - currentBlock.len;
+                        insertAfterBlock.freespaceAfter = 0;
 
-                    insertAfterBlock.nextBlock = currentBlock;
-                    currentBlock.prevBlock = insertAfterBlock;
-                    if (insertAfterBlockNEXT) {
-                        insertAfterBlockNEXT.prevBlock = currentBlock;
-                        currentBlock.nextBlock = insertAfterBlockNEXT;
+                        insertAfterBlock.nextBlock = currentBlock;
+                        currentBlock.prevBlock = insertAfterBlock;
+                        if (insertAfterBlockNEXT) {
+                            insertAfterBlockNEXT.prevBlock = currentBlock;
+                            currentBlock.nextBlock = insertAfterBlockNEXT;
+                        }
+
+                        currentBlockPREV.nextBlock = currentBlockNEXT;
+                        if (currentBlockNEXT) currentBlockNEXT.prevBlock = currentBlockPREV;
+                        currentBlockPREV.freespaceAfter += currentBlock.len + currentBlockFSA;
+                        //this.debug(this.toDisk(this.blockHead));
                     }
-
-                    currentBlockPREV.nextBlock = currentBlockNEXT;
-                    if (currentBlockNEXT) currentBlockNEXT.prevBlock = currentBlockPREV;
-                    currentBlockPREV.freespaceAfter += currentBlock.len + currentBlockFSA;
-                    this.debug(this.toDisk(this.blockHead));
                 }
                 insertAfterBlock = insertAfterBlock.nextBlock;
             }
@@ -92,10 +100,10 @@ export class b202409 extends AoCPuzzle {
         }
     }
 
-    checksum(disk: number[]): bigint {
-        let result = 0n;
+    checksum(disk: number[]): number {
+        let result = 0;
         for (let pos=0; pos<disk.length; pos++) {
-            result += BigInt(pos)*BigInt((disk[pos]??0));
+            result += pos*(disk[pos]??0);
         }
 
         return result;
@@ -103,14 +111,15 @@ export class b202409 extends AoCPuzzle {
 
     _runStep(): boolean {
         let moreToDo = false;
-        this.debug(this.toDisk(this.blockHead));
+        //this.debug(this.toDisk(this.blockHead));
         this.defrag();
-        this.debug(this.toDisk(this.blockHead));
-        let checksum = this.checksum(this.toDisk(this.blockHead));
+        //this.debug(this.toDisk(this.blockHead));
+        let disk = this.toDisk(this.blockHead);
+        //console.log(disk.join('/'));
+        let checksum = this.checksum(disk);
 
         if (!moreToDo) {
             this.result = checksum.toString();
-            // 6357904438363 is too low
         }
         return moreToDo;
     }
