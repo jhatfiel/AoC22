@@ -1,0 +1,32 @@
+[                  HP] / 2024-12-09T05:06:26.519Z: [     22.82ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:07:45.001Z: [     10.50ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:08:01.179Z: [     24.39ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:08:35.127Z: [     16.92ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:08:42.193Z: [     30.51ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:16:21.382Z: [     54.99ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:17:17.173Z: [      9.94ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:18:35.489Z: [     14.68ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:18:47.885Z: [     34.11ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:19:20.727Z: [     10.68ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:19:38.962Z: [     15.33ms] Ran a202409 with ./data/2024/09/sample.txt resulting in Result
+[                  HP] / 2024-12-09T05:21:27.114Z: [      8.81ms] Ran a202409 with ./data/2024/09/sample.txt resulting in 1928
+[                  HP] / 2024-12-09T05:21:50.043Z: [   5321.68ms] Ran a202409 with ./data/2024/09/input.txt resulting in 6344673854800
+[                  HP] / 2024-12-09T05:35:24.252Z: [     15.85ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 
+[                  HP] / 2024-12-09T05:41:35.898Z: [     13.22ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 
+[                  HP] / 2024-12-09T05:41:49.588Z: [      7.33ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 
+[                  HP] / 2024-12-09T05:58:13.228Z: [     44.77ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 
+[                  HP] / 2024-12-09T05:59:35.124Z: [      8.21ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 
+[                  HP] / 2024-12-09T06:00:02.143Z: [     27.94ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 45
+[                  HP] / 2024-12-09T06:01:07.848Z: [     36.38ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2872
+[                  HP] / 2024-12-09T06:02:06.529Z: [    130.24ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2872
+[                  HP] / 2024-12-09T06:02:43.119Z: [     57.34ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2872
+[                  HP] / 2024-12-09T06:03:47.357Z: [     57.32ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2858
+[                  HP] / 2024-12-09T06:04:01.498Z: [      9.99ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2858
+[                  HP] / 2024-12-09T06:04:18.068Z: [      4.02ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2858
+[                  HP] / 2024-12-09T06:04:23.394Z: [    587.36ms] Ran b202409 with ./data/2024/09/input.txt resulting in 6357904438363
+[                  HP] / 2024-12-09T06:04:57.061Z: [    682.30ms] Ran b202409 with ./data/2024/09/input.txt resulting in 6357904438363
+[                  HP] / 2024-12-09T06:05:28.352Z: [    940.37ms] Ran b202409 with ./data/2024/09/input.txt resulting in 6357904438363
+[                  HP] / 2024-12-09T06:06:16.058Z: [    884.92ms] Ran b202409 with ./data/2024/09/input.txt resulting in 6357904438363
+[                  HP] / 2024-12-09T06:06:38.403Z: [     14.63ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2858
+[                  HP] / 2024-12-09T07:16:23.584Z: [     11.42ms] Ran b202409 with ./data/2024/09/sample.txt resulting in 2858
+[                  HP] / 2024-12-09T07:16:34.406Z: [    576.10ms] Ran b202409 with ./data/2024/09/input.txt resulting in 6357904438363

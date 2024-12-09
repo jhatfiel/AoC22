@@ -11,3 +11,6 @@
 [                  HP] / 2024-12-08T07:48:24.822Z: [     51.37ms] Ran a202408 with ./data/2024/08/input.txt resulting in 244
 [                  HP] / 2024-12-08T07:48:36.399Z: [     64.56ms] Ran a202408 with ./data/2024/08/sample.txt resulting in 14
 [                  HP] / 2024-12-08T07:49:35.731Z: [     62.85ms] Ran a202408 with ./data/2024/08/input.txt resulting in 244
+[                  HP] / 2024-12-08T07:58:04.445Z: [     58.35ms] Ran a202408 with ./data/2024/08/whynot.txt resulting in 0
+[                  HP] / 2024-12-08T20:01:43.685Z: [     89.17ms] Ran a202408 with ./data/2024/08/sample.txt resulting in 14
+[                  HP] / 2024-12-08T20:12:04.648Z: [     40.83ms] Ran a202408 with ./data/2024/08/whynot.txt resulting in 1
