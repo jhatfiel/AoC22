@@ -1,4 +1,4 @@
-import { Deque } from "./deque";
+import { Deque } from "./deque.js";
 
 export class BFS_State<T=string> {
     constructor(public at: T) {}
@@ -59,8 +59,8 @@ export class BFS<T=string> {
     }
 
     getPathsFrom(startNode: T, shouldStop: (state: BFS_State<T>) => boolean = _ => false): Array<BFS_State<T>> {
-        let states = new Array<BFS_State<T>>(new BFS_State(startNode));
-        let toProcess = new Deque<BFS_State<T>>(states[0]);
+        let states = new Array<BFS_State<T>>();
+        let toProcess = new Deque<BFS_State<T>>(new BFS_State(startNode));
 
         while (toProcess.length) {
             let state = toProcess.removeFront();
