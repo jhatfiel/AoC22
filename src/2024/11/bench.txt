@@ -1,0 +1,14 @@
+[                  HP] / 2024-12-11T05:03:20.177Z: [     17.06ms] Ran a202411 with ./data/2024/11/sample.txt resulting in Result
+[                  HP] / 2024-12-11T05:04:06.926Z: [     34.17ms] Ran a202411 with ./data/2024/11/sample.txt resulting in Result
+[                  HP] / 2024-12-11T05:06:04.921Z: [     19.26ms] Ran a202411 with ./data/2024/11/sample.txt resulting in Result
+[                  HP] / 2024-12-11T05:06:28.576Z: [      8.89ms] Ran a202411 with ./data/2024/11/sample.txt resulting in Result
+[                  HP] / 2024-12-11T05:06:46.278Z: [      6.31ms] Ran a202411 with ./data/2024/11/sample.txt resulting in Result
+[                  HP] / 2024-12-11T05:07:12.249Z: [     18.12ms] Ran a202411 with ./data/2024/11/sample.txt resulting in Result
+[                  HP] / 2024-12-11T05:10:09.181Z: [     62.31ms] Ran a202411 with ./data/2024/11/sample2.txt resulting in 55312
+[                  HP] / 2024-12-11T05:10:19.880Z: [    274.71ms] Ran a202411 with ./data/2024/11/input.txt resulting in 189547
+[                  HP] / 2024-12-11T05:12:57.171Z: [     78.10ms] Ran a202411 with ./data/2024/11/input.txt resulting in 189547
+[                  HP] / 2024-12-11T06:18:53.684Z: [   1963.84ms] Ran b202411 with ./data/2024/11/sample.txt resulting in 125681
+[                  HP] / 2024-12-11T06:19:03.541Z: [   3803.94ms] Ran b202411 with ./data/2024/11/input.txt resulting in 189547
+[                  HP] / 2024-12-11T06:19:11.456Z: [      8.62ms] Ran b202411 with ./data/2024/11/input.txt resulting in 189547
+[                  HP] / 2024-12-11T06:19:18.145Z: [     79.53ms] Ran b202411 with ./data/2024/11/input.txt resulting in 224577979481346
+[                  HP] / 2024-12-11T06:20:03.833Z: [     80.94ms] Ran b202411 with ./data/2024/11/input.txt resulting in 189547
