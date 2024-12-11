@@ -35,6 +35,7 @@ export class b202411 extends AoCPuzzle {
         this.log(`Part 2: ${result}`);
         result = this.stones.map(n => this.numTermsAfter(n, 25)).reduce((sum, n)=>sum+n,0);
         this.log(`Part 1: ${result}`);
+        this.log(Object.keys(this.cache).length);
         if (!moreToDo) {
             this.result = result.toString();
         }
