@@ -11,3 +11,34 @@
 [                  HP] / 2024-12-12T05:32:57.391Z: [      6.24ms] Ran a202412 with ./data/2024/12/sample.txt resulting in 140
 [                  HP] / 2024-12-12T05:40:54.031Z: [      5.97ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 132
 [                  HP] / 2024-12-12T05:43:58.595Z: [      5.45ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:26:16.649Z: [    155.86ms] Ran b202412 with ./data/2024/12/input.txt resulting in 1467094
+[ip-172-31-43-116.eu-] / 2024-12-12T10:29:06.767Z: [      4.46ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:32:24.379Z: [      7.44ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:33:04.418Z: [      8.36ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:33:12.807Z: [      7.43ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:42:23.982Z: [      9.87ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:43:21.655Z: [     20.51ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
+[ip-172-31-43-116.eu-] / 2024-12-12T10:44:33.980Z: [      8.93ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 80
+[ip-172-31-43-116.eu-] / 2024-12-12T10:44:47.239Z: [     18.58ms] Ran b202412 with ./data/2024/12/sample2.txt resulting in 520
+[ip-172-31-43-116.eu-] / 2024-12-12T10:47:19.504Z: [     15.44ms] Ran b202412 with ./data/2024/12/sample3.txt resulting in 1226
+[ip-172-31-43-116.eu-] / 2024-12-12T10:53:56.164Z: [     17.47ms] Ran b202412 with ./data/2024/12/sample3.txt resulting in 1930
+[ip-172-31-43-116.eu-] / 2024-12-12T10:54:14.381Z: [     17.92ms] Ran b202412 with ./data/2024/12/sample3.txt resulting in 1930
+[ip-172-31-43-116.eu-] / 2024-12-12T10:54:35.028Z: [     15.16ms] Ran b202412 with ./data/2024/12/sample3.txt resulting in 1930
+[ip-172-31-43-116.eu-] / 2024-12-12T10:54:49.038Z: [     18.49ms] Ran b202412 with ./data/2024/12/sample3.txt resulting in 1206
+[ip-172-31-43-116.eu-] / 2024-12-12T10:55:05.889Z: [     14.25ms] Ran b202412 with ./data/2024/12/sample5.txt resulting in 368
+[ip-172-31-43-116.eu-] / 2024-12-12T10:55:16.431Z: [      8.64ms] Ran b202412 with ./data/2024/12/sample4.txt resulting in 236
+[ip-172-31-43-116.eu-] / 2024-12-12T10:55:23.768Z: [    699.35ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T10:56:56.230Z: [    396.66ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T10:57:05.414Z: [    244.14ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T11:56:11.410Z: [    268.84ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T11:58:10.362Z: [      5.16ms] Ran b202412 with ./data/2024/12/sample6.txt resulting in 332
+[ip-172-31-43-116.eu-] / 2024-12-12T11:59:26.388Z: [      4.45ms] Ran b202412 with ./data/2024/12/sample6.txt resulting in 1124
+[ip-172-31-43-116.eu-] / 2024-12-12T12:00:56.266Z: [      9.63ms] Ran b202412 with ./data/2024/12/sample6.txt resulting in 166
+[ip-172-31-43-116.eu-] / 2024-12-12T12:01:53.130Z: [      6.43ms] Ran b202412 with ./data/2024/12/sample6.txt resulting in 202
+[ip-172-31-43-116.eu-] / 2024-12-12T12:04:36.946Z: [    391.27ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T12:06:06.365Z: [      6.05ms] Ran b202412 with ./data/2024/12/sample7.txt resulting in 170
+[ip-172-31-43-116.eu-] / 2024-12-12T12:07:18.495Z: [     14.67ms] Ran b202412 with ./data/2024/12/sample7.txt resulting in 120
+[ip-172-31-43-116.eu-] / 2024-12-12T12:08:26.190Z: [    335.51ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T12:10:00.133Z: [    327.07ms] Ran b202412 with ./data/2024/12/input.txt resulting in 881182
+[ip-172-31-43-116.eu-] / 2024-12-12T12:10:06.043Z: [      4.34ms] Ran b202412 with ./data/2024/12/sample7.txt resulting in 68
+[ip-172-31-43-116.eu-] / 2024-12-12T12:10:26.812Z: [     12.65ms] Ran b202412 with ./data/2024/12/sample7.txt resulting in 120
