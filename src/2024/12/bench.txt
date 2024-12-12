@@ -1,0 +1,13 @@
+[                  HP] / 2024-12-12T05:17:57.949Z: [     21.40ms] Ran a202412 with ./data/2024/12/sample.txt resulting in Result
+[                  HP] / 2024-12-12T05:19:06.422Z: [      7.09ms] Ran a202412 with ./data/2024/12/sample.txt resulting in Result
+[                  HP] / 2024-12-12T05:19:53.774Z: [      9.13ms] Ran a202412 with ./data/2024/12/sample.txt resulting in 140
+[                  HP] / 2024-12-12T05:20:00.275Z: [     17.97ms] Ran a202412 with ./data/2024/12/sample3.txt resulting in 1930
+[                  HP] / 2024-12-12T05:20:05.229Z: [    285.61ms] Ran a202412 with ./data/2024/12/input.txt resulting in 1467094
+[                  HP] / 2024-12-12T05:31:21.481Z: [      7.08ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 132
+[                  HP] / 2024-12-12T05:31:36.684Z: [      7.96ms] Ran a202412 with ./data/2024/12/sample.txt resulting in 140
+[                  HP] / 2024-12-12T05:31:44.483Z: [      6.81ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 132
+[                  HP] / 2024-12-12T05:32:14.751Z: [      5.84ms] Ran a202412 with ./data/2024/12/sample.txt resulting in 140
+[                  HP] / 2024-12-12T05:32:19.046Z: [      6.74ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 132
+[                  HP] / 2024-12-12T05:32:57.391Z: [      6.24ms] Ran a202412 with ./data/2024/12/sample.txt resulting in 140
+[                  HP] / 2024-12-12T05:40:54.031Z: [      5.97ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 132
+[                  HP] / 2024-12-12T05:43:58.595Z: [      5.45ms] Ran b202412 with ./data/2024/12/sample.txt resulting in 140
