@@ -64,7 +64,7 @@ export class Matrix {
         //this.debug(`toRREF at end`);
     }
 
-    round(n: number): number { return Math.round(n*10**12)/10**12; }
+    round(n: number, places = 12): number { return Math.round(n*10**places)/10**places; }
 
     /**
      * Convert as far as possible to RREF and give final solutions
@@ -84,7 +84,7 @@ export class Matrix {
                     }
                 } else {
                     // variable
-                    if (v === 1) {
+                    if (this.round(v) === 1) {
                         if (eq) eq += ' + '
                         eq += `X${index}`;
                     }
@@ -98,13 +98,14 @@ export class Matrix {
     /**
      * Get the solution for parameter number specified. Assumes the matrix is in RREF.
      * @param n Parameter Number
+     * @param places Parameter Number number of places to round to
      * @returns  if there is not a defined answer, returns undefined
      */
-    getSolution(n: number): number {
+    getSolution(n: number, places=12): number {
         let result: number = undefined;
         this.arr.some(row => {
-            if (row.every((v, index) => (index !== n && v === 0) || (index === n && v === 1) || index === row.length-1)) {
-                result = this.round(row[row.length-1]);
+            if (row.every((v, index) => (index !== n && v === 0) || (index === n && this.round(v, places) === 1) || index === row.length-1)) {
+                result = this.round(row[row.length-1], places);
                 return true;
             } else {
                 return false;
