@@ -40,3 +40,17 @@
 [ip-172-31-43-116.eu-] / 2024-12-13T11:19:17.582Z: [     19.06ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
 [ip-172-31-43-116.eu-] / 2024-12-13T11:19:34.662Z: [      8.15ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
 [ip-172-31-43-116.eu-] / 2024-12-13T11:19:41.351Z: [    296.60ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
+[ip-172-31-43-116.eu-] / 2024-12-13T11:30:01.251Z: [     33.39ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:30:55.572Z: [     34.53ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:32:07.372Z: [     36.62ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:33:07.482Z: [     73.50ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:34:03.835Z: [     44.65ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:38:04.251Z: [    214.21ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:45:58.548Z: [    353.17ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:46:52.682Z: [    190.70ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:47:27.301Z: [    283.29ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:48:06.837Z: [    187.36ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:49:06.843Z: [    199.08ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[ip-172-31-43-116.eu-] / 2024-12-13T11:49:15.807Z: [   4640.92ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
+[ip-172-31-43-116.eu-] / 2024-12-13T11:52:53.364Z: [     73.47ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
+[ip-172-31-43-116.eu-] / 2024-12-13T11:53:04.742Z: [      4.42ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999

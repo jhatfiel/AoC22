@@ -27,6 +27,7 @@
     "chalk": "^5.3.0",
     "d3-array": "^3.2.4",
     "drange": "^2.0.1",
+    "nerdamer": "^1.1.13",
     "node-dijkstra": "^2.5.0",
     "phaser": "^3.70.0",
     "primeicons": "^6.0.1",
