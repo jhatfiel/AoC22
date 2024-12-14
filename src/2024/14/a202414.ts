@@ -30,7 +30,7 @@ export class a202414 extends AoCPuzzle {
         let y = ((loc.y + this.numSteps*vel.y)%this.h + this.h)%this.h;
         let key = `${x},${y}`;
         this.finalLocations.set(key, (this.finalLocations.get(key)??0) + 1);
-        //this.log(`Bot ${this.stepNumber} ends at ${key}`);
+        this.log(`Bot ${this.stepNumber} ends at ${key}`);
 
         if (!moreToDo) {
             let qScores: number[] = [0,0,0,0];
@@ -43,7 +43,7 @@ export class a202414 extends AoCPuzzle {
                     if (x > this.halfw && y < this.halfh) q = 1;
                     if (x < this.halfw && y > this.halfh) q = 2;
                     if (x > this.halfw && y > this.halfh) q = 3;
-                    //this.log(`Position: ${x},${y} = ${count}, q=${q}`);
+                    this.log(`Position: ${x},${y} = ${count}, q=${q}`);
                     if (q !== undefined) qScores[q] += count;
                 }
             }

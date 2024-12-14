@@ -37,7 +37,7 @@ export class b202414 extends AoCPuzzle {
             }
             str += '\n';
         }
-        console.log(`Step Number: ${this.stepNumber*this.stepSize+this.offset-1}`);
+        console.log(`Step Number: ${this.stepNumber*this.stepSize+this.offset}`);
         console.log(str);
     }
 
