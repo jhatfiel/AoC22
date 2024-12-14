@@ -31,8 +31,8 @@ export class b202414 extends AoCPuzzle {
 
     show() {
         let str = '';
-        for (let x=0; x<this.w; x++) {
-            for (let y=0; y<this.h; y++) {
+        for (let y=0; y<this.h; y++) {
+            for (let x=0; x<this.w; x++) {
                 str += this.bots.some(bot=>bot.loc.x === x && bot.loc.y === y)?'#':'.';
             }
             str += '\n';
