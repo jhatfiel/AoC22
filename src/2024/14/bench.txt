@@ -39,6 +39,17 @@
 [                  HP] / 2024-12-14T07:10:25.791Z: [   2774.10ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
 [                  HP] / 2024-12-14T07:10:41.620Z: [   2755.39ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
 [                  HP] / 2024-12-14T07:10:45.519Z: [   2776.60ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:10:10.970Z: [      2.89ms] Ran a202414 with ./data/2024/14/sample.txt resulting in 12
+[          ASUSLAPTOP] / 2024-12-14T22:11:51.671Z: [    244.24ms] Ran b202414 with ./data/2024/14/sample.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:12:05.424Z: [   1277.22ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:18.284Z: [    877.01ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:21.341Z: [    899.90ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:23.581Z: [    881.86ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:30.937Z: [    889.03ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:40.564Z: [   1011.45ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:42.597Z: [   1039.41ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:44.386Z: [   1017.06ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
+[          ASUSLAPTOP] / 2024-12-14T22:14:46.371Z: [   1025.43ms] Ran b202414 with ./data/2024/14/input.txt resulting in 
 [                  HP] / 2024-12-14T08:44:33.652Z: [     18.53ms] Ran a202414 with ./data/2024/14/sample.txt resulting in 12
 [                  HP] / 2024-12-14T08:44:50.575Z: [     24.31ms] Ran a202414 with ./data/2024/14/sample.txt resulting in 12
 [                  HP] / 2024-12-14T08:45:26.039Z: [    513.66ms] Ran a202414 with ./data/2024/14/input.txt resulting in 231019008
