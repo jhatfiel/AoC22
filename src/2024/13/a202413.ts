@@ -25,16 +25,15 @@ class ClawMachine {
         return [aPresses, bPresses];
     }
 
+    /*
     solveSLOW(offset=0): number[] {
-        let vars = {ax: this.a.x, ay: this.a.y,
-                    bx: this.b.x, by: this.b.y,
-                    tx: offset + this.target.x, ty: offset + this.target.y};
-        let eq1 = nerdamer('Na * ax + Nb * bx = tx').evaluate(vars);
-        let eq2 = nerdamer('Na * ay + Nb * by = ty').evaluate(vars);
-        let exp = nerdamer.solveEquations([eq1.toString(), eq2.toString()]);
+        let exp = nerdamer.solveEquations([`Na * ${this.a.x} + Nb * ${this.b.x} = ${offset+this.target.x}`,
+                                           `Na * ${this.a.y} + Nb * ${this.b.y} = ${offset+this.target.y}`]);
         let solutions = new Map<string, number>(exp);
+        //console.log(solutions);
         return [solutions.get('Na'), solutions.get('Nb')];
     }
+    */
 }
 
 export class a202413 extends AoCPuzzle {

@@ -54,3 +54,12 @@
 [ip-172-31-43-116.eu-] / 2024-12-13T11:49:15.807Z: [   4640.92ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
 [ip-172-31-43-116.eu-] / 2024-12-13T11:52:53.364Z: [     73.47ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
 [ip-172-31-43-116.eu-] / 2024-12-13T11:53:04.742Z: [      4.42ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
+[          ASUSLAPTOP] / 2024-12-15T21:11:50.302Z: [     44.81ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[          ASUSLAPTOP] / 2024-12-15T21:12:11.824Z: [     52.93ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[          ASUSLAPTOP] / 2024-12-15T21:13:39.226Z: [     42.09ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 480
+[          ASUSLAPTOP] / 2024-12-15T21:13:58.371Z: [     45.03ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[          ASUSLAPTOP] / 2024-12-15T21:16:22.167Z: [     35.44ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[          ASUSLAPTOP] / 2024-12-15T21:18:30.980Z: [     42.13ms] Ran a202413 with ./data/2024/13/sample.txt resulting in 875318608908
+[          ASUSLAPTOP] / 2024-12-15T21:18:38.949Z: [    910.32ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
+[          ASUSLAPTOP] / 2024-12-15T21:18:43.733Z: [    636.11ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
+[          ASUSLAPTOP] / 2024-12-15T21:18:53.697Z: [      4.15ms] Ran a202413 with ./data/2024/13/input.txt resulting in 107487112929999
