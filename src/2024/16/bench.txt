@@ -1,0 +1,15 @@
+[          ASUSLAPTOP] / 2024-12-16T05:16:55.074Z: [      3.87ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:17:25.556Z: [      5.76ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:17:58.311Z: [     28.55ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:19:02.193Z: [     28.69ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:19:42.246Z: [      5.58ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:19:52.451Z: [    123.35ms] Ran a202416 with ./data/2024/16/input.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:20:16.218Z: [    155.85ms] Ran a202416 with ./data/2024/16/input.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:22:08.922Z: [      5.04ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:22:25.463Z: [      5.89ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:22:54.592Z: [      5.94ms] Ran a202416 with ./data/2024/16/sample.txt resulting in Result
+[          ASUSLAPTOP] / 2024-12-16T05:24:26.548Z: [      5.97ms] Ran a202416 with ./data/2024/16/sample.txt resulting in 45
+[          ASUSLAPTOP] / 2024-12-16T05:24:33.816Z: [    137.29ms] Ran a202416 with ./data/2024/16/input.txt resulting in 500
+[          ASUSLAPTOP] / 2024-12-16T05:27:32.994Z: [    125.95ms] Ran a202416 with ./data/2024/16/input.txt resulting in 500
+[          ASUSLAPTOP] / 2024-12-16T05:27:44.554Z: [      5.27ms] Ran a202416 with ./data/2024/16/sample.txt resulting in 45
+[          ASUSLAPTOP] / 2024-12-16T05:27:50.526Z: [      7.10ms] Ran a202416 with ./data/2024/16/sample2.txt resulting in 64
