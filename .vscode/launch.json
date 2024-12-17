@@ -9,7 +9,7 @@
       "program": "./dist/out-tsc/aoc.js",
       "runtimeArgs": [
         "--experimental-specifier-resolution=node",
-        "--enable-source-maps=node",
+        "--enable-source-maps=nodejs",
       ],
       "args": [
         "${fileBasenameNoExtension}",
@@ -27,6 +27,7 @@
       "console": "integratedTerminal",
       "runtimeArgs": [
         "--experimental-specifier-resolution=node",
+        "--enable-source-maps=nodejs",
       ],
       "args": [
         "${fileBasenameNoExtension}",
