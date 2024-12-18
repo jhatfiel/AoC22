@@ -154,3 +154,5 @@
 [          ASUSLAPTOP] / 2024-12-17T23:45:59.627Z: [     11.46ms] Ran b202417 with ./data/2024/17/input.txt resulting in 202356708354602
 [          ASUSLAPTOP] / 2024-12-17T23:47:59.816Z: [      6.84ms] Ran b202417 with ./data/2024/17/sample2.txt resulting in 117440
 [          ASUSLAPTOP] / 2024-12-17T23:48:16.282Z: [     11.11ms] Ran b202417 with ./data/2024/17/input.txt resulting in 202356708354602
+[          ASUSLAPTOP] / 2024-12-18T00:07:04.056Z: [      2.35ms] Ran a202417 with ./data/2024/17/sample3.txt resulting in 6,0,4,5,4,5,2,0
+[          ASUSLAPTOP] / 2024-12-18T00:07:14.518Z: [     35.50ms] Ran b202417 with ./data/2024/17/sample3.txt resulting in 202797954918051
