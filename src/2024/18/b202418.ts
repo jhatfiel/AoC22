@@ -1,18 +1,20 @@
+import { BFS } from './../../lib/bfs';
 import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
 import { Pair, PairToKey } from '../../lib/gridParser.js';
 
 export class b202418 extends AoCPuzzle {
     walls: Pair[] = [];
-    wallSet = new Set<string>();
     pos = {x: 0, y: 0};
     width = 71;
     height = 71;
-    after = 1024;
+    numSplits: number;
+    start = 0;
+    end: number;
+    stepSize: number;
 
     sampleMode(): void {
         this.width = 7;
         this.height = 7;
-        this.after = 12;
     };
 
     valid(p: Pair): boolean {
@@ -21,135 +23,47 @@ export class b202418 extends AoCPuzzle {
 
     _loadData(lines: string[]) {
         this.walls = lines.map(line => line.split(',')).map(arr => arr.map(Number)).map(arr => ({x: arr[0], y: arr[1]}));
+        this.numSplits = Math.trunc(Math.log2(lines.length));
+        this.stepSize = this.end = 2**this.numSplits;;
     }
 
-    getSolutionStepsAt(): number {
+    getShortestStepCount(): number {
+        // what walls to consider
+        let wallSet = new Set<string>(this.walls.slice(this.start, this.end).map(PairToKey));
+
         let startKey = PairToKey({x: 0, y: 0});
         let endKey = PairToKey({x: this.width-1, y: this.height-1});
 
-        let stepNum = 0;
-        let frontier: string[] = [startKey];
-        let visited = new Set<string>();
-        while (frontier.length && !visited.has(endKey)) {
-            let newFrontier = new Set<string>();
-            for (let n of frontier) {
-                let [curX, curY] = n.split(',').map(Number);
-                if (visited.has(n)) continue;
-                visited.add(n);
-                [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dx,dy]) => {
-                    let x = curX + dx;
-                    let y = curY + dy;
+        let bfs = new BFS((node: string) => {
+            let results = new Set<string>();
+            let [curX, curY] = node.split(',').map(Number);
+            [[1,0],[0,1],[0,-1],[-1,0]].forEach(([dx,dy]) => {
+                let x = curX + dx;
+                let y = curY + dy;
+                if (this.valid({x,y})) {
                     let key = PairToKey({x,y});
-                    if (this.valid({x,y}) && !this.wallSet.has(key)) {
-                        newFrontier.add(PairToKey({x,y}));
+                    if (!wallSet.has(key)) {
+                        results.add(key);
                     }
-                });
-            }
-
-            stepNum++;
-            frontier = [...newFrontier.keys()];
-        }
-
-        return visited.has(endKey)?stepNum:-1;
+                }
+            });
+            //this.log(`GetNeighbors: ${state.at} returns ${JSON.stringify([...results.keys()])}`);
+            return results;
+        });
+        let path = bfs.getShortestPath(startKey, endKey);
+        return path !== undefined && path.length !== 0?path.length:-1;
     }
 
     _runStep(): boolean {
-        let moreToDo = false;
+        let moreToDo = this.stepNumber < this.numSplits;
+        this.stepSize >>=1;
 
-        let logSize = Math.trunc(Math.log2(this.walls.length));
-        let half = 2**logSize;
-        let end = half;
-        this.log({logSize, half, end});
-
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        let stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end -= half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end -= half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end -= half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end -= half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        logSize--;
-        half = 2**logSize;
-        end += half;
-        this.log({logSize, half, end});
-        this.wallSet = new Set<string>(this.walls.slice(0, end).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-
-        this.wallSet = new Set<string>(this.walls.slice(0, 3042).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-        this.log(stepCount);
-        this.wallSet = new Set<string>(this.walls.slice(0, 3043).map(PairToKey));
-        stepCount = this.getSolutionStepsAt();
-        this.log(stepCount);
+        this.log(`[${this.stepNumber.toString().padStart(2)}]: ${this.start}-${this.end} half=${this.stepSize}`);
+        let stepCount = this.getShortestStepCount();
+        this.end += Math.sign(stepCount)*this.stepSize;
 
         if (!moreToDo) {
-            this.result = PairToKey(this.walls[3042]);
+            this.result = (this.end < this.walls.length)?PairToKey(this.walls[this.end-1]):'ALL';
         }
         return moreToDo;
     }
