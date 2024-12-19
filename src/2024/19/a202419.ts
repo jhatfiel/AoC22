@@ -9,10 +9,10 @@ export class a202419 extends AoCPuzzle {
         this.types = lines[0].split(', ');
     }
 
-    canCompose(pattern: string, pos: number): boolean {
-        if (pos >= pattern.length) return true;
+    canCompose(pattern: string): boolean {
+        if (pattern.length === 0) return true;
         for (let t of this.types) {
-            if (pattern.substring(pos).startsWith(t) && this.canCompose(pattern, pos+t.length)) {
+            if (pattern.startsWith(t) && this.canCompose(pattern.substring(t.length))) {
                 return true;
             }
         }
@@ -22,8 +22,9 @@ export class a202419 extends AoCPuzzle {
     _runStep(): boolean {
         let moreToDo = this.stepNumber < this.lines.length-2;
         let pattern = this.lines[this.stepNumber+1];
-        this.log(`[${this.stepNumber}]: ${pattern}`);
-        if (this.canCompose(pattern, 0)) this.count++;
+        let canCompose = this.canCompose(pattern);
+        //this.log(`[${this.stepNumber}]: ${pattern} ${canCompose}`);
+        if (canCompose) this.count++;
         if (!moreToDo) {
             this.result = this.count.toString();
         }

@@ -13,3 +13,22 @@
 [                  HP] / 2024-12-19T05:21:36.499Z: [    926.63ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
 [                  HP] / 2024-12-19T05:23:32.694Z: [    149.69ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
 [                  HP] / 2024-12-19T05:24:14.531Z: [    314.01ms] Ran a202419 with ./data/2024/19/input.txt resulting in 276
+[ip-172-31-43-116.eu-] / 2024-12-19T11:23:18.998Z: [      2.31ms] Ran a202419 with ./data/2024/19/sample2.txt resulting in 0
+[ip-172-31-43-116.eu-] / 2024-12-19T11:24:41.357Z: [      3.53ms] Ran a202419 with ./data/2024/19/sample.txt resulting in 6
+[ip-172-31-43-116.eu-] / 2024-12-19T11:25:11.675Z: [      3.33ms] Ran a202419 with ./data/2024/19/sample.txt resulting in 8
+[ip-172-31-43-116.eu-] / 2024-12-19T11:25:18.218Z: [      2.02ms] Ran a202419 with ./data/2024/19/sample2.txt resulting in 1
+[ip-172-31-43-116.eu-] / 2024-12-19T11:25:56.496Z: [      2.18ms] Ran a202419 with ./data/2024/19/sample2.txt resulting in 1
+[ip-172-31-43-116.eu-] / 2024-12-19T11:32:59.824Z: [    221.87ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:33:53.462Z: [    286.41ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:33:59.807Z: [    232.08ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:34:21.858Z: [    238.00ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:34:30.020Z: [    244.33ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:34:52.210Z: [    244.97ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:44:37.967Z: [    283.77ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:45:16.858Z: [    382.20ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:45:25.420Z: [    395.09ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T11:47:43.696Z: [    343.31ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T13:26:25.625Z: [    147.57ms] Ran a202419 with ./data/2024/19/input.txt resulting in 276
+[ip-172-31-43-116.eu-] / 2024-12-19T13:27:04.887Z: [     35.93ms] Ran a202419 with ./data/2024/19/input.txt resulting in 276
+[ip-172-31-43-116.eu-] / 2024-12-19T13:29:00.565Z: [    282.34ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
+[ip-172-31-43-116.eu-] / 2024-12-19T13:29:05.725Z: [    216.44ms] Ran b202419 with ./data/2024/19/input.txt resulting in 681226908011510
