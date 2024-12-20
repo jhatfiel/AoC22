@@ -1,0 +1,22 @@
+[                  HP] / 2024-12-20T04:59:10.910Z: [      8.38ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:06:58.234Z: [     19.36ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:14:22.776Z: [     16.39ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:16:25.867Z: [     34.70ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:18:54.380Z: [     11.26ms] Ran a202420 with ./data/2024/20/sample.txt resulting in 
+[                  HP] / 2024-12-20T05:19:23.806Z: [    123.11ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:19:37.053Z: [    121.37ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:21:41.805Z: [    269.67ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:23:13.394Z: [    132.60ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:24:14.422Z: [     11.43ms] Ran a202420 with ./data/2024/20/sample.txt resulting in Results
+[                  HP] / 2024-12-20T05:25:06.038Z: [   1606.08ms] Ran a202420 with ./data/2024/20/input.txt resulting in 1317
+[                  HP] / 2024-12-20T05:33:34.007Z: [  35168.83ms] Ran b202420 with ./data/2024/20/input.txt resulting in 73361
+[                  HP] / 2024-12-20T05:35:06.498Z: [    730.65ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 272
+[                  HP] / 2024-12-20T05:36:39.541Z: [    363.12ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 24
+[                  HP] / 2024-12-20T05:37:40.564Z: [    143.02ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 46
+[                  HP] / 2024-12-20T05:37:58.066Z: [    420.10ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 544
+[                  HP] / 2024-12-20T05:39:07.042Z: [   1470.49ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 1748
+[                  HP] / 2024-12-20T05:39:21.155Z: [    197.52ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 46
+[                  HP] / 2024-12-20T05:41:44.742Z: [     96.55ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 46
+[                  HP] / 2024-12-20T05:41:57.597Z: [    422.20ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 46
+[                  HP] / 2024-12-20T05:42:30.093Z: [    139.31ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 7
+[                  HP] / 2024-12-20T05:43:52.436Z: [  56924.34ms] Ran b202420 with ./data/2024/20/input.txt resulting in 982474
