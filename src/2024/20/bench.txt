@@ -20,3 +20,4 @@
 [                  HP] / 2024-12-20T05:41:57.597Z: [    422.20ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 46
 [                  HP] / 2024-12-20T05:42:30.093Z: [    139.31ms] Ran b202420 with ./data/2024/20/sample.txt resulting in 7
 [                  HP] / 2024-12-20T05:43:52.436Z: [  56924.34ms] Ran b202420 with ./data/2024/20/input.txt resulting in 982474
+[                  HP] / 2024-12-20T05:53:21.999Z: [  36696.69ms] Ran b202420 with ./data/2024/20/input.txt resulting in 982474

@@ -47,10 +47,10 @@ export class b202420 extends AoCPuzzle {
         let moreToDo = this.stepNumber < this.originalPath.length-1;
         let tryCheatFrom = PairFromKey(this.originalPath[this.stepNumber-1]);
         this.log(`[${this.stepNumber.toString().padStart(4)}]: (${this.count.toString().padStart(5)}) Trying to cheat from`, tryCheatFrom);
-        this.originalPath.slice(this.stepNumber).forEach((futureStep, stepIndex) => {
+        this.originalPath.slice(this.stepNumber + 100).forEach((futureStep, stepIndex) => {
             let futurePos = PairFromKey(futureStep);
             let distance = Math.abs(futurePos.x - tryCheatFrom.x) + Math.abs(futurePos.y - tryCheatFrom.y);
-            let saved = stepIndex - distance + 1;
+            let saved = stepIndex - distance + 1 + 100;
             if (distance <= 20 && saved >= 100) {
                 //this.log(`FOUND CHEAT!! ${this.originalPath[this.stepNumber-1]} to ${futureStep} ${saved}`);
                 this.count++;
