@@ -1,0 +1,11 @@
+[                  HP] / 2024-12-25T05:09:15.224Z: [    121.67ms] Ran a202425 with ./data/2024/25/sample.txt resulting in Result
+[                  HP] / 2024-12-25T05:10:08.861Z: [    125.46ms] Ran a202425 with ./data/2024/25/sample.txt resulting in Result
+[                  HP] / 2024-12-25T05:10:32.345Z: [     62.05ms] Ran a202425 with ./data/2024/25/sample.txt resulting in Result
+[                  HP] / 2024-12-25T05:11:15.437Z: [    117.37ms] Ran a202425 with ./data/2024/25/sample.txt resulting in Result
+[                  HP] / 2024-12-25T05:12:37.532Z: [    146.65ms] Ran a202425 with ./data/2024/25/sample.txt resulting in 0
+[                  HP] / 2024-12-25T05:13:07.083Z: [     94.89ms] Ran a202425 with ./data/2024/25/sample.txt resulting in 0
+[                  HP] / 2024-12-25T05:13:29.655Z: [    108.33ms] Ran a202425 with ./data/2024/25/sample.txt resulting in 0
+[                  HP] / 2024-12-25T05:14:42.367Z: [     42.78ms] Ran a202425 with ./data/2024/25/sample.txt resulting in 0
+[                  HP] / 2024-12-25T05:15:17.464Z: [     78.35ms] Ran a202425 with ./data/2024/25/sample.txt resulting in 3
+[                  HP] / 2024-12-25T05:15:28.468Z: [     84.11ms] Ran a202425 with ./data/2024/25/sample.txt resulting in 3
+[                  HP] / 2024-12-25T05:15:40.410Z: [     28.51ms] Ran a202425 with ./data/2024/25/input.txt resulting in 3136
