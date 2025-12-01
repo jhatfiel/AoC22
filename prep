@@ -1,1 +1,1 @@
-$d='14'; $y='2024'; mkdir data/$y/$d; mkdir src/$y/$d; write-host -nonewline ''>data/$y/$d/sample.txt; write-host -nonewline '' >data/$y/$d/input.txt; write-host -nonewline '' >data/$y/$d/desc.txt; write-host -nonewline '' >src/$y/$d/a$y$d.ts
+$d='01'; $y='2025'; mkdir data/$y/$d; mkdir src/$y/$d; write-host -nonewline ''>data/$y/$d/sample.txt; write-host -nonewline '' >data/$y/$d/input.txt; write-host -nonewline '' >data/$y/$d/desc.txt; write-host -nonewline '' >src/$y/$d/a$y$d.ts
