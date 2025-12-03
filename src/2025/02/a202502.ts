@@ -2,12 +2,12 @@ import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
 import { Factors } from '../../lib/numberTheory.js';
 
 export class a202502 extends AoCPuzzle {
-    factors: number[][] = [];
-    getFactors(n: number): number[] {
-        let result = this.factors[n];
+    times: number[][] = [];
+    getTimes(n: number): number[] {
+        let result = this.times[n];
         if (!result) {
-            result = Factors(n).filter(f => f !== n);
-            this.factors[n] = result;
+            result = Factors(n).filter(f => f !== 1);
+            this.times[n] = result;
         }
         return result;
     }
@@ -22,9 +22,9 @@ export class a202502 extends AoCPuzzle {
                 const str = i.toString();
                 const len = str.length;
                 let matched = false;
-                const factors = this.getFactors(len);
-                factors.forEach(width => {
-                    const times = len / width;
+                const times = this.getTimes(len);
+                times.forEach(times => {
+                    const width = len / times;
                     if (times > 2 && matched) return;
                     const pattern = str.substring(0, width);
                     if (str === pattern.repeat(times)) {
