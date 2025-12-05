@@ -1,0 +1,12 @@
+[                  HP] / 2025-12-05T05:08:26.966Z: [      8.14ms] Ran a202505 with ./data/2025/05/sample.txt resulting in Result
+[                  HP] / 2025-12-05T05:11:56.962Z: [      6.41ms] Ran a202505 with ./data/2025/05/sample.txt resulting in Result
+[                  HP] / 2025-12-05T05:13:26.721Z: [      4.21ms] Ran a202505 with ./data/2025/05/sample.txt resulting in 33
+[                  HP] / 2025-12-05T05:13:36.237Z: [      8.43ms] Ran a202505 with ./data/2025/05/sample.txt resulting in 3
+[                  HP] / 2025-12-05T05:13:41.957Z: [    384.64ms] Ran a202505 with ./data/2025/05/input.txt resulting in 611
+[                  HP] / 2025-12-05T05:33:44.419Z: [      2.93ms] Ran b202505 with ./data/2025/05/sample.txt resulting in 
+[                  HP] / 2025-12-05T05:34:02.355Z: [      3.78ms] Ran b202505 with ./data/2025/05/sample.txt resulting in 
+[                  HP] / 2025-12-05T05:34:37.670Z: [      3.33ms] Ran b202505 with ./data/2025/05/sample.txt resulting in 13
+[                  HP] / 2025-12-05T05:36:06.942Z: [      5.97ms] Ran b202505 with ./data/2025/05/sample.txt resulting in 13
+[                  HP] / 2025-12-05T05:38:07.421Z: [      6.56ms] Ran b202505 with ./data/2025/05/sample.txt resulting in 13
+[                  HP] / 2025-12-05T05:41:27.246Z: [     13.69ms] Ran b202505 with ./data/2025/05/sample.txt resulting in 14
+[                  HP] / 2025-12-05T05:41:34.138Z: [    145.15ms] Ran b202505 with ./data/2025/05/input.txt resulting in 345995423801866
