@@ -8,19 +8,17 @@ interface Point {
 
 export class b202508 extends AoCPuzzle {
     boxes: Point[];
-    connected: boolean[][];
     distance: {a: number, b: number, d: number}[] = [];
     boxInCircuit: number[];
     circuit: number[][];
-    steps = 1000;
+    now: number;
+    numGroups: number;
 
-    sampleMode(): void {
-        this.steps = 10;
-    };
+    sampleMode(): void { };
 
     _loadData(lines: string[]) {
+        this.now = Date.now();
         this.boxes = lines.map(l => l.split(',').map(Number)).map(([x,y,z]) => ({x,y,z}));
-        this.connected = Array.from({length: this.boxes.length}, () => Array(this.boxes.length).fill(false));
         this.boxInCircuit = Array.from({length: this.boxes.length}, (_,ind) => ind);
         this.circuit = Array.from({length: this.boxes.length}, (_, ind) => [ind]);
 
@@ -28,21 +26,21 @@ export class b202508 extends AoCPuzzle {
             const b1 = this.boxes[a];
             for (let b=a+1; b<this.boxes.length; b++) {
                 const b2 = this.boxes[b];
-                this.distance.push({a, b, d: (b1.x-b2.x)**2 + (b1.y-b2.y)**2 + (b1.z-b2.z)**2});
+                const d = (b1.x-b2.x)**2 + (b1.y-b2.y)**2 + (b1.z-b2.z)**2;
+                this.distance.push({a, b, d});
             }
         }
         this.distance.sort((a,b) => b.d-a.d);
+        console.log(`[${(Date.now()-this.now).toString().padStart(5)}ms] Loaded ${this.boxes.length} boxes and ${this.distance.length} distances`);
+        this.numGroups = this.boxes.length;
     }
 
     _runStep(): boolean {
-        let moreToDo = this.stepNumber < this.steps;
         const {a, b, d} = this.distance.pop();
 
         const ba = this.boxes[a];
         const bb = this.boxes[b];
-        // console.log(`Connecting ${a}(${JSON.stringify(ba)}) to ${b}(${JSON.stringify(bb)}) at distance=${d}`);
-        if (this.connected[a][b] || this.connected[b][a]) throw Error(`this shouldn't happen`)
-        this.connected[a][b] = true;
+        //console.log(`[${this.numGroups}] Connecting ${a}(${JSON.stringify(ba)}) to ${b}(${JSON.stringify(bb)}) at distance=${d}`);
 
         const ca = this.boxInCircuit[a];
         const cb = this.boxInCircuit[b];
@@ -65,6 +63,7 @@ export class b202508 extends AoCPuzzle {
             this.circuit[mc].push(...this.circuit[xc]);
             // console.log(` RESULT  ${mc}[${this.circuit[mc]}]`);
             this.circuit[xc] = [];
+            this.numGroups--;
 
             // console.log(` Now, ${a} is in circuit ${this.boxInCircuit[a]}`);
             // console.log(` Now, ${b} is in circuit ${this.boxInCircuit[b]}`);
@@ -74,9 +73,11 @@ export class b202508 extends AoCPuzzle {
         // for (let i=0; i<this.circuit.length; i++) {
         //     console.log(` Circuit: ${i}: len: ${this.circuit[i].length}: [${this.circuit[i].join(',')}] `)
         // }
-        moreToDo = this.circuit.filter(a => a.length > 0).length > 1;
+        //let moreToDo = this.circuit.filter(a => a.length > 0).length > 1;
+        let moreToDo = this.numGroups > 1;
 
         if (!moreToDo) {
+            console.log(`[${(Date.now()-this.now).toString().padStart(5)}ms] Finished (distances remaining: ${this.distance.length})`);
             this.result = (ba.x*bb.x).toString();
         }
         return moreToDo;
