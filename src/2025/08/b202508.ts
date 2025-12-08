@@ -36,50 +36,28 @@ export class b202508 extends AoCPuzzle {
     }
 
     _runStep(): boolean {
-        const {a, b, d} = this.distance.pop();
-
-        const ba = this.boxes[a];
-        const bb = this.boxes[b];
-        //console.log(`[${this.numGroups}] Connecting ${a}(${JSON.stringify(ba)}) to ${b}(${JSON.stringify(bb)}) at distance=${d}`);
+        const {a, b} = this.distance.pop();
 
         const ca = this.boxInCircuit[a];
         const cb = this.boxInCircuit[b];
         if (ca !== cb) {
             // join circuits
-            const mc = Math.min(ca, cb);
-            const xc = Math.max(ca, cb);
             const caNodes = this.circuit[ca];
             const cbNodes = this.circuit[cb];
-            // console.log(` JOINING ${mc}[${this.circuit[mc]}] + ${xc}[${this.circuit[xc]}]`)
-            if (caNodes.length === 0 || cbNodes.length === 0) {
-                throw Error(`Also shouldn't happen!`)
-            }
-            // this.boxInCircuit[a] = mc;
-            // this.boxInCircuit[b] = mc;
+            const [mc, xc] = (caNodes.length>cbNodes.length)?[ca,cb]:[cb,ca];
 
             // move everybody from circuit[xc] to circuit[mc];
             this.circuit[xc].forEach(i => this.boxInCircuit[i] = mc)
-
             this.circuit[mc].push(...this.circuit[xc]);
-            // console.log(` RESULT  ${mc}[${this.circuit[mc]}]`);
             this.circuit[xc] = [];
             this.numGroups--;
-
-            // console.log(` Now, ${a} is in circuit ${this.boxInCircuit[a]}`);
-            // console.log(` Now, ${b} is in circuit ${this.boxInCircuit[b]}`);
-        } else {
-            // console.log(` SAME CIRCUIT!!`);
         }
-        // for (let i=0; i<this.circuit.length; i++) {
-        //     console.log(` Circuit: ${i}: len: ${this.circuit[i].length}: [${this.circuit[i].join(',')}] `)
-        // }
-        //let moreToDo = this.circuit.filter(a => a.length > 0).length > 1;
-        let moreToDo = this.numGroups > 1;
 
-        if (!moreToDo) {
+        if (this.numGroups === 1) {
             console.log(`[${(Date.now()-this.now).toString().padStart(5)}ms] Finished (distances remaining: ${this.distance.length})`);
-            this.result = (ba.x*bb.x).toString();
+            this.result = (this.boxes[a].x*this.boxes[b].x).toString();
+            return false
         }
-        return moreToDo;
+        return true;
     }
 }
