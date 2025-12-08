@@ -6,7 +6,7 @@ interface Point {
     z: number
 }
 
-export class a202508 extends AoCPuzzle {
+export class b202508 extends AoCPuzzle {
     boxes: Point[];
     connected: boolean[][];
     distance: {a: number, b: number, d: number}[] = [];
@@ -40,7 +40,7 @@ export class a202508 extends AoCPuzzle {
 
         const ba = this.boxes[a];
         const bb = this.boxes[b];
-        console.log(`Connecting ${a}(${JSON.stringify(ba)}) to ${b}(${JSON.stringify(bb)}) at distance=${d}`);
+        // console.log(`Connecting ${a}(${JSON.stringify(ba)}) to ${b}(${JSON.stringify(bb)}) at distance=${d}`);
         if (this.connected[a][b] || this.connected[b][a]) throw Error(`this shouldn't happen`)
         this.connected[a][b] = true;
 
@@ -69,20 +69,15 @@ export class a202508 extends AoCPuzzle {
             // console.log(` Now, ${a} is in circuit ${this.boxInCircuit[a]}`);
             // console.log(` Now, ${b} is in circuit ${this.boxInCircuit[b]}`);
         } else {
-            console.log(` SAME CIRCUIT!!`);
+            // console.log(` SAME CIRCUIT!!`);
         }
         // for (let i=0; i<this.circuit.length; i++) {
         //     console.log(` Circuit: ${i}: len: ${this.circuit[i].length}: [${this.circuit[i].join(',')}] `)
         // }
+        moreToDo = this.circuit.filter(a => a.length > 0).length > 1;
 
         if (!moreToDo) {
-            console.log(`3 Largest`)
-            const longest = this.circuit.sort((a, b) => b.length-a.length).slice(0,3);
-            
-            for (let i=0; i<longest.length; i++) {
-                console.log(` Circuit len = ${longest[i].length}: [${longest[i]}] `)
-            }
-            this.result = longest.reduce((prod,arr) => prod*arr.length, 1).toString()
+            this.result = (ba.x*bb.x).toString();
         }
         return moreToDo;
     }
