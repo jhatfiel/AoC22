@@ -101,3 +101,7 @@
 [ip-172-31-36-117.eu-] / 2025-12-09T13:21:43.802Z: [   2237.56ms] Ran b202509 with ./data/2025/09/input.txt resulting in 1624057680
 [ip-172-31-36-117.eu-] / 2025-12-09T13:24:04.103Z: [    422.87ms] Ran b202509 with ./data/2025/09/input.txt resulting in 1624057680
 [ip-172-31-36-117.eu-] / 2025-12-09T13:37:37.848Z: [    370.02ms] Ran b202509 with ./data/2025/09/input.txt resulting in 1624057680
+[ip-172-31-36-117.eu-] / 2025-12-09T13:48:50.773Z: [     48.80ms] Ran b202509 with ./data/2025/09/sample2.txt resulting in 98
+[ip-172-31-36-117.eu-] / 2025-12-09T14:47:13.027Z: [     39.66ms] Ran b202509 with ./data/2025/09/sample.txt resulting in 24
+[ip-172-31-36-117.eu-] / 2025-12-09T14:48:34.766Z: [     35.80ms] Ran b202509 with ./data/2025/09/sample.txt resulting in 24
+[ip-172-31-36-117.eu-] / 2025-12-09T14:48:43.725Z: [    448.00ms] Ran b202509 with ./data/2025/09/input.txt resulting in 1624057680

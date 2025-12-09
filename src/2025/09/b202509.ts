@@ -7,11 +7,10 @@ export class b202509 extends AoCPuzzle {
     sampleMode(): void { };
 
     _loadData(lines: string[]) {
-        let max = 1277412579; // 1277412579 is too low
+        let max = 0; // 1277412579 is too low
                               // 1624057680
                               // 4749562832 is too high
         let SCALE=5;
-        let count=0;
         this.corners = lines.map(l=>l.split(',').map(Number)).map(arr => ({x: arr[0], y: arr[1]}));
         const hwArr: {y: number, minx: number, maxx: number}[] = []; 
         const vwArr: {x: number, miny: number, maxy: number}[] = []; 
@@ -133,7 +132,7 @@ export class b202509 extends AoCPuzzle {
                 //     `;
                 //     const fn = `src/2025/09/b202509_${i.toString().padStart(4, '0')}_${j.toString().padStart(4, '0')}.png`; 
                 //     sharp(Buffer.from(contentHeader+content+contentFooter), {limitInputPixels: 1000000000000})
-                //         .resize({width: 3000, height: 3000})
+                //         .resize(3000)
                 //         .toFile(fn);
                 // }
                 if (valid) {
@@ -145,7 +144,7 @@ export class b202509 extends AoCPuzzle {
         }
         const fn = `src/2025/09/b202509.png`; 
         sharp(Buffer.from(contentHeader+bestContent+contentFooter), {limitInputPixels: 1000000000000})
-            .resize({width: 3000, height: 3000})
+            .resize(3000)
             .toFile(fn);
         this.result = max.toString();
     }
