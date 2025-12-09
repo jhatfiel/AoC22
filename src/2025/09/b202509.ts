@@ -1,5 +1,6 @@
 import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
 import sharp from 'sharp';
+import sharpGif from 'sharp-gif2';
 
 export class b202509 extends AoCPuzzle {
     grid: boolean[][] = Array.from({length:100000}, () => []);
@@ -11,6 +12,8 @@ export class b202509 extends AoCPuzzle {
                               // 1624057680
                               // 4749562832 is too high
         let SCALE=5;
+        const gif = sharpGif.createGif({delay: 200, repeat: 0});
+
         this.corners = lines.map(l=>l.split(',').map(Number)).map(arr => ({x: arr[0], y: arr[1]}));
         const hwArr: {y: number, minx: number, maxx: number}[] = []; 
         const vwArr: {x: number, miny: number, maxy: number}[] = []; 
@@ -58,6 +61,7 @@ export class b202509 extends AoCPuzzle {
             <polygon points="${points}" fill="#999999" stroke="#ffffff" stroke-width="${SCALE}"/>
             `;
         const contentFooter = `</svg>`;
+        gif.addFrame(sharp(Buffer.from(contentHeader+contentFooter), {limitInputPixels: 1000000000000}).resize(3000));
         for (let i=0; i<this.corners.length; i++) {
             // only consider corners that open down and right
             const ic = this.corners[i];
@@ -81,60 +85,57 @@ export class b202509 extends AoCPuzzle {
                 if (a < max) continue;
 
                 let valid = true;
-                // let content = '';
-                // if (c1.x === c2.x) {
-                //     content = `
-                //         <line x1="${c1.x*SCALE}" y1="${c1.y*SCALE}" x2="${c2.x*SCALE}" y2="${c2.y*SCALE}" stroke="#3333ff" stroke-width="1"/>
-                //     `
-                // } else if (c1.y === c2.y) {
-                //     content = `
-                //         <line x1="${c1.x*SCALE}" y1="${c1.y*SCALE}" x2="${c2.x*SCALE}" y2="${c2.y*SCALE}" stroke="#3333ff" stroke-width="1"/>
-                //     `
-                // } else {
-                //     content = `
-                //         <rect x="${c1.x*SCALE}" y="${c1.y*SCALE}" width="${SCALE*(c2.x-c1.x)}" height="${SCALE*(c2.y-c1.y)}" stroke="#3333ff" stroke-width="3"/>
-                //     `
-                // }
+                let content = '';
+                if (c1.x === c2.x) {
+                    content = `
+                        <line x1="${c1.x*SCALE}" y1="${c1.y*SCALE}" x2="${c2.x*SCALE}" y2="${c2.y*SCALE}" stroke="#3333ff" stroke-width="1"/>
+                    `
+                } else if (c1.y === c2.y) {
+                    content = `
+                        <line x1="${c1.x*SCALE}" y1="${c1.y*SCALE}" x2="${c2.x*SCALE}" y2="${c2.y*SCALE}" stroke="#3333ff" stroke-width="1"/>
+                    `
+                } else {
+                    content = `
+                        <rect x="${c1.x*SCALE}" y="${c1.y*SCALE}" width="${SCALE*(c2.x-c1.x)}" height="${SCALE*(c2.y-c1.y)}" stroke="#3333ff" stroke-width="3"/>
+                    `
+                }
                 //if (count < 10) console.log(`For rectangle: min(${c1.x},${c1.y}) max(${c2.x},${c2.y})`);
                 for (const hw of hwArr.filter(hw => c1.y < hw.y && hw.y < c2.y)) {
                     if (!valid) break;
                     //if (count < 10) console.log(` Checking horizontal wall at y=${hw.y} from x=${hw.minx} to x=${hw.maxx}`);
                     // if the wall is all left or all right of box, it's ok.  Otherwise, the box is cut
-                    // let color = "#00ff00";
+                    let color = "#00ff00";
                     if (((hw.minx <= c1.x && hw.maxx <= c1.x) || (hw.minx >= c2.x && hw.maxx >= c2.x)) === false) {
                         //if (count < 10) console.log(`  CUT`);
-                        // color = "#ff3333";
+                        color = "#ff3333";
                         valid = false;
                     }
-                    // content += `
-                    //     <line x1="${hw.minx*SCALE}" y1="${hw.y*SCALE}" x2="${hw.maxx*SCALE}" y2="${hw.y*SCALE}" stroke="${color}" stroke-width="1000"/>
-                    // `;
+                    content += `
+                        <line x1="${hw.minx*SCALE}" y1="${hw.y*SCALE}" x2="${hw.maxx*SCALE}" y2="${hw.y*SCALE}" stroke="${color}" stroke-width="1"/>
+                    `;
                 }
                 for (const vw of vwArr.filter(vw => c1.x < vw.x && vw.x < c2.x)) {
                     if (!valid) break;
                     //if (count < 10) console.log(` Checking vertc1 wall at x=${vw.x} from y=${vw.miny} to y=${vw.maxy}`);
                     // if the wall is all above or all below of box, it's ok.  Otherwise, the box is cut
-                    // let color = "#00ff00";
+                    let color = "#00ff00";
                     if (((vw.miny <= c1.y && vw.maxy <= c1.y) || (vw.miny >= c2.y && vw.maxy >= c2.y)) === false) {
                         //if (count < 10) console.log(`  CUT`);
-                        // color = "#ff3333";
+                        color = "#ff3333";
                         valid = false;
                     }
-                    // content += `
-                    //     <line x1="${vw.x*SCALE}" y1="${vw.miny*SCALE}" x2="${vw.x*SCALE}" y2="${vw.maxy*SCALE}" stroke="${color}" stroke-width="1000"/>
-                    // `;
+                    content += `
+                        <line x1="${vw.x*SCALE}" y1="${vw.miny*SCALE}" x2="${vw.x*SCALE}" y2="${vw.maxy*SCALE}" stroke="${color}" stroke-width="1"/>
+                    `;
                 }
-                // if (Math.random() < 0.001 || a === max) {
-                //     count++;
-                //     content += `
-                //         <circle cx="${c1.x*SCALE}" cy="${c1.y*SCALE}" r="${100}" fill="#00ff00"/>
-                //         <circle cx="${c2.x*SCALE}" cy="${c2.y*SCALE}" r="${100}" fill="#ff0000"/>
-                //     `;
-                //     const fn = `src/2025/09/b202509_${i.toString().padStart(4, '0')}_${j.toString().padStart(4, '0')}.png`; 
-                //     sharp(Buffer.from(contentHeader+content+contentFooter), {limitInputPixels: 1000000000000})
-                //         .resize(3000)
-                //         .toFile(fn);
-                // }
+                if (a === max) {
+                    content += `
+                        <circle cx="${c1.x*SCALE}" cy="${c1.y*SCALE}" r="${1}" fill="#00ff00"/>
+                        <circle cx="${c2.x*SCALE}" cy="${c2.y*SCALE}" r="${1}" fill="#ff0000"/>
+                    `;
+                    const fn = `src/2025/09/b202509_${i.toString().padStart(4, '0')}_${j.toString().padStart(4, '0')}.png`; 
+                    gif.addFrame(sharp(Buffer.from(contentHeader+content+contentFooter), {limitInputPixels: 1000000000000}).resize(3000));
+                }
                 if (valid) {
                     console.log(`Found valid rectangle: min(${c1.x},${c1.y}) max(${c2.x},${c2.y}) area=${a}`);
                     bestContent = `<rect x="${c1.x*SCALE}" y="${c1.y*SCALE}" width="${SCALE*(c2.x-c1.x)}" height="${SCALE*(c2.y-c1.y)}" stroke="#3333ff" stroke-width="3"/>`
@@ -142,10 +143,9 @@ export class b202509 extends AoCPuzzle {
                 }
             }
         }
-        const fn = `src/2025/09/b202509.png`; 
-        sharp(Buffer.from(contentHeader+bestContent+contentFooter), {limitInputPixels: 1000000000000})
-            .resize(3000)
-            .toFile(fn);
+        const fn = `src/2025/09/b202509.gif`; 
+        gif.addFrame(sharp(Buffer.from(contentHeader+bestContent+contentFooter), {limitInputPixels: 1000000000000}).resize(3000));
+        gif.toSharp().then(image => image.toFile(fn));
         this.result = max.toString();
     }
 
