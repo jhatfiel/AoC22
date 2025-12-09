@@ -1,6 +1,6 @@
 import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
 
-export class a202509 extends AoCPuzzle {
+export class b202509 extends AoCPuzzle {
     grid: boolean[][] = Array.from({length:100000}, () => []);
     corners: number[][];
     sampleMode(): void { };
