@@ -60,15 +60,15 @@ export class b202510 extends AoCPuzzle {
         const len = button.length;
         const targetKey = this.stateToString(target);
         const now = Date.now();
-        //console.log('machine', JSON.stringify({targetKey, button}));
+        console.log('machine', JSON.stringify({targetKey, button}));
 
         // let's use linear algebra
         // compute array
         const array = Array.from({length: target.length}, (_,ind) => [...Array(len).fill(0), target[ind]]);
         // put in a 1 at each location that a button increments
         button.forEach((btn,btnInd) => btn.reg.forEach(regIndex => array[regIndex][btnInd] = 1));
-        //console.log(array.join('\n'));
 
+        //console.log(array.join('\n'));
         const matrix = new Matrix(array);
         matrix.toRREF();
         //console.log('RREF:')
@@ -78,16 +78,38 @@ export class b202510 extends AoCPuzzle {
         const free = Array(len).fill(true);
         matrix.arr.forEach(row => free[row.findIndex(n=>n!=0)] = false);
         const freeIndices = free.map((v,i)=>v?i:undefined).filter(i=>i!==undefined);
-        const pivotIndices = free.map((v,i)=>!v?i:undefined).filter(i=>i!==undefined);
         const rowForPivot = Array.from({length: len}, (_, ind) => free[ind]?null:ind-free.slice(0,ind).filter(v=>v).length);
-        //console.log('rowForPivot:', rowForPivot);
+        let max=Math.max(...target)+1;
+        const runPlan = (solution: number[]): number[] => {
+            const registers = Array(target.length).fill(0);
+            solution.forEach((presses, btnIndex) => {
+                button[btnIndex].reg.forEach(regIndex => registers[regIndex] += presses);
+            })
+            return registers;
+        }
 
         // now we just run a for loop for each of the free variables and stop when something goes negative
         if (freeIndices.length > 0) {
-            //console.log(matrix.arr.join('\n'));
-            //console.log('free:', freeIndices);
             const solution = Array(len).fill(0);
-            const calculatePivot = () => {
+
+            //console.log(matrix.arr.join('\n'));
+            console.log('free:', free.filter(v=>v).length, JSON.stringify(free));
+
+            let freeIndexIndex = freeIndices.length-1;
+            const iterate = () => {
+                let carry = false;
+                solution[freeIndices[freeIndexIndex]]++;
+                while (solution[freeIndices[freeIndexIndex]] === max+1) {
+                    carry = true;
+                    solution[freeIndices[freeIndexIndex]] = 0;
+                    freeIndexIndex--;
+                    if (freeIndexIndex < 0) break;
+                    solution[freeIndices[freeIndexIndex]]++;
+                }
+                if (carry && freeIndexIndex >= 0) freeIndexIndex = freeIndices.length-1;
+            }
+
+            const calculateSolution = () => {
                 for (let buttonInd=0; buttonInd<len; buttonInd++) {
                     if (!free[buttonInd]) {
                         const rowNum = rowForPivot[buttonInd];
@@ -102,86 +124,54 @@ export class b202510 extends AoCPuzzle {
             }
 
             let num=0;
-            let max=Math.max(...target);
             let minPresses = max*len;
-            const iterate = () => {
-                solution[0] = -1;
-            };
 
-            while (num < 1000000) {
-                num++;
-                let sum = 0;
-                for (let i=0; i<len; i++) {
-                    if (free[i]) {
-                        solution[i] = Math.floor(Math.random()*((max-sum)+1));
-                        sum += solution[i];
-                    }
-                }
-                //console.log(`Consider: ${solution}`)
-                calculatePivot();
-                if (solution.some(n => n<0 || Math.abs(n-Math.round(n)) > 0.01)) { // no negative presses or decimal presses
-                    //console.log(`solution: ${solution}: INVALID`);
+            while (freeIndexIndex >= 0) {
+                calculateSolution();
+                // console.log(`${freeIndexIndex} Consider: ${solution}`)
+
+                if (solution.some(n => n<0 || Math.abs(n-Math.round(n)) > 0.2)) { // no negative presses or decimal presses
+                    // we could check here to see if we HAVE had a solution at this index
+                    // and if so, then we know any increment will also fail, so we could immediately set this index to max?
+                    // but it's fast enough
+                    //console.log(`   solution: ${solution}: INVALID`);
                 } else {
-                    let numPresses = solution.reduce((sum, n) => sum+n, 0);
+                    let numPresses = Math.round(solution.reduce((sum, n) => sum+n, 0));
                     if (numPresses < minPresses) {
-                        //console.log(`solution: ${solution}: ${numPresses}`);
+                        //console.log(`   solution: ${solution}: ${numPresses}`);
+                        const result = runPlan(solution);
+                        if (result.some((n, ind) => Math.abs(target[ind] - n) > matrix.EPS)) {
+                            console.log(`   plan result: ${result}`);
+                            throw Error(`Solution didn't match target!`)
+                        }
                         minPresses = numPresses;
                         num = 0;
                     }
                 }
+
+                iterate();
             }
-            console.log(`minPresses: ${minPresses}`);
+            console.log(`CALCULATE: minPresses: ${minPresses}`);
             this.pushes += minPresses;
         } else {
-            // if there are no free indices, we straight up have a solution?
-            this.pushes += matrix.arr.map(row => row.at(-1)).reduce((sum, n) => sum+n, 0);
+            // if there are no free indices, we straight up have a solution
+            const plan = matrix.arr.map(row => row.at(-1)).slice(0, button.length)
+            console.log('plan:', plan);
+            const result = runPlan(plan);
+            if (result.some((n, ind) => Math.abs(target[ind] - n) > matrix.EPS)) {
+                console.log(`   plan result: ${result}`);
+                throw Error(`Solution didn't match target!`)
+            }
+            const minPresses = matrix.arr.map(row => row.at(-1)).reduce((sum, n) => sum+n, 0);
+            console.log(`SIMPLE: minPresses: ${minPresses}`);
+            if (minPresses == 1) console.log('\n'.repeat(50))
+            this.pushes += minPresses;
+            
         }
 
-        // 18585
+        // 19297 too high
         // 18575 too low
         // 18574 too low
-        
-
-        /*
-        const seen = new Set<string>();
-        const trial: Plan[] = [{pressed: [], result: Array(target.length).fill(0)}]
-
-        let count=0;
-        let best = Infinity;
-        OUTER: while (trial.length) {
-            const {pressed, result} = trial.pop()
-            if (pressed.length+1 >= best) continue;
-            const resultKey = this.stateToString(result);
-            if (seen.has(resultKey)) continue;
-            seen.add(resultKey);
-            // console.log(`[${count.toString().padStart(8)}]: Pressed=${pressed}, state=${resultKey}, trial.length=${trial.length}, best=${best}`);
-            const sortedBtns = this.sortButtons(button, target, result);
-            //console.log(`Recommended button order: ${JSON.stringify(sortedBtns)}`)
-            for (let i=0; i<sortedBtns.length; i++) {
-                const btn = sortedBtns[i];
-                const newResult = [...result];
-                btn.reg.forEach(n => newResult[n]++);
-                if (newResult.some((n, i) => n > target[i])) {
-                    // we've pushed a register too high, not a valid solution
-                    continue;
-                }
-                const newResultKey = this.stateToString(newResult);
-                if (!seen.has(newResultKey)) {
-                    // console.log(`${resultKey} pressing ${btn.toString().padStart(10)} would result in ${newResultKey} (target=${target})`);
-                    trial.push({pressed: [...pressed, btn.name], result: newResult});
-                }
-                if (newResultKey === targetKey) {
-                    best = pressed.length+1;
-                    console.log(`Found result!!! best=${best}, [${pressed},${btn.name}]`);
-                    //break OUTER;
-                }
-            }
-            count++;
-        }
-
-        console.log(`Pushes: ${best} found in ${Date.now()-now}ms, iterations=${count}`);
-        this.pushes += best;
-        */
 
         if (!moreToDo) {
             this.result = this.pushes.toString();

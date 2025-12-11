@@ -1,8 +1,12 @@
 export class Matrix {
     constructor (public arr: number[][]) {}
+    EPS = 1e-10;
+    isZero(x) { return Math.abs(x) < this.EPS; }
 
     swapRows(r1: number, r2: number) {
-        this.arr[r1].forEach((v, index) => { this.arr[r1][index] = this.arr[r2][index]; this.arr[r2][index] = v;});
+        const temp = this.arr[r1];
+        this.arr[r1] = this.arr[r2];
+        this.arr[r2] = temp;
     }
 
     cancelRow(r1: number, r2: number, pivotColumn: number) {
@@ -20,7 +24,7 @@ export class Matrix {
 
     toEchelon() {
         let topRow = 0;
-        for (let pivotColumn=0; pivotColumn < this.arr.length && topRow < this.arr.length; pivotColumn++) {
+        for (let pivotColumn=0; pivotColumn < this.arr[0].length; pivotColumn++) {
             //this.debug(`toEchelon, topRow=${topRow}, pivotColumn=${pivotColumn}`)
             let maxValue = 0;
             let maxRow = 0;
@@ -33,7 +37,7 @@ export class Matrix {
                 }
 
             }
-            if (maxValue !== 0) {
+            if (!this.isZero(maxValue)) {
                 if (maxRow !== topRow) {
                     this.swapRows(topRow, maxRow);
                 }
@@ -53,7 +57,7 @@ export class Matrix {
         // start at the bottom and set the diagonal to 1
         for (let row=this.arr.length-1; row >= 0; row--) {
             let thisRow = this.arr[row];
-            let pivotColumn = thisRow.findIndex(v => v !== 0);
+            let pivotColumn = thisRow.findIndex(v => !this.isZero(v));
             if (pivotColumn !== -1) {
                 this.scaleRow(row, 1/thisRow[pivotColumn]);
                 for (let r=0; r<row; r++) {
@@ -104,7 +108,7 @@ export class Matrix {
     getSolution(n: number, places=12): number {
         let result: number = undefined;
         this.arr.some(row => {
-            if (row.every((v, index) => (index !== n && v === 0) || (index === n && this.round(v, places) === 1) || index === row.length-1)) {
+            if (row.every((v, index) => (index !== n && this.isZero(v)) || (index === n && this.round(v, places) === 1) || index === row.length-1)) {
                 result = this.round(row[row.length-1], places);
                 return true;
             } else {
