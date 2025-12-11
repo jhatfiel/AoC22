@@ -70,10 +70,13 @@ export class b202510 extends AoCPuzzle {
 
         //console.log(array.join('\n'));
         const matrix = new Matrix(array);
-        //matrix.toRREF();
-        matrix.toRationalRREF();
-        //console.log('**RATIONAL** RREF:')
+        //const matrix2 = new Matrix(array.map(row=>[...row]));
+        matrix.toRREF();
+        //matrix2.toRationalRREF();
+        //console.log('**FLOAT** RREF:')
         //console.log(matrix.arr.join('\n'));
+        //console.log('**RATIONAL** RREF:')
+        //console.log(matrix2.arr.join('\n'));
 
         // figure out what the "free" buttons are
         const free = Array(len).fill(true);
@@ -130,7 +133,7 @@ export class b202510 extends AoCPuzzle {
                 calculateSolution();
                 // console.log(`${freeIndexIndex} Consider: ${solution}`)
 
-                if (solution.some(n => n<0 || Math.abs(n-Math.round(n)) > 0.2)) { // no negative presses or decimal presses
+                if (solution.some(n => n+matrix.EPS < 0 || Math.abs(n-Math.round(n)) > 0.2)) { // no negative presses or decimal presses
                     // we could check here to see if we HAVE had a solution at this index
                     // and if so, then we know any increment will also fail, so we could immediately set this index to max?
                     // but it's fast enough
