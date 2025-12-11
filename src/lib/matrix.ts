@@ -10,16 +10,23 @@ export class Matrix {
     }
 
     cancelRow(r1: number, r2: number, pivotColumn: number) {
+        if (this.arr[r1][pivotColumn] === 0) return;
         let scale = -1 * this.arr[r2][pivotColumn] / this.arr[r1][pivotColumn];
         this.addRow(r1, r2, scale);
     }
 
     addRow(r1: number, r2: number, scale: number) {
-        this.arr[r1].forEach((v, index) => this.arr[r2][index] = this.arr[r2][index] + v*scale);
+        this.arr[r1].forEach((v, index) => {
+            const x = this.arr[r2][index] + v*scale;
+            this.arr[r2][index] = this.isZero(x) ? 0 : x;
+        });
     }
 
     scaleRow(r1: number, scale: number) {
-        this.arr[r1].forEach((v, index) => this.arr[r1][index] = v*scale);
+        this.arr[r1].forEach((v, index) => {
+            const x = v*scale;
+            this.arr[r1][index] = this.isZero(x) ? 0 : x;
+        });
     }
 
     toEchelon() {
@@ -57,7 +64,7 @@ export class Matrix {
         // start at the bottom and set the diagonal to 1
         for (let row=this.arr.length-1; row >= 0; row--) {
             let thisRow = this.arr[row];
-            let pivotColumn = thisRow.findIndex(v => !this.isZero(v));
+            let pivotColumn = thisRow.slice(0, this.arr[0].length-1).findIndex(v => !this.isZero(v));
             if (pivotColumn !== -1) {
                 this.scaleRow(row, 1/thisRow[pivotColumn]);
                 for (let r=0; r<row; r++) {
@@ -66,6 +73,91 @@ export class Matrix {
             }
         }
         //this.debug(`toRREF at end`);
+    }
+
+    toRationalRREF() {
+        this.toRationalEchelon();
+        const rows = this.arr.length;
+        const cols = this.arr[0].length;
+
+        // Work upward from bottom pivot row
+        for (let r = rows - 1; r >= 0; r--) {
+            const row = this.arr[r];
+
+            // Find pivot column
+            let pivotCol = -1;
+            for (let c = 0; c < cols - 1; c++) {
+                if (row[c] !== 0) { pivotCol = c; break; }
+            }
+            if (pivotCol === -1) continue;
+
+            const pivot = row[pivotCol];
+
+            // Normalize pivot to 1 (integer-safe)
+            if (pivot !== 1) {
+                // Bareiss guarantees divisibility
+                for (let c = pivotCol; c < cols; c++) {
+                    row[c] = row[c] / pivot;
+                }
+            }
+
+            // Eliminate above pivot
+            for (let rr = 0; rr < r; rr++) {
+                const factor = this.arr[rr][pivotCol];
+                if (factor === 0) continue;
+                for (let c = pivotCol; c < cols; c++) {
+                    this.arr[rr][c] -= factor * row[c];
+                }
+            }
+        }
+    }
+
+    toRationalEchelon() {
+        const rows = this.arr.length;
+        const cols = this.arr[0].length;
+        let prevPivot = 1;       // Bareiss pivot divisor (starts at 1)
+        let pivotRow = 0;
+
+        for (let pivotCol = 0; pivotCol < cols-1 && pivotRow < rows; pivotCol++) {
+            // 1. Find first non-zero row for pivot
+            let sel = -1;
+            for (let r = pivotRow; r < rows; r++) {
+                if (this.arr[r][pivotCol] !== 0) {
+                    sel = r;
+                    break;
+                }
+            }
+            if (sel === -1) continue; // no pivot here
+
+            // 2. Move pivot row into place
+            if (sel !== pivotRow) this.swapRows(sel, pivotRow);
+
+            let pivot = this.arr[pivotRow][pivotCol];
+
+            // Normalize pivot sign (optional but keeps numbers smaller)
+            if (pivot < 0) {
+                this.scaleRow(pivotRow, -1);
+                pivot = -pivot;
+            }
+
+            // 3. Bareiss elimination below pivot
+            for (let r = pivotRow + 1; r < rows; r++) {
+                const f = this.arr[r][pivotCol];
+                if (f === 0) continue;
+
+                for (let c = pivotCol; c < cols; c++) {
+                    const a = this.arr[r][c];
+                    const b = this.arr[pivotRow][c];
+
+                    // Bareiss formula:
+                    //     new = (pivot * a - f * b) / prevPivot
+                    this.arr[r][c] = (pivot * a - f * b) / prevPivot;
+                }
+            }
+
+            prevPivot = pivot;   // Update divisor for next column
+            pivotRow++;
+        }
     }
 
     round(n: number, places = 12): number { return Math.round(n*10**places)/10**places; }

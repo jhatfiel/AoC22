@@ -70,8 +70,9 @@ export class b202510 extends AoCPuzzle {
 
         //console.log(array.join('\n'));
         const matrix = new Matrix(array);
-        matrix.toRREF();
-        //console.log('RREF:')
+        //matrix.toRREF();
+        matrix.toRationalRREF();
+        //console.log('**RATIONAL** RREF:')
         //console.log(matrix.arr.join('\n'));
 
         // figure out what the "free" buttons are
@@ -123,7 +124,6 @@ export class b202510 extends AoCPuzzle {
                 }
             }
 
-            let num=0;
             let minPresses = max*len;
 
             while (freeIndexIndex >= 0) {
@@ -138,14 +138,13 @@ export class b202510 extends AoCPuzzle {
                 } else {
                     let numPresses = Math.round(solution.reduce((sum, n) => sum+n, 0));
                     if (numPresses < minPresses) {
-                        //console.log(`   solution: ${solution}: ${numPresses}`);
+                        console.log(`   plan: ${solution}: ${numPresses}`);
                         const result = runPlan(solution);
                         if (result.some((n, ind) => Math.abs(target[ind] - n) > matrix.EPS)) {
-                            console.log(`   plan result: ${result}`);
+                            console.log(` registers: ${result}`);
                             throw Error(`Solution didn't match target!`)
                         }
                         minPresses = numPresses;
-                        num = 0;
                     }
                 }
 
@@ -170,6 +169,7 @@ export class b202510 extends AoCPuzzle {
         }
 
         // 19297 too high
+        // 19293 CORRECT!  I wonder what is wrong with my matrix code...
         // 18575 too low
         // 18574 too low
 
