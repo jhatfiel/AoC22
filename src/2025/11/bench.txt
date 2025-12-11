@@ -1,0 +1,8 @@
+[                  HP] / 2025-12-11T07:51:51.180Z: [     37.92ms] Ran a202511 with ./data/2025/11/sample.txt resulting in Result
+[                  HP] / 2025-12-11T07:54:01.015Z: [     29.44ms] Ran a202511 with ./data/2025/11/sample.txt resulting in Result
+[                  HP] / 2025-12-11T07:56:50.992Z: [     19.72ms] Ran a202511 with ./data/2025/11/sample.txt resulting in 30
+[                  HP] / 2025-12-11T07:57:39.782Z: [      7.95ms] Ran a202511 with ./data/2025/11/sample.txt resulting in 5
+[                  HP] / 2025-12-11T07:57:43.990Z: [   1206.87ms] Ran a202511 with ./data/2025/11/input.txt resulting in 539
+[                  HP] / 2025-12-11T07:59:04.944Z: [    417.38ms] Ran a202511 with ./data/2025/11/input.txt resulting in 539
+[                  HP] / 2025-12-11T07:59:16.723Z: [      5.14ms] Ran a202511 with ./data/2025/11/input.txt resulting in -1
+[                  HP] / 2025-12-11T07:59:34.137Z: [      7.29ms] Ran a202511 with ./data/2025/11/input.txt resulting in 539
