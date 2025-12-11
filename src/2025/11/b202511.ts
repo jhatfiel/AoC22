@@ -14,8 +14,7 @@ export class b202511 extends AoCPuzzle {
         })
     }
 
-    calculateTimesReaches(key: string, destination: string, seen: Set<string> = new Set<string>()): number {
-        //console.log(`calculateTimesReaches: ${key}, ${destination}, ${[...seen]}`)
+    calculateTimesReaches(key: string, destination: string): number {
         if (key === destination) return 1;
         if (key === 'out') return 0;
         let keyMap = this.mapping.get(key);
@@ -25,14 +24,7 @@ export class b202511 extends AoCPuzzle {
         }
         let result = keyMap.get(destination);
         if (result === undefined) {
-            const node = this.nodes.get(key);
-            result = 0;
-            const newSeen = new Set([...seen]);
-            newSeen.add(key);
-            for (const n of node.to) {
-                if (seen.has(n)) continue;
-                result += this.calculateTimesReaches(n, destination, newSeen);
-            }
+            result = this.nodes.get(key).to.reduce((sum, n) => sum += this.calculateTimesReaches(n, destination), 0);
             keyMap.set(destination, result);
         }
         return result;
