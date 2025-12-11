@@ -6,3 +6,11 @@
 [                  HP] / 2025-12-11T07:59:04.944Z: [    417.38ms] Ran a202511 with ./data/2025/11/input.txt resulting in 539
 [                  HP] / 2025-12-11T07:59:16.723Z: [      5.14ms] Ran a202511 with ./data/2025/11/input.txt resulting in -1
 [                  HP] / 2025-12-11T07:59:34.137Z: [      7.29ms] Ran a202511 with ./data/2025/11/input.txt resulting in 539
+[ip-172-31-36-117.eu-] / 2025-12-11T11:46:25.259Z: [      8.99ms] Ran b202511 with ./data/2025/11/sample.txt resulting in 5
+[ip-172-31-36-117.eu-] / 2025-12-11T11:54:10.911Z: [      9.14ms] Ran b202511 with ./data/2025/11/sample2.txt resulting in 
+[ip-172-31-36-117.eu-] / 2025-12-11T11:57:00.304Z: [     11.19ms] Ran b202511 with ./data/2025/11/sample2.txt resulting in 
+[ip-172-31-36-117.eu-] / 2025-12-11T11:57:29.877Z: [     11.03ms] Ran b202511 with ./data/2025/11/sample2.txt resulting in 
+[ip-172-31-36-117.eu-] / 2025-12-11T11:58:04.974Z: [      9.90ms] Ran b202511 with ./data/2025/11/sample2.txt resulting in 02
+[ip-172-31-36-117.eu-] / 2025-12-11T11:58:13.631Z: [     10.00ms] Ran b202511 with ./data/2025/11/sample2.txt resulting in 2
+[ip-172-31-36-117.eu-] / 2025-12-11T12:01:55.238Z: [     25.25ms] Ran b202511 with ./data/2025/11/sample2.txt resulting in 2
+[ip-172-31-36-117.eu-] / 2025-12-11T12:03:05.854Z: [     24.27ms] Ran b202511 with ./data/2025/11/input.txt resulting in 413167078187872
