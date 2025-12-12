@@ -2,3 +2,7 @@
 [                  HP] / 2025-12-12T07:19:56.575Z: [      8.94ms] Ran a202512 with ./data/2025/12/sample.txt resulting in Result
 [                  HP] / 2025-12-12T07:20:09.830Z: [     17.85ms] Ran a202512 with ./data/2025/12/sample.txt resulting in Result
 [                  HP] / 2025-12-12T07:20:18.909Z: [     10.04ms] Ran a202512 with ./data/2025/12/sample.txt resulting in Result
+[                  HP] / 2025-12-12T11:43:21.123Z: [      6.40ms] Ran a202512 with ./data/2025/12/sample.txt resulting in Easy: 0 Hard: 0 Impossible: 3
+[                  HP] / 2025-12-12T11:43:26.156Z: [    387.89ms] Ran a202512 with ./data/2025/12/input.txt resulting in Easy: 0 Hard: 867 Impossible: 133
+[                  HP] / 2025-12-12T11:46:12.681Z: [    363.09ms] Ran a202512 with ./data/2025/12/input.txt resulting in Easy: 457 Hard: 0 Impossible: 543
+[                  HP] / 2025-12-12T11:50:07.580Z: [     11.77ms] Ran a202512 with ./data/2025/12/input.txt resulting in Easy: 457 Hard: 0 Impossible: 543
