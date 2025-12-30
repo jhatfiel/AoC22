@@ -7,7 +7,7 @@ const move = {
   'L': ([x,y]) => [x-1,y],
 }
 
-export class a201903 extends AoCPuzzle {
+export class b201903 extends AoCPuzzle {
     sampleMode(): void { };
 
     _loadData(lines: string[]) {}
@@ -15,31 +15,36 @@ export class a201903 extends AoCPuzzle {
     _runStep(): boolean {
       // mark all of the first wire's locations
       let [x,y] = [0,0];
-      let seen = new Set<string>();
+      let stepsTo = new Map<string, number>();
+      let steps=0;
       for (let str of this.lines[0].split(',')) {
         let dir = str.charAt(0);
         let len = Number(str.substring(1));
         for (let i=0; i<len; i++) {
           [x,y] = move[dir]([x,y]);
-          seen.add(`${x},${y}`);
+          steps++;
+          if (!stepsTo.has(`${x},${y}`)) stepsTo.set(`${x},${y}`, steps);
         }
       }
 
       [x,y] = [0,0];
-      let closest = Infinity;
+      let lowest = Infinity;
+      steps = 0;
       for (let str of this.lines[1].split(',')) {
         let dir = str.charAt(0);
         let len = Number(str.substring(1));
         for (let i=0; i<len; i++) {
           [x,y] = move[dir]([x,y]);
-          if (seen.has(`${x},${y}`)) {
-            console.log(`Second line crosses at ${x},${y}`);
-            if (Math.abs(x)+Math.abs(y) < closest) closest=Math.abs(x)+Math.abs(y);
+          steps++;
+          const steps1 = stepsTo.get(`${x},${y}`);
+          if (steps1) {
+            console.log(`Second line crosses at ${x},${y} steps=${steps1} + ${steps}`);
+            if (steps1 + steps < lowest) lowest = steps1 + steps
           }
         }
       }
 
-      this.result = closest.toString();
+      this.result = lowest.toString();
       return false;
     }
 }
