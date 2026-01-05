@@ -1,4 +1,4 @@
-import { IC } from "./intcode";
+import { IC } from "./intcode.js";
 (async () => {
   let lines = await import("fs").then(fs => fs.promises.readFile('data/2019/intcode.txt', 'utf-8'));
   console.log('Running intcode tests...');
@@ -24,6 +24,7 @@ import { IC } from "./intcode";
       let inputIdx = 0;
       let ic = new IC(instrSet, {readint: () => inputVals[inputIdx], writeint: (n: number) => output.push(n)});
       let memchecks: {[key: number]: number} = {};
+      let memactualStr = '';
       if (memcheckStr) {
         for (const mv of memcheckStr.split(',')) {
           const [k, v] = mv.split('=').map(s => s.trim());
@@ -42,9 +43,10 @@ import { IC } from "./intcode";
       }
       for (const k of Object.keys(memchecks).map(s => parseInt(s))) {
         if (ic.mem[k] !== memchecks[k]) success = false;
+        memactualStr += `${k}=${ic.mem[k]}`;
       }
       if (!success) {
-        console.error(`TEST FAILED: ${name}: ${inputs} -> ${outputs} : ${memcheckStr}`);
+        console.error(`TEST ${name} FAILED: \nEXPECTED: ${outputs} : ${memcheckStr??''}\n  ACTUAL: ${output} : ${memactualStr}`);
         fail++;
       } else {
         //console.log(`Test passed: ${name}`);
