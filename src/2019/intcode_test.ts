@@ -22,7 +22,7 @@ import { IC } from "./intcode.js";
       let outputVals = outputs?outputs.split(',').map(s => parseInt(s.trim())):[];
       let output: number[] = [];
       let inputIdx = 0;
-      let ic = new IC(instrSet, {readint: () => inputVals[inputIdx], writeint: (n: number) => output.push(n)});
+      let ic = new IC(instrSet, {readint: async () => inputVals[inputIdx], writeint: (n: number) => output.push(n)});
       let memchecks: {[key: number]: number} = {};
       let memactualStr = '';
       if (memcheckStr) {
@@ -31,7 +31,7 @@ import { IC } from "./intcode.js";
           memchecks[parseInt(k)] = parseInt(v);
         }
       }
-      ic.run();
+      await ic.run();
       let success = true;
       if (outputVals.length > 0) {
         if (output.length !== outputVals.length) success = false;
