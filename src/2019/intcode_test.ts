@@ -1,4 +1,4 @@
-import { IC } from "./intcode.js";
+import { IC, STATE_HALTED } from "./intcode.js";
 (async () => {
   let lines = await import("fs").then(fs => fs.promises.readFile('data/2019/intcode.txt', 'utf-8'));
   console.log('Running intcode tests...');
@@ -22,7 +22,7 @@ import { IC } from "./intcode.js";
       let outputVals = outputs?outputs.split(',').map(s => parseInt(s.trim())):[];
       let output: number[] = [];
       let inputIdx = 0;
-      let ic = new IC(instrSet, {readint: async () => inputVals[inputIdx], writeint: (n: number) => output.push(n)});
+      let ic = new IC(instrSet, {readint: () => inputVals[inputIdx], writeint: (n: number) => output.push(n)});
       let memchecks: {[key: number]: number} = {};
       let memactualStr = '';
       if (memcheckStr) {
@@ -31,7 +31,8 @@ import { IC } from "./intcode.js";
           memchecks[parseInt(k)] = parseInt(v);
         }
       }
-      await ic.run();
+      ic.runToHalt();
+
       let success = true;
       if (outputVals.length > 0) {
         if (output.length !== outputVals.length) success = false;

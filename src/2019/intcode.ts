@@ -1,21 +1,25 @@
 // io helper
 export interface IO {
-  readint(): Promise<number>
+  readint(): number
   writeint(n: number): void
 };
 
 interface OP {
   name: string
   size: number
-  exec: (par: number[], mode: number[]) => Promise<boolean>
+  exec: (par: number[], mode: number[]) => boolean
 };
+
+export const STATE_HALTED = 0;
+export const STATE_RUNNING = 1;
+export const STATE_OUTPUT = 2;
 
 // the intcode computer
 export class IC {
   mem: number[];
   ip = 0;
 
-  constructor(program: string, private io: IO = {readint: async () => -1, writeint: (n: number) => console.log(`DEFAULT IO: ${n}`)}) {
+  constructor(program: string, private io: IO = {readint: () => -1, writeint: (n: number) => console.log(`DEFAULT IO: ${n}`)}) {
     //console.log(`PROGRAM: ${program}`)
     this.mem = program.split(',').map(Number);
     // console.log(`----- Program Disassembly -----`)
@@ -26,45 +30,45 @@ export class IC {
   op: OP[] = [
     undefined, // opcodes start at 1 so 0 is undefined
     // 1
-    {name: 'ADD', size: 4, exec: async (par: number[], mode: number[]) => {
+    {name: 'ADD', size: 4, exec: (par: number[], mode: number[]) => {
       this.mem[par[2]] = this.resolve(par, mode, 0) + this.resolve(par, mode, 1);
       return false;
     }},
     // 2
-    {name: 'MUL', size: 4, exec: async (par: number[], mode: number[]) => {
+    {name: 'MUL', size: 4, exec: (par: number[], mode: number[]) => {
       this.mem[par[2]] = this.resolve(par, mode, 0) * this.resolve(par, mode, 1);
       return false;
     }},
     // 3
-    {name: 'IN', size: 2, exec: async (par: number[], mode: number[]) => {
-      this.mem[par[0]] = await this.io.readint();
+    {name: 'IN', size: 2, exec: (par: number[], mode: number[]) => {
+      this.mem[par[0]] = this.io.readint();
       return false;
     }},
     // 4
-    {name: 'OUT', size: 2, exec: async (par: number[], mode: number[]) => {
+    {name: 'OUT', size: 2, exec: (par: number[], mode: number[]) => {
       this.io.writeint(this.resolve(par, mode, 0));
       return false;
     }},
     // 5
-    {name: 'JIT', size: 3, exec: async (par: number[], mode: number[]) => {
+    {name: 'JIT', size: 3, exec: (par: number[], mode: number[]) => {
       const bool = this.resolve(par, mode, 0) != 0;
       if (bool) this.ip = this.resolve(par, mode, 1);
       return bool;
     }},
     // 6
-    {name: 'JIF', size: 3, exec: async (par: number[], mode: number[]) => {
+    {name: 'JIF', size: 3, exec: (par: number[], mode: number[]) => {
       const bool = this.resolve(par, mode, 0) == 0;
       if (bool) this.ip = this.resolve(par, mode, 1);
       return bool;
     }},
     // 7
-    {name: 'LT', size: 4, exec: async (par: number[], mode: number[]) => {
+    {name: 'LT', size: 4, exec: (par: number[], mode: number[]) => {
       const bool = this.resolve(par, mode, 0) < this.resolve(par, mode, 1);
       this.mem[par[2]] = bool?1:0;
       return false;
     }},
     // 8
-    {name: 'EQ', size: 4, exec: async (par: number[], mode: number[]) => {
+    {name: 'EQ', size: 4, exec: (par: number[], mode: number[]) => {
       const bool = this.resolve(par, mode, 0) == this.resolve(par, mode, 1);
       this.mem[par[2]] = bool?1:0;
       return false;
@@ -141,25 +145,33 @@ export class IC {
     return {opSize, disassembly};
   }
 
-  async tick(debug = false): Promise<boolean> {
+  tick(debug = false): number {
     const instr = this.mem[this.ip];
     const {opcode, op, mode} = this.decodeInstr(instr);
     //console.debug(`IP=${this.ip} opcode=${opcode}`);
-    if (opcode === 99 || op === undefined) return false;
+    if (opcode === 99 || op === undefined) return STATE_HALTED;
     const par = this.mem.slice(this.ip+1, this.ip+op.size);
     if (debug) {
       const {disassembly} = this.disassembleAt(this.ip);
       console.debug(`IP [${this.ip.toString().padStart(4)}]: ${disassembly}`);
     }
-    const jumped = await op.exec(par, mode);
+    const jumped = op.exec(par, mode);
 
     if (!jumped) this.ip += op.size;
-    return true;
+    return opcode === 4?STATE_OUTPUT:STATE_RUNNING;
   }
 
-  async run(debug = false): Promise<number> {
-    while (await this.tick(debug))
-      ;
-    return this.mem[0];
+  run(debug = false): number {
+    while (true) {
+      let state = this.tick(debug)
+      if (state !== STATE_RUNNING) return state;
+    }
+  }
+
+  runToHalt(debug = false): number {
+    while (true) {
+      let state = this.tick(debug)
+      if (state === STATE_HALTED) return state;
+    }
   }
 }

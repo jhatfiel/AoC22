@@ -1,7 +1,6 @@
 import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
 import { Permutations } from '../../lib/CombiPerm.js';
-import { AsyncQueue } from '../AsyncQueue.js';
-import { IC } from '../intcode.js';
+import { IC, STATE_HALTED } from '../intcode.js';
 
 interface State {
   used: number[]
@@ -11,6 +10,8 @@ interface State {
 export class b201907 extends AoCPuzzle {
   prog: string;
   numAmps = 5;
+  gen = Permutations([5,6,7,8,9]);
+  max = -Infinity;
 
   sampleMode(): void { };
 
@@ -19,47 +20,34 @@ export class b201907 extends AoCPuzzle {
   }
 
   _runStep(): boolean {
-    const gen = Permutations([5,6,7,8,9]);
-    (async () => {
-      let max = -Infinity;
-      for (const nextPerm of gen) {
-        //console.log(`Phase setting sequence: ${nextPerm.join(',')}`)
-        let input: AsyncQueue[] = Array.from({length: this.numAmps}, () => new AsyncQueue());
-        let ics: IC[] = [];
-        let promises: Promise<number>[] = [];
-        for (let i=0; i<this.numAmps; i++) {
-          input[i].enqueue(nextPerm[i]);
-        }
-        input[0].enqueue(0); // initial input
-  
-        for (let i=0; i<this.numAmps; i++) {
-          const inQ = input[i];
-          const outN = (i+1)%this.numAmps;
-          const outQ = input[outN];
-          const ic = new IC(this.prog, {
-            readint: async () => {
-              const v = await inQ.dequeue();
-              if (v === null) throw new Error(`[${i}] Input queue closed`);
-              return v;
-            },
-            writeint: (n: number) => outQ.enqueue(n)
-          });
-          promises.push(ic.run().finally(() => outQ.close()));
-          ics.push(ic);
+    const nextPermIter = this.gen.next();
+    const nextPerm = nextPermIter.value;
+    const moreToDo = nextPerm !== undefined;
+    if (moreToDo) {
+      const input: number[][] = nextPerm.map(v=>[v]);
+      const ics: IC[] = Array.from({length: this.numAmps}, 
+        (_, i) => new IC(this.prog, { readint: () => input[i].shift() , writeint: (n: number) => input[(i+1)%this.numAmps].push(n) }))
+
+      input[0].push(0); // initialize amp A
+      let executingIC = 0;
+
+      while (true) {
+        const ic = ics[executingIC];
+        const nextIC = (executingIC+1)%this.numAmps;
+        const state = ic.run(); // run to halt or next output, then run the next ic
+        //console.log(`${executingIC} state=${state}`)
+        if (state === STATE_HALTED) {
+          if (input[0][0] > this.max) this.max = input[0][0];
+          break;
         }
 
-        await Promise.all(promises);
-
-        const output = await input[0].dequeue();
-        if (output > max) {
-          max = output;
-          console.log(nextPerm.join(','), `: new best: ${max}`);
-        }
-
+        executingIC = nextIC;
       }
-    })();
+    } else {
+      this.result = this.max.toString();
+    }
 
-    return false;
+    return moreToDo;
   }
 
 }
