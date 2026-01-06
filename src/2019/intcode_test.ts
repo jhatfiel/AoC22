@@ -1,4 +1,4 @@
-import { IC, STATE_HALTED } from "./intcode.js";
+import { IC } from "./intcode.js";
 (async () => {
   let lines = await import("fs").then(fs => fs.promises.readFile('data/2019/intcode.txt', 'utf-8'));
   console.log('Running intcode tests...');
@@ -17,12 +17,9 @@ import { IC, STATE_HALTED } from "./intcode.js";
     } else {
       // Name:[inputs]:[outputs]:[o1=v1,o2=v2,...]
       total++;
-      let [name, inputs, outputs, memcheckStr] = line.split(':');
-      let inputVals = inputs?inputs.split(',').map(s => parseInt(s.trim())):[];
-      let outputVals = outputs?outputs.split(',').map(s => parseInt(s.trim())):[];
-      let output: number[] = [];
-      let inputIdx = 0;
-      let ic = new IC(instrSet, {readint: () => inputVals[inputIdx], writeint: (n: number) => output.push(n)});
+      let [name, inputStr, outputStr, memcheckStr] = line.split(':');
+      let expectedOutputs = outputStr?outputStr.split(',').map(s => parseInt(s.trim())):[];
+      let ic = new IC(instrSet, {input: inputStr?inputStr.split(',').map(s => parseInt(s.trim())):[]});
       let memchecks: {[key: number]: number} = {};
       let memactualStr = '';
       if (memcheckStr) {
@@ -31,14 +28,14 @@ import { IC, STATE_HALTED } from "./intcode.js";
           memchecks[parseInt(k)] = parseInt(v);
         }
       }
-      ic.runToHalt();
+      ic.run();
 
       let success = true;
-      if (outputVals.length > 0) {
-        if (output.length !== outputVals.length) success = false;
+      if (expectedOutputs.length > 0) {
+        if (ic.output.length !== expectedOutputs.length) success = false;
         else {
-          for (let i = 0; i < outputVals.length; i++) {
-            if (output[i] !== outputVals[i]) success = false;
+          for (let i = 0; i < expectedOutputs.length; i++) {
+            if (ic.output[i] !== expectedOutputs[i]) success = false;
           }
         }
       }
@@ -47,7 +44,7 @@ import { IC, STATE_HALTED } from "./intcode.js";
         memactualStr += `${k}=${ic.mem[k]}`;
       }
       if (!success) {
-        console.error(`TEST ${name} FAILED: \nEXPECTED: ${outputs} : ${memcheckStr??''}\n  ACTUAL: ${output} : ${memactualStr}`);
+        console.error(`TEST ${name} FAILED: \nEXPECTED: ${outputStr} : ${memcheckStr??''}\n  ACTUAL: ${ic.output} : ${memactualStr}`);
         fail++;
       } else {
         //console.log(`Test passed: ${name}`);

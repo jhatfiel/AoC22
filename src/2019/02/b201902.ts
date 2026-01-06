@@ -15,7 +15,8 @@ export class b201902 extends AoCPuzzle {
                 const ic = new IC(this.lines[0]);
                 ic.mem[1] = noun;
                 ic.mem[2] = verb;
-                let result = ic.run();
+                ic.run();
+                let result = ic.mem[0];
                 if (result === 19690720) {
                     console.log(`Found noun=${noun} and verb=${verb}`);
                     this.result = `${noun}${verb}`;

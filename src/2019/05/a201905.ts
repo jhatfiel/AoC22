@@ -6,15 +6,13 @@ export class a201905 extends AoCPuzzle {
     sampleMode(): void { };
 
     _loadData(lines: string[]) {
-      this.ic = new IC(lines[0], {
-        readint: () => 1,
-        writeint: (n: number) => {console.log(`IC says ${n}`); this.result = `${n}`}
-      });
+      this.ic = new IC(lines[0], {input: [1]});
     }
 
     _runStep(): boolean {
         let moreToDo = false;
         this.ic.run();
+        this.result = this.ic.output.at(-1).toString();
         return moreToDo;
     }
 }

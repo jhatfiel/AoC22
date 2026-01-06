@@ -1,5 +1,5 @@
 import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
-import { IC, STATE_HALTED } from '../intcode.js';
+import { IC } from '../intcode.js';
 
 export class a201902 extends AoCPuzzle {
     ic: IC;
@@ -15,7 +15,7 @@ export class a201902 extends AoCPuzzle {
     _runStep(): boolean {
         //console.log(`${this.stepNumber} calling ic.tick()`);
         //this.log(this.ic.mem.join());
-        let moreToDo = this.ic.tick() !== STATE_HALTED;
+        let moreToDo = this.ic.tick() !== 'HALTED';
         if (!moreToDo) {
             this.result = this.ic.mem[0].toString();
         }

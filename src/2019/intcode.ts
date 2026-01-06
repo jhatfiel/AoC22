@@ -1,27 +1,33 @@
-// io helper
-export interface IO {
-  readint(): number
-  writeint(n: number): void
-};
-
+type CPU_State = 'HALTED' | 'RUNNING' | 'OUTPUT' | 'INPUT' | 'INPUT_HALT';
 interface OP {
   name: string
   size: number
+  state?: CPU_State
   exec: (par: number[], mode: number[]) => boolean
 };
 
-export const STATE_HALTED = 0;
-export const STATE_RUNNING = 1;
-export const STATE_OUTPUT = 2;
+interface Config {
+  debug?: boolean;
+  singleStep?: boolean;
+  haltOnOutput?: boolean;
+  haltOnInput?: boolean;
+  input?: number[];
+  output?: number[];
+}
 
 // the intcode computer
 export class IC {
   mem: number[];
+  input: number[];
+  output: number[];
   ip = 0;
+  haltedIp = -1;
 
-  constructor(program: string, private io: IO = {readint: () => -1, writeint: (n: number) => console.log(`DEFAULT IO: ${n}`)}) {
+  constructor(program: string, props: {input?: number[], output?: number[]} = {}) {
     //console.log(`PROGRAM: ${program}`)
     this.mem = program.split(',').map(Number);
+    this.input = props.input ?? [];
+    this.output = props.output ?? [];
     // console.log(`----- Program Disassembly -----`)
     // this.disassemble();
     // console.log(`-------------------------------`)
@@ -40,13 +46,15 @@ export class IC {
       return false;
     }},
     // 3
-    {name: 'IN', size: 2, exec: (par: number[], mode: number[]) => {
-      this.mem[par[0]] = this.io.readint();
+    {name: 'IN', size: 2, state: 'INPUT', exec: (par: number[], mode: number[]) => {
+      const val = this.input.shift();
+      if (val === undefined) throw new Error(`Input instruction executed but no input available`);
+      this.mem[par[0]] = val;
       return false;
     }},
     // 4
-    {name: 'OUT', size: 2, exec: (par: number[], mode: number[]) => {
-      this.io.writeint(this.resolve(par, mode, 0));
+    {name: 'OUT', size: 2, state: 'OUTPUT', exec: (par: number[], mode: number[]) => {
+      this.output.push(this.resolve(par, mode, 0))
       return false;
     }},
     // 5
@@ -145,33 +153,39 @@ export class IC {
     return {opSize, disassembly};
   }
 
-  tick(debug = false): number {
+  tick(config: Config = {}): CPU_State {
     const instr = this.mem[this.ip];
     const {opcode, op, mode} = this.decodeInstr(instr);
     //console.debug(`IP=${this.ip} opcode=${opcode}`);
-    if (opcode === 99 || op === undefined) return STATE_HALTED;
+    if (opcode === 99 || op === undefined) return 'HALTED';
+    let state = op.state??'RUNNING';
     const par = this.mem.slice(this.ip+1, this.ip+op.size);
-    if (debug) {
+    if (config.debug) {
       const {disassembly} = this.disassembleAt(this.ip);
       console.debug(`IP [${this.ip.toString().padStart(4)}]: ${disassembly}`);
     }
+
+    // if we want to break in input and we are not resuming from an input halt
+    // we need to break in input before the input occurs
+    if (this.haltedIp !== this.ip && state === 'INPUT' && config.haltOnInput) {
+      this.haltedIp = this.ip;
+      return 'INPUT_HALT';
+    }
+
     const jumped = op.exec(par, mode);
+    this.haltedIp = -1; // reset haltedIp on successful exec
 
     if (!jumped) this.ip += op.size;
-    return opcode === 4?STATE_OUTPUT:STATE_RUNNING;
+    return state;
   }
 
-  run(debug = false): number {
+  run(config: Config = {}): CPU_State {
     while (true) {
-      let state = this.tick(debug)
-      if (state !== STATE_RUNNING) return state;
-    }
-  }
-
-  runToHalt(debug = false): number {
-    while (true) {
-      let state = this.tick(debug)
-      if (state === STATE_HALTED) return state;
+      let state = this.tick(config)
+      if ( state === 'INPUT_HALT') return 'INPUT';
+      if ( state === 'HALTED' ||
+           config.singleStep || 
+          (config.haltOnOutput && state === 'OUTPUT')) return state;
     }
   }
 }
