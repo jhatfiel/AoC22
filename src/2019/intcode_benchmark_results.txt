@@ -1,0 +1,8 @@
+===== Intcode Benchmark Results Run at 2026-01-06T14:04:25.719Z [ip-172-31-36-117.eu-] =====
+TEST sum-of-primes 100000 PASSED in 404ms
+TEST ackermann 3,6 PASSED in 249ms
+TEST isqrt 130 PASSED in 0ms
+TEST divmod 1024,3 PASSED in 8ms
+TEST factor 19338240 PASSED in 152ms
+TEST factor 2147483647 PASSED in 2631ms
+TEST factor 19201644899 PASSED in 6935ms
