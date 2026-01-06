@@ -20,7 +20,10 @@ export class IC {
   mem: number[];
   input: number[];
   output: number[];
+
   ip = 0;
+  rb = 0;
+
   haltedIp = -1;
 
   constructor(program: string, props: {input?: number[], output?: number[]} = {}) {
@@ -37,19 +40,17 @@ export class IC {
     undefined, // opcodes start at 1 so 0 is undefined
     // 1
     {name: 'ADD', size: 4, exec: (par: number[], mode: number[]) => {
-      this.mem[par[2]] = this.resolve(par, mode, 0) + this.resolve(par, mode, 1);
+      this.mem[par[2] + (mode[2]?this.rb:0)] = this.resolve(par, mode, 0) + this.resolve(par, mode, 1);
       return false;
     }},
     // 2
     {name: 'MUL', size: 4, exec: (par: number[], mode: number[]) => {
-      this.mem[par[2]] = this.resolve(par, mode, 0) * this.resolve(par, mode, 1);
+      this.mem[par[2] + (mode[2]?this.rb:0)] = this.resolve(par, mode, 0) * this.resolve(par, mode, 1);
       return false;
     }},
     // 3
     {name: 'IN', size: 2, state: 'INPUT', exec: (par: number[], mode: number[]) => {
-      const val = this.input.shift();
-      if (val === undefined) throw new Error(`Input instruction executed but no input available`);
-      this.mem[par[0]] = val;
+      this.mem[par[0] + (mode[0]?this.rb:0)] = this.input.shift();
       return false;
     }},
     // 4
@@ -72,13 +73,18 @@ export class IC {
     // 7
     {name: 'LT', size: 4, exec: (par: number[], mode: number[]) => {
       const bool = this.resolve(par, mode, 0) < this.resolve(par, mode, 1);
-      this.mem[par[2]] = bool?1:0;
+      this.mem[par[2] + (mode[2]?this.rb:0)] = bool?1:0;
       return false;
     }},
     // 8
     {name: 'EQ', size: 4, exec: (par: number[], mode: number[]) => {
       const bool = this.resolve(par, mode, 0) == this.resolve(par, mode, 1);
-      this.mem[par[2]] = bool?1:0;
+      this.mem[par[2] + (mode[2]?this.rb:0)] = bool?1:0;
+      return false;
+    }},
+    // 9
+    {name: 'RB', size: 2, exec: (par: number[], mode: number[]) => {
+      this.rb += this.resolve(par, mode, 0);
       return false;
     }},
   ]
@@ -87,10 +93,13 @@ export class IC {
     let result = '';
     switch (mode[n]) {
       case 0:
-        result = `${par[n]}=[${this.mem[par[n]]}]`;
+        result = `${par[n]}=[${this.resolve(par, mode, n)}]`;
         break;
       case 1:
-        result = `[${par[n]}]`
+        result = `[${this.resolve(par, mode, n)}]`
+        break;
+      case 2:
+        result = `~${par[n]}=${this.rb+par[n]}=[${this.resolve(par, mode, n)}]`;
         break;
       default:
         throw new Error(`Encountered unknown mode for resolve`)
@@ -102,10 +111,13 @@ export class IC {
     let result: number;
     switch (mode[n]) {
       case 0:
-        result = this.mem[par[n]]; // single dereference
+        result = this.mem[par[n]]??0; // single dereference
         break;
       case 1:
         result = par[n]; // literal value
+        break;
+      case 2:
+        result = this.mem[this.rb + par[n]]??0; // relative
         break;
       default:
         throw new Error(`Encountered unknown mode for resolve`)
@@ -167,7 +179,8 @@ export class IC {
 
     // if we want to break in input and we are not resuming from an input halt
     // we need to break in input before the input occurs
-    if (this.haltedIp !== this.ip && state === 'INPUT' && config.haltOnInput) {
+    if ((this.haltedIp !== this.ip && state === 'INPUT' && config.haltOnInput) ||
+        (state === 'INPUT' && this.input.length === 0)) {
       this.haltedIp = this.ip;
       return 'INPUT_HALT';
     }
