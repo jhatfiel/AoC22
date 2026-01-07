@@ -141,3 +141,15 @@ export function IsPrime(n: number): boolean {
     }
     return _NUMBERS_PRIME_cache.every(p => n % p !== 0);
 }
+
+export function LCM(...arr: number[]): number {
+    const factors = new Map<number, number>();
+    arr.forEach(n => {
+        PrimeFactors(n).forEach((p, f) => {
+            const currentP = factors.get(f);
+            if (!currentP || currentP < p) factors.set(f, p);
+        });
+    })
+    
+    return [...factors].reduce((prev, [f,p]) => prev = prev * f**p,1);
+}
