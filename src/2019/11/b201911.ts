@@ -3,7 +3,7 @@ import { IC } from '../intcode.js';
 
 const SIZE=200;
 
-export class a201911 extends AoCPuzzle {
+export class b201911 extends AoCPuzzle {
   facing = 0; // N/E/S/W
   delta = [[0,-1],[1,0],[0,1],[-1,0]];
   minX = Infinity;
@@ -19,6 +19,18 @@ export class a201911 extends AoCPuzzle {
 
   _loadData(lines: string[]) {
     this.ic = new IC(lines[0]);
+    this.grid[this.y][this.x] = 1;
+  }
+
+  output() {
+    for (let y=this.minY; y<=this.maxY; y++) {
+      let line='';
+      for (let x=this.minX; x<=this.maxX; x++) {
+        line += this.grid[y][x]===1?'█':' ';
+      }
+      console.log(line);
+    }
+
   }
 
   turn(d: number) {
@@ -54,6 +66,7 @@ export class a201911 extends AoCPuzzle {
 
     if (this.stepNumber > 10000 || state === 'HALTED') {
       console.log(`Final boundary: ${this.minX}-${this.maxX}, ${this.minY}-${this.maxY}`);
+      this.output();
       this.result = this.painted.size.toString();
       return false;
     } else {
