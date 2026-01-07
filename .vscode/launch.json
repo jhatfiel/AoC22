@@ -31,7 +31,7 @@
       ],
       "args": [
         "${fileBasenameNoExtension}",
-        "${input:selectInputFile}"
+        "${input:selectInputFileRemember}"
       ],
       "outFiles": [
         "${workspaceFolder}/dist/out-tsc/**/*.js"

@@ -1,4 +1,4 @@
-type CPU_State = 'HALTED' | 'RUNNING' | 'OUTPUT' | 'INPUT' | 'INPUT_HALT';
+export type CPU_State = 'HALTED' | 'RUNNING' | 'OUTPUT' | 'INPUT' | 'INPUT_HALT';
 interface OP {
   name: string
   size: number
@@ -179,6 +179,7 @@ export class IC {
 
     // if we want to break in input and we are not resuming from an input halt
     // we need to break in input before the input occurs
+    //console.log(`haltedIp=${this.haltedIp}, ip=${this.ip}, input.length=${this.input.length}`)
     if ((this.haltedIp !== this.ip && state === 'INPUT' && config.haltOnInput) ||
         (state === 'INPUT' && this.input.length === 0)) {
       this.haltedIp = this.ip;
