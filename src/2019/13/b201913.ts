@@ -32,16 +32,32 @@ export class b201913 extends AoCPuzzle {
     console.log(lines.join('\n'));
   }
 
+  processICOutput() {
+    while (this.ic.output.length) {
+      let [x, y, t] = this.ic.output.splice(0, 3);
+      if (x === -1 && y === 0) {
+        this.score = t;
+        continue;
+      }
+      if (t === 3) this.paddle = x;
+      if (t === 4) this.ball = {x,y};
+      if (this.grid[y] === undefined) this.grid[y] = [];
+      this.grid[y][x] = t;
+    }
+  }
+
   _loadData(lines: string[]) {
     this.ic = new IC(lines[0]);
     this.ic.mem[0] = 2; // free play!
   }
 
-  _runStep(): boolean {
-    Readline.emitKeypressEvents(process.stdin);
-    process.stdin.setRawMode(true);
-    process.stdin.resume();
-    process.stdin.setEncoding('utf8');
+  async playGame(interactive: boolean) {
+    if (interactive) {
+      Readline.emitKeypressEvents(process.stdin);
+      process.stdin.setRawMode(true);
+      process.stdin.resume();
+      process.stdin.setEncoding('utf8');
+    }
     const readSingleChar = () => {
       return new Promise((resolve) => {
         const onKeypress = (str, key) => {
@@ -52,37 +68,51 @@ export class b201913 extends AoCPuzzle {
         //console.log(`waiting for keypress....`)
       })
     }
-    (async () => {
-
-      let state = this.ic.run({haltOnInput: true});
-      while (true) {
-        //console.log(`output:`, this.ic.output);
-        while (this.ic.output.length) {
-          let [x, y, t] = this.ic.output.splice(0, 3);
-          if (x === -1 && y === 0) {
-            this.score = t;
-            console.log(`SCORE:`, t);
-            continue;
-          }
-          if (this.grid[y] === undefined) this.grid[y] = [];
-          this.grid[y][x] = t;
-        }
-        if (state === 'INPUT') {
-          console.log(`Input requested, current length=${this.ic.input.length}`);
-          this.output();
-          if (this.ic.input.length === 0) {
-            const key = await readSingleChar();
-            //console.log(`Async function captured: ${key}`)
-            if (key === 'q') process.exit();
-            this.ic.input.push(key==='left'?-1:key==='right'?1:0);
-          }
-          state = this.ic.run({haltOnInput: true});
-        }
-        if (state === 'HALTED') process.exit();;
-        //console.log({state});
-      }
-    })()
+    let state = this.ic.run({haltOnInput: true});
+    this.processICOutput();
+    if (!interactive) this.output(); // just once to see the initial state
     
+    while (true) {
+      //console.log(`output:`, this.ic.output);
+      let rec = this.ball.x < this.paddle?-1:this.ball.x>this.paddle?1:0;
+      if (interactive) this.output();
+      if (state === 'INPUT') {
+        //console.log(`Input requested, current length=${this.ic.input.length}`);
+        if (interactive) {
+          console.log(`Move (press UP for recommendation of ${rec===-1?'<':rec===1?'>':'_'})`)
+          const key = await readSingleChar();
+          switch (key) {
+            case 'left': this.ic.input.push(-1); break;
+            case 'right': this.ic.input.push(1); break;
+            case 'down': this.ic.input.push(0); break;
+            case 'up': this.ic.input.push(rec); break;
+            default:
+              process.exit();
+          }
+        } else {
+          this.ic.input.push(rec);
+        }
+        state = this.ic.run({haltOnInput: true});
+        this.processICOutput();
+      }
+      if (state === 'HALTED') {
+        if (interactive) {
+          console.log(`Final Score: ${this.score}`);
+          process.exit();
+        }
+        break;
+      }
+    }
+  }
+
+  _runStep(): boolean {
+    if (false) { // interactive?
+      (async () => {
+        await this.playGame(true);
+      })();
+    } else {
+      this.playGame(false);
+    }
     this.result = this.score.toString();
     return false;
   }
