@@ -64,7 +64,10 @@ export class BFS<T=string> {
 
         while (toProcess.length) {
             let state = toProcess.removeFront();
-            if (shouldStop(state)) break;
+            if (shouldStop(state)) {
+                if (this.keepFinalState(state)) states.push(state);
+                break;
+            }
             state.visited.add(state.at);
 
             let neighbors = this.getNeighbors(state);
