@@ -6,6 +6,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch TS",
+      "runtimeVersion": "default",
       "program": "./dist/out-tsc/aoc.js",
       "runtimeArgs": [
         "--experimental-specifier-resolution=node",
@@ -23,6 +24,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch TS (term)",
+      "runtimeVersion": "default",
       "program": "./dist/out-tsc/aoc.js",
       "console": "integratedTerminal",
       "runtimeArgs": [
