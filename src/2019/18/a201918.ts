@@ -31,100 +31,91 @@ export class a201918 extends AoCPuzzle {
   }
 
   _runStep(): boolean {
-
-    /*
-    This could be improved substantially
-    We could do the dijkstra first, and BFS underneath that instead of doing a bunch of BFS's up front
-    as long as we cache all results based on what keys you have.  Never go through locked doors. Always stop at the first key you find down any path.
-    */
-
-    // find distance between pairs of keys, based on what other keys are necessary (what doors you'd have to go through)
-    // then, find the best path between all keys, choosing the shortest path based on what keys you've picked up so far
-    const graph = new Map<string, Map<string, {cost: number, keys: string[]}>>();
+    let start = Date.now();
+    let bfsTimer = 0;
+    let dupNode = 0;
+    // const graph = new Map<string, Map<string, {cost: number, keys: string[]}>>();
     console.log(this.gp.grid.map(row=>row.map(ch=>ch==='.'?' ':ch).join('')).join('\n'));
-    const bfs = new BFS((state) => {
-      // console.log(`BFS ${state}`)
-      const pair = PairFromKey(state.at);
-      const result = new Map<string, number>();
-        this.gp.gridOrthogonalP(pair).forEach(([n]) => {
-        if (this.gp.grid[n.y][n.x] !== '#') result.set(PairToKey(n), 1);
-      })
-      return result;
-    });
-    const keyNames = [...this.keys.keys()];
-
-    // build the high-level graph
-    ['@', ...keyNames].forEach((keyFrom, ind, arr) => {
-      const fromPair = this.keys.get(keyFrom) ?? this.start;
-      const fromPairKey = PairToKey(fromPair);
-      console.log(`Processing Key: ${keyFrom} at ${fromPairKey} ${ind+1}/${arr.length}`);
-      let nodeMap = graph.get(keyFrom);
-      if (nodeMap === undefined) {
-        nodeMap = new Map<string, {cost: number, keys: string[]}>();
-        graph.set(keyFrom, nodeMap);
-      }
-      // analyze how we would get from this pair to other pairs that have keys
-      keyNames.forEach((keyTo) => {
-        if (keyTo <= keyFrom) return;
-        const toPairKey = PairToKey(this.keys.get(keyTo));
-        const paths = bfs.getPathsBetweenNodes(fromPairKey, toPairKey, true);
-        //console.log(`paths between ${fromPairKey} and ${toPairKey}`)
-        //console.log(paths.map(state=>state.toString()).join(' / '));
-        paths.forEach(({cost, visited}) => {
-          const keys: string[] = [];
-          visited.forEach(posKey => {
-            const pos = PairFromKey(posKey);
-            const ch = this.gp.grid[pos.y][pos.x];
-            if (this.doors.has(ch)) keys.push(ch.toLowerCase());
-          })
-          nodeMap.set(keyTo, {cost, keys});
-          if (keyFrom !== '@') {
-            let oppositeMap = graph.get(keyTo);
-            if (oppositeMap === undefined) {
-              oppositeMap = new Map<string, {cost: number, keys: string[]}>();
-              graph.set(keyTo, oppositeMap);
-            }
-            oppositeMap.set(keyFrom, {cost, keys});
-          }
-        })
-      });
-    });
-
-    // ['@', ...keyNames].forEach((keyFrom) => {
-    //   const fromPair = this.keys.get(keyFrom) ?? this.start;
-    //   const fromPairKey = PairToKey(fromPair);
-    //   console.log(`Key: ${keyFrom} is at ${fromPairKey}`);
-    //   const nodeMap = graph.get(fromPairKey);
-    //   if (!nodeMap) return;
-    //   [...nodeMap.entries()].forEach(([toPairKey, {cost, keys}]) => {
-    //     console.log(`- to ${toPairKey} cost=${cost}, keysNeeded=${keys}`)
-    //   });
-    // });
-
-    // now that we have a high-level graph, it's a "simple" dijkstra over it
+    const nodeMapCache = new Map<string, Map<string, number>>();
     const dij = new Dijkstra((node) => {
-      // console.log(`DIJ processing ${node}`)
-      const results = new Map<string, number>();
-      const [atKey, keysPossessed] = node.split(';');
-      const nodeMap = graph.get(atKey);
-      [...nodeMap.entries()].forEach(([toKey, {cost, keys}]) => {
-        // console.log(`- to ${toKey} cost=${cost}, keysNeeded=${keys}`)
-        if (keysPossessed.indexOf(toKey) === -1 && keys.every(k => keysPossessed.indexOf(k) !== -1)) {
-          const newKey = `${toKey};${[toKey, ...keysPossessed.split('')].sort().join('')}`;
-          // console.log(`- we can get there! (${newKey})`);
-          results.set(newKey, cost)
-        }
-      });
+      //console.log(`DIJ processing ${node}`)
+      const [fromPairKey, keysPossessed] = node.split(';');
+      //const nodeMap = graph.get(atKey);
+      // replace call to nodeMap with calculation of BFS based on keysPossessed (caching results)
+      let results = nodeMapCache.get(node);
+      if (results === undefined) {
+        results = new Map<string, number>();
+        nodeMapCache.set(node, results);
+
+        //const fromPair = atKey === '@' ? this.start : this.keys.get(atKey)!;
+        //const fromPairKey = PairToKey(fromPair);
+        // analyze how we would get from this pair to other pairs that have keys
+        const bfs = new BFS((state) => {
+          // console.log(`BFS ${state}`)
+          const pair = PairFromKey(state.at);
+          const result = new Map<string, number>();
+          const ch = this.gp.grid[pair.y][pair.x];
+          const isSpace = ch === '.';
+          const isDoor = this.doors.has(ch);
+          const isKey = this.keys.has(ch);
+          if ( state.visited.size === 1 || // we can always move away from our start position
+              isSpace ||  // we can move through open space
+              (isDoor && keysPossessed.indexOf(ch.toLowerCase()) !== -1) || // we can move through doors we have keys for
+              (isKey && keysPossessed.indexOf(ch) !== -1)) { // we can move through keys we have picked up (otherwise we need to stop at this key)
+            this.gp.gridOrthogonalP(pair).forEach(([n]) => {
+              if (this.gp.grid[n.y][n.x] !== '#') {
+                // console.log(`  can go to ${PairToKey(n)}`);
+                result.set(PairToKey(n), 1)
+              }
+            });
+          }
+          return result;
+        }, ({at}) => {
+          const pair = PairFromKey(at);
+          const ch = this.gp.grid[pair.y][pair.x];
+
+          // console.log(`Keeping terminal state: ${at}=${ch}=${this.keys.has(ch) && keysPossessed.indexOf(ch) === -1}`); // keep states that end at uncollected keys
+          return this.keys.has(ch) && keysPossessed.indexOf(ch) === -1; // keep states that end at uncollected keys
+        });
+
+        const now = Date.now();
+        const paths = bfs.getPathsFrom(fromPairKey);
+        bfsTimer += Date.now() - now;
+        paths.forEach(({at, cost}) => {
+          const pair = PairFromKey(at);
+          const toKey = this.gp.grid[pair.y][pair.x];
+          //if (keyTo === '.' || this.doors.has(keyTo) || keyTo === atKey) return; // not a key path, or door, or same key
+          const newKeysPossessed = keysPossessed.indexOf(toKey) === -1 ? (keysPossessed + toKey).split('').sort().join('') : keysPossessed;
+          const newKey = `${at};${newKeysPossessed}`;
+          // console.log(`- found path to ${at}(${newKey}) cost=${cost}`);
+          results.set(newKey, cost);
+        });
+      } else {
+        dupNode++;
+      }
+
+      // [...nodeMap.entries()].forEach(([toKey, {cost, keys}]) => {
+      //   // console.log(`- to ${toKey} cost=${cost}, keysNeeded=${keys}`)
+      //   if (/*keysPossessed.indexOf(toKey) === -1 && */keys.every(k => keysPossessed.indexOf(k) !== -1)) {
+      //     const newKeysPossessed = keysPossessed.indexOf(toKey) === -1 ? (keysPossessed + toKey).split('').sort().join('') : keysPossessed;
+      //     const newKey = `${toKey};${newKeysPossessed}`;
+      //     // console.log(`- we can get there! (${newKey})`);
+      //     results.set(newKey, cost)
+      //   }
+      // });
       return results;
     });
 
-    const result = dij.pathToAny(`@;`, (node) => {
-      const keysPossessed = node.split(';')[1];
-      // console.log(`? is at end ${node} ${keysPossessed.length} vs ${this.keys.size}`);
+    const startNode = `${PairToKey(this.start)};`;
+    const result = dij.pathToAny(startNode, (node) => {
+      const keysPossessed = node.split(';')[1]??'';
+      //console.log(` is at end?? ${node} ${keysPossessed.length} vs ${this.keys.size}`);
       return (keysPossessed.length === this.keys.size)
     }, false);
-    console.log(`Paths:`)
-    console.log(result);
+
+    // console.log(`Paths:`)
+    // console.log(result);
+
     let minCost = Infinity;
     for (let endPairKey of [...result.keys()]) {
       const paths = result.get(endPairKey);
@@ -132,10 +123,10 @@ export class a201918 extends AoCPuzzle {
       console.log(paths.map(path=>path.join(' / ')).map(line=>`-${line}`).join('\n'))
       for (let path of paths) {
         let cost = 0;
-        let node = '@';
+        let node = startNode;
         for (let i=1; i<path.length; i++) {
-          const toKey = path[i].split(';')[0];
-          cost += graph.get(node).get(toKey).cost;
+          const toKey = path[i];
+          cost += nodeMapCache.get(node).get(toKey);
           node = toKey;
         }
 
@@ -146,50 +137,10 @@ export class a201918 extends AoCPuzzle {
       }
     }
 
+    console.log(`Duplicate DIJ nodes: ${dupNode}`);
+    console.log(`BFS time: ${bfsTimer}ms`);
+    console.log(`Total time: ${Date.now()-start}ms`)
     this.result = minCost.toString();
-
-    return false;
-  }
-
-  _runStepTooLong(): boolean {
-    const bfs = new BFS((state) => {
-      const {pair, keys} = fromState(state.at);
-      const result = new Map<string, number>();
-      this.gp.gridOrthogonalP(pair).forEach(([n]) => {
-        const ch = this.gp.grid[n.y][n.x];
-        const isSpace = ch === '.';
-        const isWall = ch === '#';
-        const isKey = this.keys.has(ch);
-        if (!isWall && (isSpace || isKey || (keys.includes(ch.toLowerCase())))) {
-          let newState: string;
-          if (isKey && !keys.includes(ch)) {
-            //console.log(`new key: ${keys},${ch}`)
-            newState = toState(n, keys + ch); // we've picked up a new key!
-          } else {
-            newState = toState(n, keys);
-          }
-          result.set(newState, 1);
-        }
-      })
-      return result;
-    }, (state) => {
-      const keys = state.at.split(';')[1];
-      return keys.length === this.keys.size;
-    });
-
-    console.log(this.gp.grid.map(row=>row.join('')).join('\n'));
-    console.log(`Start at ${PairToKey(this.start)}`);
-    console.log(`Keys:`, this.keys);
-    console.log(`Doors:`, this.doors);
-    const paths = bfs.getPathsFrom(toState(this.start, ''), (state) => {
-      // stop as soon as we have all the keys
-      const keys = state.at.split(';')[1];
-      return keys.length === this.keys.size;
-    });
-    console.log(`Possible paths:`);
-    console.log(paths.join('\n'));
-
-    this.result = paths[0].cost.toString();
 
     return false;
   }
