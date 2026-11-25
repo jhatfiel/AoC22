@@ -1,4 +1,4 @@
-import { AoCPuzzle } from '../../lib/AoCPuzzle.js';
+import { AoCPuzzle } from '../../lib/AoCPuzzle';
 
 export class a202601 extends AoCPuzzle {
     sampleMode(): void { };

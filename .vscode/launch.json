@@ -7,6 +7,33 @@
       "request": "launch",
       "name": "Launch TS",
       "runtimeVersion": "default",
+      "program": "${workspaceFolder}/src/aoc.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["--import", "tsx"],
+      "args": [
+        "${fileBasenameNoExtension}",
+        "${input:selectInputFileRemember}"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch TS (term)",
+      "runtimeVersion": "default",
+      "program": "${workspaceFolder}/src/aoc.ts",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "runtimeArgs": ["--import", "tsx"],
+      "args": [
+        "${fileBasenameNoExtension}",
+        "${input:selectInputFileRemember}"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch TS (compiled)",
+      "runtimeVersion": "default",
       "program": "./dist/out-tsc/aoc.js",
       "runtimeArgs": [
         "--experimental-specifier-resolution=node",
@@ -23,7 +50,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch TS (term)",
+      "name": "Launch TS (compiled, term)",
       "runtimeVersion": "default",
       "program": "./dist/out-tsc/aoc.js",
       "console": "integratedTerminal",
